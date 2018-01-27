@@ -1,0 +1,39 @@
+div, figure, section, nav, article, input, textarea {
+  padding:0; margin:0; box-sizing: border-box;
+}
+
+body {
+  width:360px;
+  height:600px;
+  padding:0;
+  margin:0;
+}
+
+a {
+  display:inherit;
+  text-decoration: inherit;
+}
+
+main {
+  background:#f9f9f9;
+  transition:background 0.8s ease;
+  height:100%;
+
+  &.main-white-bg {
+    background:#fff;
+  }
+}
+
+.p20 { padding:20px; }
+.p40 { padding:40px; }
+.white-bg {
+  background:#fff;
+}
+
+.line {
+  width:100%;
+  height:1px;
+  background:#eaeaea;
+  margin:0;
+  padding:0;
+}
