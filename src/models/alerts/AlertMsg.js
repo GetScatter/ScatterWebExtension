@@ -37,7 +37,7 @@ export default class AlertMsg {
             'Identity Name Exists',
             'Error',
             ['Identity', 'Name'],
-            'This Identity name is registered to another Scatter extension.'
+            'This Identity name is registered to another Identity.'
         );
     }
 
@@ -87,13 +87,13 @@ export default class AlertMsg {
         );
     }
 
-    static WrongPassword(){
+    static CantRemoveLastIdentity(){
         return new AlertMsg(
             AlertTypes.Error,
-            'Wrong Password',
+            'Removing Last Identity',
             'Error',
-            ['Scatter', 'Authentication'],
-            'The password you entered was incorrect.'
+            ['Identity', 'Remove'],
+            'You must have at least one Identity on Scatter. Create another if you want to remove this one.'
         );
     }
 
@@ -116,6 +116,61 @@ export default class AlertMsg {
             'Passwords must be at least 8 characters long'
         );
     }
+
+    static WrongPassword(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'Wrong Password',
+            'Error',
+            ['Scatter', 'Authentication'],
+            'The password you entered was incorrect.'
+        );
+    }
+
+    static NetworkHostInvalid(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'Network Host Invalid',
+            'Error',
+            ['Networks', 'New Network'],
+            'The Network host you entered was invalid. Hosts should be either a domain name ' +
+            '( ex: testnet.eos.io ) or an IP ( ex: 192.168.0.1 ).'
+        );
+    }
+
+    static NetworkPortInvalid(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'Network Port Invalid',
+            'Error',
+            ['Networks', 'New Network'],
+            'The Network port you entered was invalid. Ports should numeric only and be either 80, or above 1000.'
+        );
+    }
+
+    static NetworkExists(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'Network Already Exists',
+            'Error',
+            ['Networks', 'New Network'],
+            'Another Network with this host and port already exists. There is no reason to have a network saved twice.'
+        );
+    }
+
+    static RemovingEndorsedNetwork(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'Cannot Remove Endorsed Network',
+            'Error',
+            ['Networks', 'Remove'],
+            'You cannot remove Scatter\'s endorsed Network. We use this Network to host our contracts.'
+        );
+    }
+
+
+
+
 
     /***************************************/
     /*               Prompts               */

@@ -8,6 +8,10 @@ import * as Actions from './store/constants'
 import NavbarComponent from './components/NavbarComponent.vue'
 import InputComponent from './components/InputComponent.vue'
 import ButtonComponent from './components/ButtonComponent.vue'
+import SearchComponent from './components/SearchComponent.vue'
+import SelectComponent from './components/SelectComponent.vue'
+import NavActionsComponent from './components/NavActionsComponent.vue'
+import ViewBase from './views/ViewBase.vue'
 import Alert from './components/alerts/Alert.vue'
 
 import AlertMsg from './models/alerts/AlertMsg'
@@ -30,9 +34,13 @@ class Popup {
 
     registerComponents(){
         Vue.component('navbar', NavbarComponent);
+        Vue.component('nav-actions', NavActionsComponent);
         Vue.component('cin', InputComponent);
         Vue.component('btn', ButtonComponent);
+        Vue.component('search', SearchComponent);
+        Vue.component('sel', SelectComponent);
         Vue.component('error', Alert);
+        Vue.component('view-base', ViewBase);
     }
 
     setupRouting(){

@@ -13,7 +13,8 @@ function replaceSuffixes(file){
 const filesToCopy = [
     'index.html',
     'manifest.json',
-    'icon.png'
+    'icon.png',
+    'copied'
 ];
 
 const filesToPack = [

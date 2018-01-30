@@ -35,7 +35,8 @@
     export default {
         computed: {
             ...mapState([
-                'mnemonic'
+                'mnemonic',
+                'scatter'
             ])
         },
         methods: {
@@ -44,7 +45,8 @@
             },
             goToFirstIdentity(){
                 this[Actions.SET_MNEMONIC]('');
-                this.$router.push({name:RouteNames.FIRST_TIME})
+                if(!this.scatter.keychain.identities.length) this.$router.push({name:RouteNames.FIRST_TIME});
+                else this.$router.push({name:RouteNames.MAIN_MENU});
             },
             ...mapActions([
                 Actions.SET_MNEMONIC,

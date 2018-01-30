@@ -2,36 +2,30 @@ import * as Actions from './constants'
 import PasswordHasher from '../util/PasswordHasher'
 import Mnemonic from '../util/Mnemonic'
 import Scatter from '../models/Scatter'
+import Network from '../models/Network'
 import InternalMessage from '../messages/InternalMessage'
 import InternalMessageTypes from '../messages/InternalMessageTypes'
 
 export const actions = {
     [Actions.SET_SCATTER]:({commit}, scatter) => commit(Actions.SET_SCATTER, scatter),
-
-    [Actions.LOAD_SCATTER]:({dispatch}) => {
-        return new Promise((resolve, reject) => {
-            InternalMessage.signal(InternalMessageTypes.LOAD).send().then(_scatter => {
-                dispatch(Actions.SET_SCATTER, Scatter.fromJson(_scatter));
-                resolve();
-            })
-        })
-    },
-
-    [Actions.IS_UNLOCKED]:() => {
-        return InternalMessage.signal(InternalMessageTypes.IS_UNLOCKED).send();
-    },
-
-    [Actions.LOCK]:() => {
-        return InternalMessage.payload(InternalMessageTypes.SEED, '').send()
-    },
-
     [Actions.SET_MNEMONIC]:({commit}, mnemonic) => commit(Actions.SET_MNEMONIC, mnemonic),
+    [Actions.IS_UNLOCKED]:() => InternalMessage.signal(InternalMessageTypes.IS_UNLOCKED).send(),
+    [Actions.LOCK]:() => InternalMessage.payload(InternalMessageTypes.SEED, '').send(),
 
     [Actions.SET_SEED]:({commit}, password) => {
         return new Promise((resolve, reject) => {
             const [mnemonic, seed] = Mnemonic.generateMnemonic(password);
             InternalMessage.payload(InternalMessageTypes.SEED, seed).send().then(() => {
                 resolve(mnemonic)
+            })
+        })
+    },
+
+    [Actions.LOAD_SCATTER]:({dispatch}) => {
+        return new Promise((resolve, reject) => {
+            InternalMessage.signal(InternalMessageTypes.LOAD).send().then(_scatter => {
+                dispatch(Actions.SET_SCATTER, Scatter.fromJson(_scatter));
+                resolve();
             })
         })
     },
@@ -45,10 +39,27 @@ export const actions = {
         })
     },
 
+    [Actions.DESTROY]:() => {
+        return new Promise((resolve, reject) => {
+            InternalMessage.signal(InternalMessageTypes.DESTROY).send().then(() => {
+                resolve(true);
+            })
+
+        })
+    },
+
+    [Actions.BACKUP_SCATTER_ON_BLOCKCHAIN]:({state, commit, dispatch}, scatter) => {
+        return new Promise((resolve, reject) => {
+            // Do this from the Background script
+            resolve(true);
+        })
+    },
+
     [Actions.CREATE_NEW_SCATTER]:({state, commit, dispatch}, password) => {
         return new Promise((resolve, reject) => {
             const scatter = Scatter.fromJson(state.scatter);
             scatter.settings.hasEncryptionKey = true;
+            scatter.settings.networks = [Network.endorsedNetwork()];
 
             dispatch(Actions.SET_SEED, password).then(mnemonic => {
                 dispatch(Actions.UPDATE_STORED_SCATTER, scatter).then(_scatter => {
@@ -63,23 +74,23 @@ export const actions = {
 
 
 
-    [Actions.PUSH_ERROR]:({state, commit}, error) => {
+    [Actions.PUSH_ALERT]:({state, commit}, error) => {
         function waitForErrorResult(resolve){
-            if(state.errorResult) {
-                const errorResult = Object.assign({}, state.errorResult);
-                commit(Actions.CLEAR_ERROR_RESULT);
-                resolve(errorResult)
+            if(state.alertResult) {
+                const alertResult = Object.assign({}, state.alertResult);
+                commit(Actions.CLEAR_ALERT_RESULT);
+                resolve(alertResult)
             } else setTimeout(() => {
                 waitForErrorResult(resolve);
             }, 100)
         }
 
         return new Promise((resolve, reject) => {
-            commit(Actions.PUSH_ERROR, error);
+            commit(Actions.PUSH_ALERT, error);
             waitForErrorResult(resolve);
         })
     },
-    [Actions.PULL_ERROR]:({commit}) => commit(Actions.PULL_ERROR),
-    [Actions.PUSH_ERROR_RESULT]:({commit}, errorResult) => commit(Actions.PUSH_ERROR_RESULT, errorResult),
-    [Actions.CLEAR_ERROR_RESULT]:({commit}) => commit(Actions.CLEAR_ERROR_RESULT),
+    [Actions.PULL_ALERT]:({commit}) => commit(Actions.PULL_ALERT),
+    [Actions.PUSH_ALERT_RESULT]:({commit}, alertResult) => commit(Actions.PUSH_ALERT_RESULT, alertResult),
+    [Actions.CLEAR_ALERT_RESULT]:({commit}) => commit(Actions.CLEAR_ALERT_RESULT),
 };

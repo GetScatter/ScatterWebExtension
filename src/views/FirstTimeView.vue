@@ -1,6 +1,5 @@
 <template>
     <section>
-
         <section v-if="firstTimeState() === 'firstIdentity'" :key="1">
             <section class="white-bg">
                 <figure class="title">Create your first Identity</figure>
@@ -66,13 +65,13 @@
     import {RouteNames} from '../vue/Routing'
     import Identity from '../models/Identity';
     import Account from '../models/Account';
+    import Network from '../models/Network';
     import KeyPair from '../models/KeyPair';
     import Scatter from '../models/Scatter';
+    import AlertMsg from '../models/alerts/AlertMsg'
     import EOSKeygen from '../util/EOSKeygen'
     import AccountService from '../services/AccountService'
     import IdentityService from '../services/IdentityService'
-
-    import AlertMsg from '../models/alerts/AlertMsg'
 
     export default {
         data(){ return {
@@ -98,13 +97,13 @@
             // Identity names are not persisted until an account is bound to it.
             createNewIdentity(){
                 if(!Identity.nameIsValid(this.identityName)){
-                    this[Actions.PUSH_ERROR](AlertMsg.BadIdentityName());
+                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
                     return false;
                 }
 
-                IdentityService.nameExists(this.identityName).then(exists => {
+                IdentityService.nameExists(this.identityName, this.scatter).then(exists => {
                     if(exists){
-                        this[Actions.PUSH_ERROR](AlertMsg.IdentityNameExists());
+                        this[Actions.PUSH_ALERT](AlertMsg.IdentityNameExists());
                         return false;
                     }
 
@@ -114,65 +113,29 @@
 
             // Creates a new EOS account which is bound to the user's new Identity
             createNewAccount(){
-                if(!Account.nameIsValid(this.accountName)){
-                    this[Actions.PUSH_ERROR](AlertMsg.BadAccountName());
-                    return false;
-                }
-
-                AccountService.nameExists(this.accountName).then(exists => {
-                    if(exists){
-                        this[Actions.PUSH_ERROR](AlertMsg.AccountNameExists());
-                        return false;
-                    }
-
-                    const keypair = EOSKeygen.generateKeys();
-                    this.identity.account = Account.fromJson({name:this.accountName, 'authority':'active', publicKey:keypair.publicKey});
+                AccountService.create(this.accountName, this[Actions.PUSH_ALERT]).then(created => {
+                    const keypair = created.keypair;
+                    this.identity.account = created.account;
 
                     this.addNewIdentity(keypair, this.identity);
-                })
+                });
             },
 
             // Imports an EOS account@authority which is bound to the user's new Identity
             importAccount(){
-                if(!EOSKeygen.validPrivateKey(this.importKey)){
-                    this[Actions.PUSH_ERROR](AlertMsg.InvalidPrivateKey());
-                    return false;
-                }
-
-                const keypair = KeyPair.fromJson({
-                    privateKey:this.importKey,
-                    publicKey:EOSKeygen.privateToPublic(this.importKey)
-                });
-
-                const accountSelected = (account) => {
-                    this.identity.account = account;
-                    this.addNewIdentity(keypair, this.identity);
-                };
-
-                AccountService.getAccountsFromPrivateKey(keypair.privateKey).then(accounts => {
-                    switch(accounts.length){
-                        case 0:
-                            this[Actions.PUSH_ERROR](AlertMsg.NoAccountsFound());
-                            return false;
-
-                        case 1: accountSelected(Account.fromJson({
-                            name:accounts[0].name,
-                            authority:accounts[0].authority,
-                            publicKey:keypair.publicKey
-                        })); break;
-
-                        default: this[Actions.PUSH_ERROR](AlertMsg.SelectAccount(accounts)).then(res => {
-                            if(!res || !res.hasOwnProperty('selected')) return false;
-                            accountSelected(Account.fromJson(Object.assign(res.selected, {publicKey:keypair.publicKey})));
-                        })
-                    }
+                AccountService.importFromKey(this.importKey, this[Actions.PUSH_ALERT]).then(imported => {
+                    this.identity.account = imported.account;
+                    this.addNewIdentity(imported.keypair, this.identity);
                 });
             },
 
             // Adds the user's first Identity to the keychain and
             // registers it with the Scatter contract
             addNewIdentity(keypair, identity){
-                identity.publicKey = keypair.publicKey;
+                identity.account.publicKey = keypair.publicKey;
+
+                // Always using the endorsed network for the first identity/account
+                identity.network = this.scatter.settings.networks.find(x => x.isEndorsedNetwork());
 
                 //TODO: --------------------------------------------------------------------
                 //TODO: Might want to bind these together as a transaction so that they can
@@ -182,7 +145,7 @@
                     AccountService.register(identity.account, this.scatter).then(accountHash => {
                         //TODO: ------------------------------------------------------------
 
-                        let scatter = Scatter.fromJson(this.scatter);
+                        let scatter = this.scatter.clone();
                         scatter.keychain.keypairs.push(keypair);
                         scatter.keychain.identities.push(identity);
                         this[Actions.UPDATE_STORED_SCATTER](scatter)
@@ -193,7 +156,7 @@
             ...mapActions([
                 Actions.CREATE_NEW_SCATTER,
                 Actions.UPDATE_STORED_SCATTER,
-                Actions.PUSH_ERROR
+                Actions.PUSH_ALERT
             ])
         },
     }

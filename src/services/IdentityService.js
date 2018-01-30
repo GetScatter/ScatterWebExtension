@@ -2,10 +2,18 @@ import Identity from '../models/Identity'
 
 export default class IdentityService {
 
-    //TODO Mock
-    static nameExists(name){
+    /***
+     * Checks if an identity exists, and if not it registers it.
+     * @param name
+     * @param scatter
+     * @returns {Promise}
+     */
+    static existsOrRegister(name, scatter){
         return new Promise((resolve, reject) => {
-            resolve(false);
+            IdentityService.nameExists(name).then(exists => {
+                if(exists) resolve();
+                else IdentityService.register(name, scatter).then(res => resolve());
+            });
         })
     }
 
@@ -15,6 +23,14 @@ export default class IdentityService {
             // Register name with scatter.keychain.id
             // We might need to do this with keypairs so that they can be provably owned
             resolve(true)
+        })
+    }
+
+    //TODO Mock
+    static nameExists(name, scatter){
+        return new Promise((resolve, reject) => {
+            // Check if exists within another scatter
+            resolve(false);
         })
     }
 }

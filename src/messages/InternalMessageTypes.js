@@ -3,7 +3,8 @@ export const InternalMessageTypes = {
     IS_UNLOCKED:'is_unlocked',
     LOAD:'load',
     UPDATE:'update',
-    PUB_TO_PRIV:'public_to_private_key'
+    PUB_TO_PRIV:'public_to_private_key',
+    DESTROY:'destroy'
 };
 
 export default InternalMessageTypes;

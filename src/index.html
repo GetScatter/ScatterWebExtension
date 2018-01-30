@@ -5,15 +5,13 @@
     <title>Scatter</title>
 
     <link href="https://fonts.googleapis.com/css?family=Grand+Hotel|Open+Sans:400,600|Raleway:200,300,400,600,700,800" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
     <main id="scatter" :class="{'main-white-bg':this.$route.name === 'mainMenu'}">
-        <navbar></navbar>
-        <router-view></router-view>
-        <error></error>
+        <view-base></view-base>
     </main>
 
     <script type="text/javascript" src="popup.js"></script>

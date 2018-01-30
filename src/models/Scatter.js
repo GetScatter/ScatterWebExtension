@@ -23,6 +23,8 @@ export default class Scatter {
         return p;
     }
 
+    clone(){ return Scatter.fromJson(JSON.parse(JSON.stringify(this))) }
+
     /***
      * Encrypts the entire keychain
      * @param seed - The seed to encrypt with

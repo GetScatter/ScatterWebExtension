@@ -19,10 +19,15 @@
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
 
+
+    import Network from '../models/Network'
+    import Identity from '../models/Identity'
+    import Permission from '../models/Permission'
+
     export default {
         data(){ return {
             links:[
-                {route:RouteNames.TRANSFER, name:'Transfer', icon:'send'},
+//                {route:RouteNames.TRANSFER, name:'Transfer', icon:'send'},
                 {route:RouteNames.IDENTITIES, name:'Identities', icon:'address-book'},
                 {route:RouteNames.PERMISSIONS, name:'Permissions', icon:'shield'},
                 {route:RouteNames.HISTORY, name:'History', icon:'history'},
@@ -31,9 +36,73 @@
         }},
         computed: {
             ...mapState([
-                'scatter',
-                'mnemonic'
+                'scatter'
             ])
+        },
+        mounted(){
+            console.log(this.scatter);
+
+            // TODO: Inserting test data
+            if(this.scatter.keychain.identities.length === 1 && this.scatter.keychain.permissions.length === 0){
+                const network = Network.fromJson({host:'test.eos.io', port:8080});
+
+                const identity = Identity.fromJson({name:'helloworld', network});
+
+                const permissions = [
+                    Permission.fromJson({
+                        domain:'tester.com',
+                        network:this.scatter.settings.networks[0],
+                        identityHash:this.scatter.keychain.identities[0].hash
+                    }),
+                    Permission.fromJson({
+                        domain:'cryptocrap.com',
+                        network:this.scatter.settings.networks[0],
+                        identityHash:this.scatter.keychain.identities[0].hash
+                    }),
+                    Permission.fromJson({
+                        domain:'cryptocrap.com',
+                        network:this.scatter.settings.networks[0],
+                        identityHash:this.scatter.keychain.identities[0].hash,
+                        contractAddress:'0x1',
+                        contract:'hello',
+                        action:'world',
+                        checksum:'abcd'
+                    }),
+                    Permission.fromJson({
+                        domain:'cryptocrap.com',
+                        network:this.scatter.settings.networks[0],
+                        identityHash:this.scatter.keychain.identities[0].hash,
+                        contractAddress:'0x1',
+                        contract:'hello',
+                        action:'free',
+                        checksum:'abcde'
+                    }),
+                    Permission.fromJson({
+                        domain:'cryptocrap.com',
+                        network:network,
+                        identityHash:identity.hash
+                    }),
+                    Permission.fromJson({
+                        domain:'cryptocrap.com',
+                        network:network,
+                        identityHash:identity.hash,
+                        contractAddress:'0x1',
+                        contract:'hello',
+                        action:'world',
+                        checksum:'abcd'
+                    })
+                ];
+
+                const scatter = this.scatter.clone();
+                scatter.settings.networks.push(network);
+                scatter.keychain.identities.push(identity);
+                scatter.keychain.permissions = permissions;
+
+                this[Actions.UPDATE_STORED_SCATTER](scatter);
+
+            }
+
+
         },
         methods: {
             bind(changed, original) { this[original] = changed },
@@ -43,7 +112,8 @@
                 })
             },
             ...mapActions([
-                Actions.LOCK
+                Actions.LOCK,
+                Actions.UPDATE_STORED_SCATTER
             ])
         }
     }

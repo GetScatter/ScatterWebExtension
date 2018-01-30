@@ -44,6 +44,7 @@ export default class Background {
             case InternalMessageTypes.LOAD:             Background.load(sendResponse); break;
             case InternalMessageTypes.UPDATE:           Background.update(sendResponse, message.payload); break;
             case InternalMessageTypes.PUB_TO_PRIV:      Background.publicToPrivate(sendResponse, message.payload); break;
+            case InternalMessageTypes.DESTROY:          Background.destroy(sendResponse); break;
         }
     }
 
@@ -108,6 +109,7 @@ export default class Background {
 
             // Private Keys are always separately encrypted
             scatter.keychain.keypairs.map(keypair => keypair.encrypt(seed));
+
             // Keychain is always stored encrypted.
             scatter.encrypt(seed);
 
@@ -131,6 +133,19 @@ export default class Background {
                 const keypair = scatter.keychain.keypairs.find(x => x.publicKey === publicKey);
                 sendResponse((keypair) ? AES.decrypt(keypair.privateKey, seed) : null);
             })
+        })
+    }
+
+    /***
+     * Destroys this instance of Scatter
+     * @param sendResponse
+     */
+    static destroy(sendResponse){
+        // TODO: Mock
+        this.lockGuard(sendResponse, () => {
+            seed = '';
+            chrome.storage.local.clear();
+            sendResponse(true);
         })
     }
 

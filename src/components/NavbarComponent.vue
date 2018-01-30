@@ -2,10 +2,12 @@
     <nav :class="navState()">
         <figure class="logo" v-if="showLogo()">Scatter</figure>
         <section class="breadcrumb" v-else>
-            <figure class="icon" v-on:click="back"><i class="fa fa-chevron-left"></i></figure>
+            <figure class="icon" v-on:click="back">
+                <i class="fa fa-chevron-left"></i>
+            </figure>
             <figure class="route">{{breadcrumb()}}</figure>
         </section>
-        <figure class="settings" v-on:click="toggleSettings">
+        <figure class="settings-button" v-on:click="toggleSettings">
             <i class="fa fa-gear"></i>
         </figure>
     </nav>
@@ -45,8 +47,16 @@
                     case RouteNames.SETTINGS: return 'Settings';
                     case RouteNames.TRANSFER: return 'Transfer';
                     case RouteNames.IDENTITIES: return 'Identities';
-                    case RouteNames.PERMISSIONS: return 'Permissions';
+                    case RouteNames.IDENTITY: return 'Identity';
+                    case RouteNames.PERMISSIONS:
+                    case RouteNames.DOMAIN_PERMISSIONS: return 'Permissions';
                     case RouteNames.HISTORY: return 'History';
+                    case RouteNames.NETWORKS: return 'Networks';
+                    case RouteNames.NETWORK: return 'Network';
+                    case RouteNames.CHANGE_PASSWORD: return 'Password';
+                    case RouteNames.BACKUP:
+                    case RouteNames.EXPORT_JSON: return 'Backup';
+                    case RouteNames.DESTROY: return 'Destroy';
                 }
                 return 'Undefined'
             },
@@ -64,10 +74,13 @@
         max-height:60px;
         line-height:60px;
         background:#fff;
-        /*transition:all 0.2s ease;*/
-        /*transition-property: max-height, line-height, background;*/
+        transition:all 0.2s ease;
+        transition-property: max-height, line-height, background;
         padding:0 20px;
         overflow:hidden;
+        /*border-bottom:1px solid #f9f9f9;*/
+        position: relative;
+        z-index:2;
 
         .logo {
             font-family: 'Grand Hotel', sans-serif;
@@ -77,12 +90,12 @@
             float:left;
         }
 
-        .settings {
+        .settings-button {
             cursor: pointer;
             float: right;
             height: 60px;
             margin-left:10px;
-            line-height: 54px;
+            line-height: 59px;
             font-size: 24px;
             text-align:right;
             color: #eaeaea;

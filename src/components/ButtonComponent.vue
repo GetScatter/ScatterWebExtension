@@ -1,5 +1,5 @@
 <template>
-    <button v-on:click="emit" :class="{'margined':margined, 'blue':isBlue, 'red':isRed}">
+    <button v-on:click="emit" :class="{'margined':margined, 'blue':isBlue, 'red':isRed, 'half':half}">
         {{text}}
     </button>
 </template>
@@ -7,7 +7,7 @@
 <script>
     export default {
         methods: { emit(){ this.$emit('clicked') } },
-        props:['icon', 'text', 'margined', 'isBlue', 'isRed']
+        props:['icon', 'text', 'margined', 'isBlue', 'isRed', 'half']
     }
 </script>
 
@@ -29,8 +29,19 @@
         transition:all 0.2s ease;
         transition-property: border, background, color, box-shadow;
 
+        &.half {
+            width:calc(50% - 5px);
+            display:inline-block;
+            font-size:14px;
+
+            &:last-child {
+                margin-left:6px;
+            }
+        }
+
         &:hover {
-            box-shadow:inset 0 0 50px rgba(0,0,0,0.05);
+            /*box-shadow:inset 0 0 50px rgba(0,0,0,0.05);*/
+            background:#fff;
             border:1px solid rgba(0,0,0,0.1);
         }
 

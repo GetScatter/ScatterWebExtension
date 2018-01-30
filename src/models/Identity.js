@@ -12,7 +12,7 @@ export const PersonalFields = {
     firstname:'firstname',
     lastname:'lastname',
     email:'email',
-    age:'age'
+    birthdate:'birthdate'
 };
 
 export class PersonalInformation {
@@ -65,6 +65,8 @@ export default class Identity {
 
         this.personal = PersonalInformation.placeholder();
         this.location = LocationInformation.placeholder();
+
+        this.disabled = false;
     }
 
     static placeholder(){ return new Identity(); }
@@ -76,6 +78,8 @@ export default class Identity {
         this.location = LocationInformation.fromJson(json.location);
         return p;
     }
+
+    clone(){ return Identity.fromJson(JSON.parse(JSON.stringify(this))) }
 
     /***
      * Checks if this Identity has an associated account.

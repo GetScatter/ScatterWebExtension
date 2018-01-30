@@ -10,12 +10,15 @@ const state = {
     scatter:null,
     mnemonic:null,
 
-    errors:[],
-    errorResult:null,
+    alerts:[],
+    alertResult:null,
 };
 
 const getters = {
-    // getScatter:state => state.scatter
+    identities:state => state.scatter.keychain.identities,
+    permissions:state => state.scatter.keychain.permissions,
+    networks:state => state.scatter.settings.networks,
+    backupToBlockchain:state => state.scatter.settings.backupToBlockchain,
 };
 
 export const store = new Vuex.Store({

@@ -7,20 +7,25 @@ export default class Permission {
         // Mandatory
         this.domain = '';
         this.network = '';
-        this.identity = Identity.placeholder();
+        this.identityHash = '';
 
         // Optional
         this.contractAddress = null;
         this.contract = null;
         this.action = null;
+        this.checksum = null;
     }
 
-    static placeholder(){ return new Keychain(); }
+    static placeholder(){ return new Permission(); }
     static fromJson(json){
         let p = Object.assign(this.placeholder(), json);
         if(json.hasOwnProperty('network')) p.network = Network.fromJson(json.network);
-        if(json.hasOwnProperty('identity')) p.identity = Identity.fromJson(json.identity);
+        // if(json.hasOwnProperty('identity')) p.identity = Identity.fromJson(json.identity);
         return p;
+    }
+
+    identity(identities){
+        return identities.find(id => id.hash === this.identityHash);
     }
 
     isIdentityOnly(){

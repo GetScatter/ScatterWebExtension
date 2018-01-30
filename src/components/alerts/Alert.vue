@@ -1,25 +1,25 @@
 <template>
-    <section class="error" :class="{'show':errors.length}">
-        <section class="box" v-if="errors.length">
+    <section class="error" :class="{'show':alerts.length}">
+        <section class="box" v-if="alerts.length">
             <section class="head">
-                <figure class="header">{{errors[0].header}}</figure>
-                <figure class="sub-header">{{errors[0].subHeader}}</figure>
-                <figure class="sub-header">{{errors[0].breadcrumbs.join(" / ")}}</figure>
+                <figure class="header">{{alerts[0].header}}</figure>
+                <figure class="sub-header">{{alerts[0].subHeader}}</figure>
+                <figure class="sub-header">{{alerts[0].breadcrumbs.join(" / ")}}</figure>
             </section>
             <section class="body">
-                <section class="description">{{errors[0].description}}</section>
+                <section class="description">{{alerts[0].description}}</section>
             </section>
 
 
 
 
             <!-- Error -->
-            <section class="actions" v-if="errors[0].type === alertTypes.Error">
+            <section class="actions" v-if="alerts[0].type === alertTypes.Error">
                 <btn text="Okay" is-blue="true" v-on:clicked="accept"></btn>
             </section>
 
             <!-- Prompt -->
-            <section class="actions" v-if="errors[0].type === alertTypes.Prompt">
+            <section class="actions" v-if="alerts[0].type === alertTypes.Prompt">
                 <btn text="Cancel" v-on:clicked="cancel"></btn>
                 <btn text="Yes" is-red="true" v-on:clicked="accept"></btn>
             </section>
@@ -29,20 +29,17 @@
             </figure>
 
             <!-- Select Account -->
-            <section class="list" v-if="errors[0].type === alertTypes.SelectAccount">
-                <figure class="item" v-for="account in errors[0].list"
+            <section class="list" v-if="alerts[0].type === alertTypes.SelectAccount">
+                <figure class="item" v-for="account in alerts[0].list"
                         :class="{'selected':account === selectedItem}"
                         v-on:click="selectedItem = account">
                     {{`${account.name}@${account.authority}`}}
                 </figure>
             </section>
-            <section class="actions" v-if="errors[0].type === alertTypes.SelectAccount">
+            <section class="actions" v-if="alerts[0].type === alertTypes.SelectAccount">
                 <btn text="Cancel" v-on:clicked="cancel"></btn>
                 <btn text="Use Selected Account" is-blue="true" v-on:clicked="returnSelectedItem"></btn>
             </section>
-
-
-
 
         </section>
 
@@ -61,17 +58,17 @@
         }},
         computed: {
             ...mapState([
-                'errors'
+                'alerts'
             ])
         },
         methods: {
             accept(){
-                this[Actions.PULL_ERROR]();
-                this[Actions.PUSH_ERROR_RESULT]({accepted:true});
+                this[Actions.PULL_ALERT]();
+                this[Actions.PUSH_ALERT_RESULT]({accepted:true});
             },
             cancel(){
-                this[Actions.PULL_ERROR]();
-                this[Actions.PUSH_ERROR_RESULT]({cancelled:true});
+                this[Actions.PULL_ALERT]();
+                this[Actions.PUSH_ALERT_RESULT]({cancelled:true});
             },
             returnSelectedItem(){
                 this.selectionError = false;
@@ -80,12 +77,12 @@
                     return false;
                 }
 
-                this[Actions.PULL_ERROR]();
-                this[Actions.PUSH_ERROR_RESULT]({selected:this.selectedItem});
+                this[Actions.PULL_ALERT]();
+                this[Actions.PUSH_ALERT_RESULT]({selected:this.selectedItem});
             },
             ...mapActions([
-                Actions.PULL_ERROR,
-                Actions.PUSH_ERROR_RESULT,
+                Actions.PULL_ALERT,
+                Actions.PUSH_ALERT_RESULT,
             ])
         },
     };
@@ -103,6 +100,7 @@
         padding:20px;
         transition:all 0.2s ease;
         transition-property: background, opacity, visibility;
+        z-index:9999;
 
         &.show {
             visibility:visible;
