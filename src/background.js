@@ -143,6 +143,7 @@ export default class Background {
     static destroy(sendResponse){
         // TODO: Mock
         this.lockGuard(sendResponse, () => {
+            console.log("Destroying");
             seed = '';
             chrome.storage.local.clear();
             sendResponse(true);

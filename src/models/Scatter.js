@@ -9,6 +9,7 @@ export default class Scatter {
         this.meta = Meta.placeholder();
         this.keychain = Keychain.placeholder();
         this.settings = Settings.placeholder();
+        this.histories = [];
     }
 
     static placeholder(){ return new Scatter(); }

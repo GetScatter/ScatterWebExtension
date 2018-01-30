@@ -11,6 +11,7 @@ export const actions = {
     [Actions.SET_MNEMONIC]:({commit}, mnemonic) => commit(Actions.SET_MNEMONIC, mnemonic),
     [Actions.IS_UNLOCKED]:() => InternalMessage.signal(InternalMessageTypes.IS_UNLOCKED).send(),
     [Actions.LOCK]:() => InternalMessage.payload(InternalMessageTypes.SEED, '').send(),
+    [Actions.DESTROY]:({dispatch}) => InternalMessage.signal(InternalMessageTypes.DESTROY).send(),
 
     [Actions.SET_SEED]:({commit}, password) => {
         return new Promise((resolve, reject) => {
@@ -39,14 +40,6 @@ export const actions = {
         })
     },
 
-    [Actions.DESTROY]:() => {
-        return new Promise((resolve, reject) => {
-            InternalMessage.signal(InternalMessageTypes.DESTROY).send().then(() => {
-                resolve(true);
-            })
-
-        })
-    },
 
     [Actions.BACKUP_SCATTER_ON_BLOCKCHAIN]:({state, commit, dispatch}, scatter) => {
         return new Promise((resolve, reject) => {

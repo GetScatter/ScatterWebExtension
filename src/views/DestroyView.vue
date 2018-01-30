@@ -70,6 +70,7 @@
                 Actions.PUSH_ALERT,
                 Actions.SET_SEED,
                 Actions.IS_UNLOCKED,
+                Actions.DESTROY
             ])
         }
     }

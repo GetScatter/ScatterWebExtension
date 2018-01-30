@@ -22,7 +22,7 @@
     .nav-actions {
         position:fixed;
         top:0;
-        right:50px;
+        right:53px;
         opacity:1;
         transition:opacity 0.5s ease;
         z-index:2;
@@ -34,6 +34,9 @@
             text-align:center;
             font-size:24px;
             color:#eaeaea;
+            float:right;
+            margin-left:10px;
+            transition: color 0.2s ease;
 
             &.red { &:hover {
                 color:#ff0d0c;

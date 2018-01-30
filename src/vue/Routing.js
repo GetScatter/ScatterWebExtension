@@ -13,6 +13,7 @@ import BackupView from '../views/BackupView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import DestroyView from '../views/DestroyView.vue'
 import ExportJsonView from '../views/ExportJsonView.vue'
+import HistoryView from '../views/HistoryView.vue'
 
 export const RouteNames = {
     ENTRY:'entry',
@@ -48,7 +49,7 @@ const RouteViews = {
     [RouteNames.IDENTITY]:IdentityView,
     [RouteNames.PERMISSIONS]:PermissionsView,
     [RouteNames.DOMAIN_PERMISSIONS]:DomainPermissionView,
-    [RouteNames.HISTORY]:SettingsView,
+    [RouteNames.HISTORY]:HistoryView,
 
     [RouteNames.NETWORKS]:NetworksView,
     [RouteNames.NETWORK]:NetworkView,

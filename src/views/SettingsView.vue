@@ -23,23 +23,7 @@
                 {route:RouteNames.CHANGE_PASSWORD, name:'Change Password', icon:'asterisk'},
                 {route:RouteNames.DESTROY, name:'Destroy', icon:'trash-o'},
             ]
-        }},
-        computed: {
-            ...mapState([
-                'scatter',
-                'mnemonic'
-            ])
-        },
-        methods: {
-            bind(changed, original) { this[original] = changed },
-            ...mapActions([
-                Actions.CREATE_NEW_SCATTER,
-                Actions.PUSH_ALERT,
-                Actions.DESTROY,
-                Actions.SET_SEED,
-                Actions.IS_UNLOCKED
-            ])
-        }
+        }}
     }
 </script>
 

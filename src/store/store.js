@@ -19,6 +19,7 @@ const getters = {
     permissions:state => state.scatter.keychain.permissions,
     networks:state => state.scatter.settings.networks,
     backupToBlockchain:state => state.scatter.settings.backupToBlockchain,
+    histories:state => state.scatter.histories
 };
 
 export const store = new Vuex.Store({
