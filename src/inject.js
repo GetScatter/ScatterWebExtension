@@ -15,17 +15,6 @@ import Scatterdapp from './scatterdapp'
 class Inject {
 
     constructor(){
-        // TODO: Should scatter be handling eosjs injection?
-        // Perhaps it should be up to the website to host eosjs so that it isn't bound to the window's scope.
-        // Or perhaps it should be up to Scatter to inject it because of version issues.
-        // ------------------------------------------------
-        // I'm leaning towards having the application host it itself.
-        // There might be memory overhead by injecting eosjs into every single page.
-        // ------------------------------------------------
-        window.Eos = Eos;
-        // ------------------------------------------------
-
-
         // Injecting an encrypted stream into the
         // web application.
         const stream = new EncryptedStream(PairingTags.INJECTED, IdGenerator.text(64));
