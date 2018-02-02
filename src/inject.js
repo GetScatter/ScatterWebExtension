@@ -1,9 +1,6 @@
 import IdGenerator from './util/IdGenerator';
 import {EncryptedStream} from 'extension-streams';
-// import Scatterdapp from 'scatterdapp';
-import Eos from 'eosjs';
 import * as PairingTags from './messages/PairingTags'
-import Identity from './models/Identity'
 import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import Scatterdapp from './scatterdapp'
 

@@ -6,6 +6,18 @@ const IgnoreEmitPlugin = require('ignore-emit-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+// TODO: Change to env var
+const production = true;
+const vueAlias = `vue/dist/vue${production ? '.min' : ''}.js`;
+const productionPlugins = !production ? [] : [
+    new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
+    // new webpack.DefinePlugin({
+    //     'process.env': {
+    //         NODE_ENV: '"production"'
+    //     }
+    // }),
+    new UglifyJsPlugin()
+];
 
 function replaceSuffixes(file){
     return file
@@ -13,10 +25,6 @@ function replaceSuffixes(file){
 }
 
 const filesToCopy = [
-    'index.html',
-    'prompt.html',
-    'manifest.json',
-    'icon.png',
     'copied'
 ];
 
@@ -39,7 +47,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            vue: 'vue/dist/vue.js',
+            vue: vueAlias,
             // vue: 'vue/dist/vue.min.js',
             'extension-streams': 'extension-streams/dist/index.js',
             'aes-oop': 'aes-oop/dist/AES.js',
@@ -65,14 +73,8 @@ module.exports = {
         new ExtractTextPlugin({ filename: '[name]', allChunks: true }),
         new IgnoreEmitPlugin(/\.omit$/),
         new CopyWebpackPlugin(filesToCopy.map(file => `./src/${file}`)),
-        // new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
-        // new webpack.DefinePlugin({
-        //     'process.env': {
-        //         NODE_ENV: '"production"'
-        //     }
-        // }),
-        // new UglifyJsPlugin()
-    ],
+
+    ].concat(productionPlugins),
     stats: { colors: true },
     devtool: 'inline-source-map'
 }

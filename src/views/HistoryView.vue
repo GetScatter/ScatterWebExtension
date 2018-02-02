@@ -58,52 +58,8 @@
                     </section>
                 </section>
 
-                <!--&lt;!&ndash; Personal Information &ndash;&gt;-->
-                <!--<section class="panel" v-if="fullKeysOf(identity.personal).length">-->
-                    <!--<figure class="header small reverse-margin">personal information</figure>-->
-                    <!--<section class="items">-->
-                        <!--<section class="item" v-for="key in fullKeysOf(identity.personal)">-->
-                            <!--<span>{{key}}</span>-->
-                            <!--<span>{{identity.personal[key]}}</span>-->
-                        <!--</section>-->
-                    <!--</section>-->
-                <!--</section>-->
-
-                <!--&lt;!&ndash; Location Information &ndash;&gt;-->
-                <!--<section class="panel" v-if="fullKeysOf(identity.location).length">-->
-                    <!--<figure class="header small reverse-margin">location information</figure>-->
-                    <!--<section class="items">-->
-                        <!--<section class="item" v-for="key in fullKeysOf(identity.location)">-->
-                            <!--<span>{{key}}</span>-->
-                            <!--<span v-if="key === 'country'">{{identity.location[key].name}}</span>-->
-                            <!--<span v-else>{{identity.location[key]}}</span>-->
-                        <!--</section>-->
-                    <!--</section>-->
-                <!--</section>-->
-
-                <!--&lt;!&ndash; Actions &ndash;&gt;-->
-                <!--<section class="panel">-->
-                    <!--<section class="actions">-->
-                        <!--<figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil-square-o"></i></figure>-->
-                        <!--<figure class="action"><i class="fa fa-clone"></i></figure>-->
-                        <!--<figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>-->
-                        <!--<figure class="action toggle-switch right" v-on:click="toggleIdentity(identity)">-->
-                            <!--<figure class="switch" :class="{'enabled':!identity.disabled}">{{(identity.disabled) ? 'Disabled' : 'Enabled'}}</figure>-->
-                        <!--</figure>-->
-                    <!--</section>-->
-                <!--</section>-->
-
             </section>
         </section>
-
-        <!--<section class="history" v-if="histories.length">-->
-            <!--<section class="item" v-for="hist in filterBySearch()">-->
-                <!--<router-link :to="{name:routeNames.DOMAIN_PERMISSIONS, query:{hist}}">-->
-                    <!--<figure class="icon">hi</figure>-->
-                    <!--<figure class="text">{{hist}}</figure>-->
-                <!--</router-link>-->
-            <!--</section>-->
-        <!--</section>-->
 
         <section class="nothing-here" v-else>
             <figure class="header">
