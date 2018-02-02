@@ -52,12 +52,14 @@
                     Permission.fromJson({
                         domain:'tester.com',
                         network:this.scatter.settings.networks[0],
-                        identityHash:this.scatter.keychain.identities[0].hash
+                        identityHash:this.scatter.keychain.identities[0].hash,
+                        timestamp:+ new Date()
                     }),
                     Permission.fromJson({
                         domain:'cryptocrap.com',
                         network:this.scatter.settings.networks[0],
-                        identityHash:this.scatter.keychain.identities[0].hash
+                        identityHash:this.scatter.keychain.identities[0].hash,
+                        timestamp:+ new Date()
                     }),
                     Permission.fromJson({
                         domain:'cryptocrap.com',
@@ -66,7 +68,8 @@
                         contractAddress:'0x1',
                         contract:'hello',
                         action:'world',
-                        checksum:'abcd'
+                        checksum:'abcd',
+                        timestamp:+ new Date()
                     }),
                     Permission.fromJson({
                         domain:'cryptocrap.com',
@@ -75,12 +78,14 @@
                         contractAddress:'0x1',
                         contract:'hello',
                         action:'free',
-                        checksum:'abcde'
+                        checksum:'abcde',
+                        timestamp:+ new Date()
                     }),
                     Permission.fromJson({
                         domain:'cryptocrap.com',
                         network:network,
-                        identityHash:identity.hash
+                        identityHash:identity.hash,
+                        timestamp:+ new Date()
                     }),
                     Permission.fromJson({
                         domain:'cryptocrap.com',
@@ -89,7 +94,8 @@
                         contractAddress:'0x1',
                         contract:'hello',
                         action:'world',
-                        checksum:'abcd'
+                        checksum:'abcd',
+                        timestamp:+ new Date()
                     })
                 ];
 

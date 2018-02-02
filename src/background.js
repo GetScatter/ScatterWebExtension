@@ -1,14 +1,21 @@
 import {LocalStream} from 'extension-streams';
 import AES from 'aes-oop';
-import InternalMessageTypes from './messages/InternalMessageTypes';
+import * as InternalMessageTypes from './messages/InternalMessageTypes';
 import InternalMessage from './messages/InternalMessage';
 import StorageService from './services/StorageService'
 import Scatter from './models/Scatter'
+import Network from './models/Network'
+import Identity from './models/Identity'
+import IdentityService from './services/IdentityService'
+import HistoricEvent from './models/histories/HistoricEvent'
+import * as HistoricEventTypes from './models/histories/HistoricEventTypes'
+import Prompt from './models/prompts/Prompt';
+import * as PromptTypes from './models/prompts/PromptTypes'
 
 // Gets bound when a user logs into scatter
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
-let seed = '';
+let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
 
 // This is the script that runs in the extension's background ( singleton )
@@ -21,7 +28,7 @@ export default class Background {
 
 
     /********************************************/
-    /*                   Setup                  */
+    /*                   VueInitializer                  */
     /********************************************/
 
     // Watches the internal messaging system ( LocalStream )
@@ -39,12 +46,15 @@ export default class Background {
      */
     dispenseMessage(sendResponse, message){
         switch(message.type){
-            case InternalMessageTypes.SEED:             Background.setSeed(sendResponse, message.payload); break;
-            case InternalMessageTypes.IS_UNLOCKED:      Background.isUnlocked(sendResponse); break;
-            case InternalMessageTypes.LOAD:             Background.load(sendResponse); break;
-            case InternalMessageTypes.UPDATE:           Background.update(sendResponse, message.payload); break;
-            case InternalMessageTypes.PUB_TO_PRIV:      Background.publicToPrivate(sendResponse, message.payload); break;
-            case InternalMessageTypes.DESTROY:          Background.destroy(sendResponse); break;
+            case InternalMessageTypes.SET_SEED:                 Background.setSeed(sendResponse, message.payload); break;
+            case InternalMessageTypes.IS_UNLOCKED:              Background.isUnlocked(sendResponse); break;
+            case InternalMessageTypes.LOAD:                     Background.load(sendResponse); break;
+            case InternalMessageTypes.UPDATE:                   Background.update(sendResponse, message.payload); break;
+            case InternalMessageTypes.PUB_TO_PRIV:              Background.publicToPrivate(sendResponse, message.payload); break;
+            case InternalMessageTypes.DESTROY:                  Background.destroy(sendResponse); break;
+            case InternalMessageTypes.REQUEST_UNLOCK:           Background.requestUnlock(sendResponse); break;
+            case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:  Background.getOrRequestIdentity(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_SIGNATURE:        Background.requestSignature(sendResponse, message.payload); break;
         }
     }
 
@@ -154,6 +164,100 @@ export default class Background {
 
 
 
+
+
+
+
+
+
+
+
+    /********************************************/
+    /*              Web Application             */
+    /********************************************/
+
+    /***
+     * Returns true if unlock or requests that the user unlock Scatter
+     * @param sendResponse
+     * @param payload
+     */
+    static requestUnlock(sendResponse, payload){
+        if(seed.length) sendResponse(true)
+        else {
+            // TODO: Prompt user to unlock Scatter
+            sendResponse(false);
+        }
+    }
+
+    /***
+     * Destroys this instance of Scatter
+     * @param sendResponse
+     * @param payload
+     */
+    static getOrRequestIdentity(sendResponse, payload){
+        this.lockGuard(sendResponse, () => {
+            Background.load(scatter => {
+                const domain = payload.domain,
+                      network = Network.fromJson(payload.network),
+                      fields = payload.fields;
+
+                IdentityService.getOrRequestIdentity(domain, network, fields, scatter, identity => {
+                    if(identity) this.addHistory(HistoricEventTypes.PROVIDED_IDENTITY, {
+                        domain,
+                        network,
+                        provided:!!identity,
+                        identityName:identity ? identity.name : false,
+                        identityHash:(identity) ? identity.hash : false
+                    });
+                    sendResponse(identity)
+                });
+            });
+        })
+    }
+
+    /***
+     * Destroys this instance of Scatter
+     * @param sendResponse
+     * @param payload
+     */
+    static requestSignature(sendResponse, payload){
+        this.lockGuard(sendResponse, () => {
+            Background.load(scatter => {
+                console.log('payload', payload);
+                // TODO: Mock
+
+                // TODO: Check in whitelist for permissions
+
+                // TODO: Prompt user for signature authorization
+                const prompt = new Prompt(PromptTypes.REQUEST_SIGNATURE, payload)
+                this.openPrompt(prompt, sendResponse);
+
+                // let signed = ecc.sign(new Buffer(payload.buf.data), privateKey);
+                // sendResponse(signed);
+
+                // TODO: Mock for testing only
+                const identity = scatter.keychain.identities[0];
+                identity.encryptHash();
+                const signed = true;
+                if(signed) this.addHistory(HistoricEventTypes.SIGNED_TRANSACTION, {
+                    domain:payload.domain,
+                    network:payload.network,
+                    identityName:identity.name,
+                    identityHash:identity.hash,
+                    account:identity.account,
+                    transaction:payload.transaction,
+                    hash:''
+                });
+
+                sendResponse(null);
+            })
+        })
+    }
+
+
+
+
+
     /********************************************/
     /*                 Helpers                  */
     /********************************************/
@@ -165,8 +269,35 @@ export default class Background {
      * @param cb - Callback to perform if open
      */
     static lockGuard(sendResponse, cb){
+        // TODO: Change failure to a more explanatory message
         if(!seed.length) sendResponse(null);
         else cb();
+    }
+
+    /***
+     * Opens a prompt window outside of the extension
+     * @param prompt
+     * @param responder
+     */
+    static openPrompt(prompt, responder){
+        console.log('prmo', prompt)
+        const height = 600;
+        const width = 700;
+        let middleX = window.screen.availWidth/2 - (width/2);
+        let middleY = window.screen.availHeight/2 - (height/2);
+        let popup = window.open(chrome.runtime.getURL('prompt.html'), 'ScatterPrompt', `width=${width},height=${height},resizable=0,dependent=true,top=${middleY},left=${middleX},titlebar=0`);
+        popup.data = { prompt, responder };
+    }
+
+    /***
+     * Adds a historic event to the keychain
+     * @param historicEvent
+     */
+    static addHistory(type, data){
+        this.load(scatter => {
+            scatter.histories.unshift(new HistoricEvent(type, data));
+            this.update(() => {}, scatter);
+        })
     }
 
 }

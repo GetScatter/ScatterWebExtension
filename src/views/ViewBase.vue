@@ -7,7 +7,7 @@
                 <router-view></router-view>
             </transition>
         </section>
-        <error></error>
+        <alert></alert>
 
     </section>
 </template>

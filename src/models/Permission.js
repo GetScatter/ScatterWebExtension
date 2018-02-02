@@ -14,6 +14,8 @@ export default class Permission {
         this.contract = null;
         this.action = null;
         this.checksum = null;
+
+        this.timestamp = 0;
     }
 
     static placeholder(){ return new Permission(); }
@@ -34,5 +36,9 @@ export default class Permission {
 
     isContractAction(){
         return !this.isIdentityOnly() && this.contract.length && this.action.length
+    }
+
+    isIdentityFor(domain, network){
+        return this.isIdentityOnly() && this.domain === domain && this.network.unique() === network.unique();
     }
 }

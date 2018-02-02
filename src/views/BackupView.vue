@@ -2,18 +2,19 @@
     <section class="backup scroller">
 
         <!-- Blockchain Backup -->
-        <section class="panel">
-            <figure class="header">Blockchain Backup</figure>
+        <!-- TODO: Remove blockchain backup, no need now with import only structure -->
+        <!--<section class="panel">-->
+            <!--<figure class="header">Blockchain Backup</figure>-->
 
-            <figure class="sub-header">
-                <section class="checkbox">
-                    <cin :tag="(backupToBlockchain) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleBackup"></cin>
-                </section>
-                By enabling this option your Scatter’s identities will be backed
-                up on the EOS blockchain. You will still need your password in
-                order to decrypt your data.
-            </figure>
-        </section>
+            <!--<figure class="sub-header">-->
+                <!--<section class="checkbox">-->
+                    <!--<cin :tag="(backupToBlockchain) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleBackup"></cin>-->
+                <!--</section>-->
+                <!--By enabling this option your Scatter’s identities will be backed-->
+                <!--up on the EOS blockchain. You will still need your password in-->
+                <!--order to decrypt your data.-->
+            <!--</figure>-->
+        <!--</section>-->
 
         <!-- Export JSON -->
         <section class="panel">

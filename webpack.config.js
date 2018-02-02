@@ -1,4 +1,6 @@
 const path = require('path');
+const webpack = require('webpack')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const IgnoreEmitPlugin = require('ignore-emit-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
@@ -12,6 +14,7 @@ function replaceSuffixes(file){
 
 const filesToCopy = [
     'index.html',
+    'prompt.html',
     'manifest.json',
     'icon.png',
     'copied'
@@ -22,6 +25,8 @@ const filesToPack = [
   'popup.js',
   'content.js',
   'inject.js',
+  'prompt.js',
+  'scatterdapp.js',
   'styles.scss',
 ];
 const entry = filesToPack.reduce((o, file) => Object.assign(o, {[replaceSuffixes(file)]: `./src/${file}`}), {});
@@ -35,6 +40,7 @@ module.exports = {
     resolve: {
         alias: {
             vue: 'vue/dist/vue.js',
+            // vue: 'vue/dist/vue.min.js',
             'extension-streams': 'extension-streams/dist/index.js',
             'aes-oop': 'aes-oop/dist/AES.js',
         },
@@ -59,7 +65,13 @@ module.exports = {
         new ExtractTextPlugin({ filename: '[name]', allChunks: true }),
         new IgnoreEmitPlugin(/\.omit$/),
         new CopyWebpackPlugin(filesToCopy.map(file => `./src/${file}`)),
-        new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
+        // new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
+        // new webpack.DefinePlugin({
+        //     'process.env': {
+        //         NODE_ENV: '"production"'
+        //     }
+        // }),
+        // new UglifyJsPlugin()
     ],
     stats: { colors: true },
     devtool: 'inline-source-map'

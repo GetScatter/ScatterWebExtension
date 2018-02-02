@@ -109,6 +109,8 @@
         }
 
         .box {
+            max-width: 500px;
+            margin: 0 auto;
             background:#fff;
             border-radius:4px;
             right:20px;

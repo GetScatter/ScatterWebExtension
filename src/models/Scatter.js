@@ -32,7 +32,7 @@ export default class Scatter {
      */
     decrypt(seed){
         if(typeof this.keychain === 'string')
-            this.keychain = AES.decrypt(this.keychain, seed);
+            this.keychain = Keychain.fromJson(AES.decrypt(this.keychain, seed));
     }
 
     /***

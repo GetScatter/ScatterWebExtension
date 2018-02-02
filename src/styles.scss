@@ -3,16 +3,18 @@ div, figure, section, nav, article, input, textarea {
 }
 
 body {
-  width:360px;
+  min-width:360px;
   height:600px;
   padding:0;
   margin:0;
   overflow:hidden;
+  word-break: break-word;
 }
 
 a {
   display:inherit;
   text-decoration: inherit;
+  color:inherit;
 }
 
 main {
@@ -114,7 +116,7 @@ main {
       }
 
       &.margin {
-        margin-top:2px;
+        margin-top:4px;
       }
 
       &.reverse-margin {

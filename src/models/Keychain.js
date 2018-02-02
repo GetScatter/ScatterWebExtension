@@ -30,4 +30,13 @@ export default class Keychain {
     findKeyPair(publicKey){
         return this.keypairs.find(keypair => keypair.publicKey === publicKey);
     }
+
+    /***
+     * Finds an Identity on the keychain by a hash
+     * @param identityHash
+     * @returns {*}
+     */
+    findIdentity(identityHash){
+        return this.identities.find(id => id.hash === identityHash) || this.identities.find(id => id.encryptHash(true) === identityHash);
+    }
 }

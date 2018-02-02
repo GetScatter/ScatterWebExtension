@@ -58,13 +58,13 @@
                 one account at a time per network.
             </figure>
 
-            <cin :placeholder="'private key or account name'"
+            <cin :placeholder="'private key'"
                  :tag="(identity.account) ? `${identity.account.name}@${identity.account.authority}` : null"
                  :text="(identity.account) ? `${identity.account.name}@${identity.account.authority}` : ''"
                  v-on:untagged="removeAccount"
                  v-on:changed="changed => bind(changed, 'accountNameOrPrivateKey')"></cin>
-            <btn text="New Account" v-on:clicked="createAccount" half="true" margined="true"></btn>
-            <btn text="Import Account" v-on:clicked="importAccount" half="true" margined="true"></btn>
+            <!--<btn text="New Account" v-on:clicked="createAccount" half="true" margined="true"></btn>-->
+            <btn :disabled="identity.account" text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
 
         </section>
 

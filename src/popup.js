@@ -1,9 +1,7 @@
-import Vue from 'vue'
-
-import VueRouter from 'vue-router'
-import {Routing, RouteNames} from './vue/Routing';
-import {store} from './store/store'
+import VueInitializer from './vue/VueInitializer';
+import {Routing} from './vue/Routing';
 import * as Actions from './store/constants'
+import {RouteNames} from './vue/Routing'
 
 import NavbarComponent from './components/NavbarComponent.vue'
 import InputComponent from './components/InputComponent.vue'
@@ -14,51 +12,30 @@ import NavActionsComponent from './components/NavActionsComponent.vue'
 import ViewBase from './views/ViewBase.vue'
 import Alert from './components/alerts/Alert.vue'
 
-import AlertMsg from './models/alerts/AlertMsg'
-import * as AlertTypes from './models/alerts/AlertTypes'
-
 class Popup {
 
     constructor(){
-        this.setupVuePlugins();
-        this.registerComponents();
-        const router = this.setupRouting();
+        const components = [
+            {tag:'navbar', vue:NavbarComponent},
+            {tag:'nav-actions', vue:NavActionsComponent},
+            {tag:'cin', vue:InputComponent},
+            {tag:'btn', vue:ButtonComponent},
+            {tag:'search', vue:SearchComponent},
+            {tag:'sel', vue:SelectComponent},
+            {tag:'alert', vue:Alert},
+            {tag:'view-base', vue:ViewBase},
+        ];
 
-        store.dispatch(Actions.LOAD_SCATTER)
-            .then(() => this.setupVue(router));
-    }
+        const routes = Routing.routes();
 
-    setupVuePlugins(){
-        Vue.use(VueRouter);
-    }
+        const middleware = (to, next, store) => {
+            if(Routing.isRestricted(to.name))
+                store.dispatch(Actions.IS_UNLOCKED)
+                    .then(unlocked => (unlocked) ? next() : next({name:RouteNames.ENTRY}));
+            else next();
+        };
 
-    registerComponents(){
-        Vue.component('navbar', NavbarComponent);
-        Vue.component('nav-actions', NavActionsComponent);
-        Vue.component('cin', InputComponent);
-        Vue.component('btn', ButtonComponent);
-        Vue.component('search', SearchComponent);
-        Vue.component('sel', SelectComponent);
-        Vue.component('error', Alert);
-        Vue.component('view-base', ViewBase);
-    }
-
-    setupRouting(){
-        const router = new VueRouter({routes:Routing.routes()});
-        router.beforeEach((to, from, next) => this.middleware(to, next));
-        return router;
-    }
-
-    setupVue(router){
-        this.app = new Vue({router, store});
-        this.app.$mount('#scatter');
-    }
-
-    middleware(to, next){
-        if(Routing.isRestricted(to.name))
-            store.dispatch(Actions.IS_UNLOCKED)
-                .then(unlocked => (unlocked) ? next() : next({name:'entry'}));
-        else next();
+        new VueInitializer(routes, components, middleware);
     }
 
 }

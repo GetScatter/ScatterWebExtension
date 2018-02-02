@@ -15,6 +15,12 @@ import DestroyView from '../views/DestroyView.vue'
 import ExportJsonView from '../views/ExportJsonView.vue'
 import HistoryView from '../views/HistoryView.vue'
 
+import * as PromptTypes from '../models/prompts/PromptTypes'
+import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
+import RequestSignaturePrompt from '../prompts/RequestSignaturePrompt.vue'
+
+export const promptPrefix = 'prompt_';
+
 export const RouteNames = {
     ENTRY:'entry',
     SHOW_MNEMONIC:'showMnemonic',
@@ -35,6 +41,9 @@ export const RouteNames = {
     BACKUP:'backup',
     EXPORT_JSON:'exportJson',
     DESTROY:'destroy',
+
+    PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
+    PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
 };
 
 const RouteViews = {
@@ -57,6 +66,9 @@ const RouteViews = {
     [RouteNames.BACKUP]:BackupView,
     [RouteNames.EXPORT_JSON]:ExportJsonView,
     [RouteNames.DESTROY]:DestroyView,
+
+    [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
+    [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
 };
 
 export const RouteDepth = {
@@ -98,8 +110,11 @@ export class Routing {
         return routesBuilder;
     }
 
-    static routes(){
-        return Object.keys(Routing.builder()).map(routeName => Routing.builder()[routeName]);
+    static routes(prompts = false){
+        return Object.keys(Routing.builder())
+            .filter(routeName => prompts && routeName.indexOf(promptPrefix) !== -1 ||
+                                !prompts && routeName.indexOf(promptPrefix) === -1)
+            .map(routeName => Routing.builder()[routeName]);
     }
 
     static isRestricted(routeName) {

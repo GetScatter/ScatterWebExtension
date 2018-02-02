@@ -1,6 +1,6 @@
 import Background from '../../src/background';
 import InternalMessage from '../../src/messages/InternalMessage';
-import InternalMessageTypes from '../../src/messages/InternalMessageTypes';
+import * as InternalMessageTypes from '../../src/messages/InternalMessageTypes';
 import Scatter from '../../src/models/Scatter'
 import KeyPair from '../../src/models/KeyPair'
 import chrome from '../helpers/chrome';
@@ -33,7 +33,7 @@ describe('Background', () => {
     });
 
     it('should be able to seed the background script', done => {
-        InternalMessage.payload(InternalMessageTypes.SEED, seed).send().then(seeded => {
+        InternalMessage.payload(InternalMessageTypes.SET_SEED, seed).send().then(seeded => {
             assert(seeded);
             done();
         });

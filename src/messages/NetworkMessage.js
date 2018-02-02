@@ -1,14 +1,14 @@
 import Network from '../models/Network'
-import NetworkMessageTypes from './NetworkMessageTypes';
+import * as NetworkMessageTypes from './NetworkMessageTypes';
 
 export default class NetworkMessage {
 
-    constructor(){
-        this.type = '';
-        this.payload = {};
-        this.resolver = '';
-        this.network = Network.placeholder();
-        this.domain = '';
+    constructor(_type = '', _payload = {}, _resolver = '', _network = null, _domain = ''){
+        this.type = _type;
+        this.payload = _payload;
+        this.resolver = _resolver;
+        this.network = _network;
+        this.domain = _domain;
     }
 
     static placeholder(){ return new NetworkMessage(); }
@@ -31,6 +31,6 @@ export default class NetworkMessage {
         return p;
     }
 
-    respond(payload){ return new NetworkMessage(this.type, payload, this.resolverId); }
-    error(payload){ return new NetworkMessage(NetworkMessageTypes.ERROR, payload, this.resolverId); }
+    respond(payload){ return new NetworkMessage(this.type, payload, this.resolver); }
+    error(payload){ return new NetworkMessage(NetworkMessageTypes.ERROR, payload, this.resolver); }
 }

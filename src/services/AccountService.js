@@ -12,6 +12,7 @@ export default class AccountService {
      * @returns {Promise}
      */
     static importFromKey(privateKey, pushAlert){
+        // TODO: Replace pushAlert with contextual calls
         return new Promise((resolve, reject) => {
             if(!EOSKeygen.validPrivateKey(privateKey)){
                 pushAlert(AlertMsg.InvalidPrivateKey());

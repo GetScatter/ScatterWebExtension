@@ -45,11 +45,10 @@
                     <b>This account will be linked to the Identity you just created.</b>
                 </figure>
             </section>
-            <section class="p20">
-                <cin icon="fa-lock" placeholder="account name" v-on:changed="changed => bind(changed, 'accountName')"></cin>
-                <btn text="Create New Account" v-on:clicked="createNewAccount" margined="true"></btn>
-            </section>
-            <figure class="line"></figure>
+            <!--<section class="p20">-->
+                <!--<cin icon="fa-lock" placeholder="account name" v-on:changed="changed => bind(changed, 'accountName')"></cin>-->
+                <!--<btn text="Create New Account" v-on:clicked="createNewAccount" margined="true"></btn>-->
+            <!--</section>-->
             <section class="p20">
                 <cin icon="fa-lock" placeholder="private key" v-on:changed="changed => bind(changed, 'importKey')"></cin>
                 <btn text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
@@ -168,6 +167,7 @@
         width:100%;
         padding:40px;
         padding-top:20px;
+        height:390px;
         font-family:'Raleway', sans-serif;
 
         .title {

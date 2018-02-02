@@ -1,5 +1,5 @@
 <template>
-    <button v-on:click="emit" :class="{'margined':margined, 'blue':isBlue, 'red':isRed, 'half':half}">
+    <button :disabled="disabled" v-on:click="emit" :class="{'margined':margined, 'blue':isBlue, 'red':isRed, 'half':half, 'disabled':disabled}">
         {{text}}
     </button>
 </template>
@@ -7,7 +7,7 @@
 <script>
     export default {
         methods: { emit(){ this.$emit('clicked') } },
-        props:['icon', 'text', 'margined', 'isBlue', 'isRed', 'half']
+        props:['icon', 'text', 'margined', 'isBlue', 'isRed', 'half', 'disabled']
     }
 </script>
 
@@ -82,6 +82,11 @@
                 color:#fff;
                 border:0 solid #ff0d0c;
             }
+        }
+
+        &.disabled {
+            opacity:0.3;
+            background:rgba(0, 0, 0, 0.05);
         }
     }
 </style>

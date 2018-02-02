@@ -1,6 +1,8 @@
 import IdGenerator from '../util/IdGenerator'
 import Account from './Account';
 import Network from './Network';
+import ArrayHelpers from '../util/ArrayHelpers'
+import PasswordHasher from '../util/PasswordHasher'
 
 
 /********************************************/
@@ -40,7 +42,17 @@ export class LocationInformation {
     constructor(){ Object.keys(LocationFields).forEach(fieldName => this[fieldName] = ''); }
     static placeholder(){ return new LocationInformation(); }
     static fromJson(json){ return Object.assign(this.placeholder(), json); }
-    findFields(fields){ return fields.filter(field => this.hasOwnProperty(field) && this[field].length); }
+    findFields(fields){
+        let foundFields = fields.filter(field => field !== LocationFields.country)
+            .filter(field => this.hasOwnProperty(field) && this[field].length);
+
+        if(fields.includes(LocationFields.country) &&
+            this.hasOwnProperty('country') &&
+            typeof this.country !== 'string')
+            foundFields.push(LocationFields.country)
+
+        return foundFields;
+    }
 }
 
 
@@ -72,10 +84,10 @@ export default class Identity {
     static placeholder(){ return new Identity(); }
     static fromJson(json){
         let p = Object.assign(this.placeholder(), json);
-        if(json.hasOwnProperty('account') && json.account) this.account = Account.fromJson(json.account);
-        if(json.hasOwnProperty('network') && json.network) this.network = Network.fromJson(json.network);
-        this.personal = PersonalInformation.fromJson(json.personal);
-        this.location = LocationInformation.fromJson(json.location);
+        if(json.hasOwnProperty('account') && json.account) p.account = Account.fromJson(json.account);
+        if(json.hasOwnProperty('network') && json.network) p.network = Network.fromJson(json.network);
+        p.personal = PersonalInformation.fromJson(json.personal);
+        p.location = LocationInformation.fromJson(json.location);
         return p;
     }
 
@@ -95,10 +107,48 @@ export default class Identity {
      */
     hasRequiredFields(fields){
         let foundFields = [];
+
+        // fields should always be lowercase and hash and name should never be searched for
+        fields = fields.map(field => field.toLowerCase()).filter(field => field !== 'hash' && field !== 'name');
+
         if(fields.includes(IdentityFields.account) && this.hasAccount()) foundFields.push(IdentityFields.account);
         foundFields = foundFields.concat(this.personal.findFields(fields));
         foundFields = foundFields.concat(this.location.findFields(fields));
         return fields.every(field => foundFields.includes(field));
+    }
+
+    /***
+     * * Identities should always run this before serving the identity
+     * to anywhere outside of Scatter.
+     * @param returnOnly - If true only returns the hash instead of binding it.
+     */
+    encryptHash(returnOnly = false){
+        if(returnOnly) return PasswordHasher.hash(this.hash);
+        else this.hash = PasswordHasher.hash(this.hash);
+    }
+
+    /***
+     * Returns an object with only the required fields from this Identity
+     * @param fields
+     * @param object - Should never be set outside of the recursion
+     */
+    asOnlyRequiredFields(fields, object = null){
+        // Adding mandatory fields and converting to lowercase
+        fields = ArrayHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'name']));
+
+        const clone = object ? object : this.clone();
+        Object.keys(clone).map(field => {
+            const isObject = typeof clone[field] === 'object';
+
+            if(clone[field] === null) delete clone[field];
+            else if(isObject && !fields.includes(field)) this.asOnlyRequiredFields(fields, clone[field]);
+            else if(!fields.includes(field)) delete clone[field];
+
+            // Removing now empty fields
+            if(isObject && JSON.stringify(clone[field]) === '{}') delete clone[field];
+        });
+
+        return clone;
     }
 
     /***

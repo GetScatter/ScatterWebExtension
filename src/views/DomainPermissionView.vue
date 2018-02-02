@@ -10,7 +10,15 @@
                 <section class="panel">
                     <figure class="header big identity-header">{{networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain.identities).name}}</figure>
                     <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:networkPerms.find(perm => perm.isIdentityOnly())})">Revoke Identity</figure>
-                    <figure class="header small margin"><i class="fa fa-globe"></i>{{networkPerms.find(perm => perm.isIdentityOnly()).network.host}}</figure>
+                    <figure class="header small margin" style="overflow:hidden;">
+                        <figure style="float:left;">
+                            <i class="fa fa-globe"></i>
+                            {{networkPerms.find(perm => perm.isIdentityOnly()).network.host}}
+                        </figure>
+                        <figure style="float:right">
+                            {{networkPerms.find(perm => perm.isIdentityOnly()).timestamp/1000 | moment('from', 'now')}}
+                        </figure>
+                    </figure>
                 </section>
 
                 <!-- Contract Permissions -->
@@ -19,7 +27,7 @@
                     <figure class="revoke-contract-actions" v-on:click="revoke({type:'contract', address:contractAddress, network:actions[0].network})">revoke contract</figure>
                     <section class="items">
                         <section class="item" v-for="action in actions">
-                            <span>{{action.action}}</span>
+                            <span><u><b>{{action.action}}</b></u> <i>( {{action.timestamp/1000 | moment('from', 'now')}} )</i></span>
                             <span class="revoke-text" v-on:click="revoke({type:'action', perm:action})">revoke action</span>
                         </section>
                     </section>
