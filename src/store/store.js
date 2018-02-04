@@ -12,6 +12,8 @@ const state = {
 
     alerts:[],
     alertResult:null,
+
+    prompt:null,
 };
 
 const getters = {
@@ -19,7 +21,8 @@ const getters = {
     permissions:state => state.scatter.keychain.permissions,
     networks:state => state.scatter.settings.networks,
     backupToBlockchain:state => state.scatter.settings.backupToBlockchain,
-    histories:state => state.scatter.histories
+    histories:state => state.scatter.histories,
+    fields:state => state.prompt.data || []
 };
 
 export const store = new Vuex.Store({

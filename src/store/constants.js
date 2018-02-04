@@ -14,3 +14,6 @@ export const PUSH_ALERT = 'pushAlert';
 export const PULL_ALERT = 'pullAlert';
 export const PUSH_ALERT_RESULT = 'pushAlertResult';
 export const CLEAR_ALERT_RESULT = 'clearAlertResult';
+
+export const PUSH_PROMPT = 'pushPrompt';
+export const PULL_PROMPT = 'pullPrompt';

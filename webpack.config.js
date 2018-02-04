@@ -5,28 +5,30 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const IgnoreEmitPlugin = require('ignore-emit-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const nodeExternals = require('webpack-node-externals')
+const Dotenv = require('dotenv-webpack');
 
-// TODO: Change to env var
-const production = true;
+console.log(process.env.SCATTER_ENV);
+
+const production = process.env.SCATTER_ENV === 'production';
 const vueAlias = `vue/dist/vue${production ? '.min' : ''}.js`;
 const productionPlugins = !production ? [] : [
     new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
-    // new webpack.DefinePlugin({
-    //     'process.env': {
-    //         NODE_ENV: '"production"'
-    //     }
-    // }),
+    new webpack.DefinePlugin({
+        'process.env': {
+            NODE_ENV: '"production"'
+        }
+    }),
     new UglifyJsPlugin()
 ];
+
+const runningTests = process.env.SCATTER_ENV === 'testing';
+const externals = runningTests ? [nodeExternals()] : [];
 
 function replaceSuffixes(file){
     return file
         .replace('scss', 'css')
 }
-
-const filesToCopy = [
-    'copied'
-];
 
 const filesToPack = [
   'background.js',
@@ -48,7 +50,6 @@ module.exports = {
     resolve: {
         alias: {
             vue: vueAlias,
-            // vue: 'vue/dist/vue.min.js',
             'extension-streams': 'extension-streams/dist/index.js',
             'aes-oop': 'aes-oop/dist/AES.js',
         },
@@ -72,9 +73,13 @@ module.exports = {
     plugins: [
         new ExtractTextPlugin({ filename: '[name]', allChunks: true }),
         new IgnoreEmitPlugin(/\.omit$/),
-        new CopyWebpackPlugin(filesToCopy.map(file => `./src/${file}`)),
-
+        new CopyWebpackPlugin([`./src/copied`]),
+        new Dotenv({
+            path: './.env',
+            safe: true
+        })
     ].concat(productionPlugins),
     stats: { colors: true },
-    devtool: 'inline-source-map'
+    devtool: 'inline-source-map',
+    externals
 }

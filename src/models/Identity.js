@@ -118,6 +118,16 @@ export default class Identity {
     }
 
     /***
+     * Returns the value of a property based on the requirable name.
+     * @param requirable
+     */
+    getPropertyValueByName(requirable){
+        if(Object.keys(this).includes(requirable)) return this[requirable];
+        else if(Object.keys(this.personal).includes(requirable)) return this.personal[requirable];
+        else return this.location[requirable];
+    }
+
+    /***
      * * Identities should always run this before serving the identity
      * to anywhere outside of Scatter.
      * @param returnOnly - If true only returns the hash instead of binding it.
@@ -130,23 +140,22 @@ export default class Identity {
     /***
      * Returns an object with only the required fields from this Identity
      * @param fields
-     * @param object - Should never be set outside of the recursion
      */
-    asOnlyRequiredFields(fields, object = null){
+    asOnlyRequiredFields(fields){
         // Adding mandatory fields and converting to lowercase
-        fields = ArrayHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'name']));
+        fields = ArrayHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'name', 'network']));
 
-        const clone = object ? object : this.clone();
-        Object.keys(clone).map(field => {
-            const isObject = typeof clone[field] === 'object';
-
-            if(clone[field] === null) delete clone[field];
-            else if(isObject && !fields.includes(field)) this.asOnlyRequiredFields(fields, clone[field]);
-            else if(!fields.includes(field)) delete clone[field];
-
-            // Removing now empty fields
-            if(isObject && JSON.stringify(clone[field]) === '{}') delete clone[field];
+        const clone = {personal:{},location:{}};
+        fields.map(field => {
+           if(Object.keys(this).includes(field)) clone[field] = this[field];
+           if(Object.keys(PersonalFields).includes(field))
+               clone.personal[PersonalFields[field]] = this.personal[PersonalFields[field]];
+           if(Object.keys(LocationFields).includes(field))
+               clone.location[LocationFields[field]] = this.location[LocationFields[field]];
         });
+
+        if(!Object.keys(clone.personal).length) delete clone.personal;
+        if(!Object.keys(clone.location).length) delete clone.location;
 
         return clone;
     }

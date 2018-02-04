@@ -7,6 +7,7 @@ import Scatter from './models/Scatter'
 import Network from './models/Network'
 import Identity from './models/Identity'
 import IdentityService from './services/IdentityService'
+import NotificationService from './services/NotificationService'
 import HistoricEvent from './models/histories/HistoricEvent'
 import * as HistoricEventTypes from './models/histories/HistoricEventTypes'
 import Prompt from './models/prompts/Prompt';
@@ -16,6 +17,7 @@ import * as PromptTypes from './models/prompts/PromptTypes'
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
 let seed = '';
+// let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
 
 // This is the script that runs in the extension's background ( singleton )
@@ -229,8 +231,8 @@ export default class Background {
                 // TODO: Check in whitelist for permissions
 
                 // TODO: Prompt user for signature authorization
-                const prompt = new Prompt(PromptTypes.REQUEST_SIGNATURE, payload)
-                this.openPrompt(prompt, sendResponse);
+                const prompt = new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, sendResponse);
+                NotificationService.open(prompt);
 
                 // let signed = ecc.sign(new Buffer(payload.buf.data), privateKey);
                 // sendResponse(signed);
@@ -272,21 +274,6 @@ export default class Background {
         // TODO: Change failure to a more explanatory message
         if(!seed.length) sendResponse(null);
         else cb();
-    }
-
-    /***
-     * Opens a prompt window outside of the extension
-     * @param prompt
-     * @param responder
-     */
-    static openPrompt(prompt, responder){
-        console.log('prmo', prompt)
-        const height = 600;
-        const width = 700;
-        let middleX = window.screen.availWidth/2 - (width/2);
-        let middleY = window.screen.availHeight/2 - (height/2);
-        let popup = window.open(chrome.runtime.getURL('prompt.html'), 'ScatterPrompt', `width=${width},height=${height},resizable=0,dependent=true,top=${middleY},left=${middleX},titlebar=0`);
-        popup.data = { prompt, responder };
     }
 
     /***

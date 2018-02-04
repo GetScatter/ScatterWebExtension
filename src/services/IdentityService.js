@@ -1,4 +1,7 @@
 import Identity from '../models/Identity'
+import Prompt from '../models/prompts/Prompt';
+import * as PromptTypes from '../models/prompts/PromptTypes'
+import NotificationService from '../services/NotificationService'
 
 export default class IdentityService {
 
@@ -35,24 +38,16 @@ export default class IdentityService {
     }
 
     static getOrRequestIdentity(domain, network, fields, scatter, callback){
-        // Requested identities must always have an account
-        fields = fields.concat(['account']);
 
         // Possibly getting an Identity that has been synced with this application.
         const identityFromPermission = scatter.keychain.permissions.find(perm => perm.isIdentityFor(domain, network));
         let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain.identities) : null;
 
-        // TODO: Mock | For testing only ----------------------------
-        identity = scatter.keychain.identities[0];
-        console.log(identity);
-        // identity = Identity.placeholder();
-        // identity.name = 'TestIdentity';
-        // identity.account = scatter.keychain.identities[0].account;
-        // identity.personal.firstname = 'Bob';
-        // identity.location.country = {code:'US', name:'United States'};
-        // TODO: ----------------------------------------------------
-
         const sendBackIdentity = id => {
+            if(!id){
+                callback(null);
+                return false;
+            }
             id.encryptHash();
             callback(id.asOnlyRequiredFields(fields));
         };
@@ -61,24 +56,16 @@ export default class IdentityService {
             // Even though there is a previous permission,
             // the identity might have changed and no longer
             // meets the requirements.
-            if(!identity.hasRequiredFields(fields)){
-                //TODO: Add popup to allow a user to fix the issue.
-                callback(null);
+            if(identity.hasRequiredFields(fields)){
+                sendBackIdentity(identity);
                 return false;
+            } else {
+                // TODO: Remove permission
             }
-
-            sendBackIdentity(identity);
         }
         else {
-            const usableIdentities = scatter.keychain.identities.filter(id => id.hasRequiredFields(fields));
-            if(!usableIdentities.length) {
-                //TODO: Popup error that you have no usable identities.
-            }
-            else {
-                // TODO: Prompt for an identity from the usableIdentities
-            }
-
-            sendBackIdentity(null);
+            const prompt = new Prompt(PromptTypes.REQUEST_IDENTITY, domain, network, fields, sendBackIdentity);
+            NotificationService.open(prompt);
         }
     }
 }

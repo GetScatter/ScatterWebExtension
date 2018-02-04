@@ -86,4 +86,10 @@ export const actions = {
     [Actions.PULL_ALERT]:({commit}) => commit(Actions.PULL_ALERT),
     [Actions.PUSH_ALERT_RESULT]:({commit}, alertResult) => commit(Actions.PUSH_ALERT_RESULT, alertResult),
     [Actions.CLEAR_ALERT_RESULT]:({commit}) => commit(Actions.CLEAR_ALERT_RESULT),
+
+
+    [Actions.PUSH_PROMPT]:({state, commit}, prompt) => {
+        if(state.prompt) state.prompt.responder(null);
+        commit(Actions.PUSH_PROMPT, prompt);
+    },
 };

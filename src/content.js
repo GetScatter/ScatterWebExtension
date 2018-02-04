@@ -87,7 +87,6 @@ class Content {
     }
 
     getOrRequestIdentity(message){
-        console.log("Getting ID")
         InternalMessage.payload(InternalMessageTypes.GET_OR_REQUEST_IDENTITY, message.payload)
             .send().then(res => this.respond(message, res))
             .catch(e => this.rejectWithError(message.error('Could not get an identity')))

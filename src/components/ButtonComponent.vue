@@ -59,28 +59,34 @@
         &.blue {
             border:1px solid #54a7fc;
             color:#54a7fc;
-            text-shadow:0 !important;
+            text-shadow:0 1px 0 rgba(255,255,255,0);
 
             &:hover {
                 background:#54a7fc;
                 color:#fff;
                 border:0 solid #54a7fc;
-                text-shadow:0 !important;
+                text-shadow:0 1px 0 rgba(255,255,255,0);
             }
 
             &:active {
-                text-shadow:0 !important;
+                text-shadow:0 1px 0 rgba(255,255,255,0);
             }
         }
 
         &.red {
             border:1px solid #ff0d0c;
             color:#ff0d0c;
+            text-shadow:0 1px 0 rgba(255,255,255,0);
 
             &:hover {
                 background:#ff0d0c;
                 color:#fff;
                 border:0 solid #ff0d0c;
+                text-shadow:0 1px 0 rgba(255,255,255,0);
+            }
+
+            &:active {
+                text-shadow:0 1px 0 rgba(255,255,255,0);
             }
         }
 

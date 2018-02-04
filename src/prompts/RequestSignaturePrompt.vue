@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <section class="prompt-body">
 
         Request Signature Prompt
 
@@ -33,7 +33,15 @@
 </script>
 
 <style lang="scss">
-    body {
-        background:#fff;
+    .prompt-body {
+        font-family: 'Open Sans', sans-serif;
+
+        .description {
+            margin-top:5px;
+            font-size:9px;
+            color:#b8b8b8;
+
+            b { color:#707070; }
+        }
     }
 </style>

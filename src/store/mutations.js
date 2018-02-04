@@ -7,4 +7,5 @@ export const mutations = {
     [Mutations.PULL_ALERT]:(state, error) => state.alerts.shift(),
     [Mutations.PUSH_ALERT_RESULT]:(state, alertResult) => state.alertResult = alertResult,
     [Mutations.CLEAR_ALERT_RESULT]:(state) => state.alertResult = null,
+    [Mutations.PUSH_PROMPT]:(state, prompt) => state.prompt = prompt,
 };

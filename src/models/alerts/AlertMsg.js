@@ -168,6 +168,27 @@ export default class AlertMsg {
         );
     }
 
+    static NoIdentityWithProperties(fields){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'No Identities Found',
+            'Error',
+            ['Request', 'Identity'],
+            `This application is requesting an Identity with properties you do not have. The properties they want are '${fields.join(', ')}'`
+        );
+    }
+
+    static YouMustSelectAnIdentity(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            'You Must Select An Identity',
+            'Error',
+            ['Request', 'Identity'],
+            'If you do not wish to expose an Identity you can press the Deny button, otherwise an Identity must be ' +
+            'selected in order to accept this request.'
+        );
+    }
+
 
 
 

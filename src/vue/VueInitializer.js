@@ -22,7 +22,7 @@ export default class VueInitializer {
 
         store.dispatch(Actions.LOAD_SCATTER).then(() => {
             this.setupVue(router);
-            routerCallback(router);
+            routerCallback(router, store);
         });
 
         return router;
