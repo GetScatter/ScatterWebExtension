@@ -12,12 +12,12 @@ import HistoricEvent from './models/histories/HistoricEvent'
 import * as HistoricEventTypes from './models/histories/HistoricEventTypes'
 import Prompt from './models/prompts/Prompt';
 import * as PromptTypes from './models/prompts/PromptTypes'
+const ecc = require('eosjs-ecc');
 
 // Gets bound when a user logs into scatter
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
 let seed = '';
-// let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
 
 // This is the script that runs in the extension's background ( singleton )
@@ -231,8 +231,9 @@ export default class Background {
                 // TODO: Check in whitelist for permissions
 
                 // TODO: Prompt user for signature authorization
-                const prompt = new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, sendResponse);
-                NotificationService.open(prompt);
+                NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
+
+                }));
 
                 // let signed = ecc.sign(new Buffer(payload.buf.data), privateKey);
                 // sendResponse(signed);

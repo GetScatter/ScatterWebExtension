@@ -112,6 +112,7 @@
     import {RouteNames} from '../vue/Routing'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
+    import Identity from '../models/Identity'
 
     export default {
         data(){ return {
@@ -132,9 +133,10 @@
             bind(changed, original) { this[original] = changed },
             filteredIdentities(){
                 return this.identities
+                    .filter(id => id.network.unique() === this.prompt.network.unique())
                     .filter(id => id.hasRequiredFields(this.fields))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
-                    .map(id => id.asOnlyRequiredFields(this.fields))
+                    .map(id => Identity.fromJson(id.asOnlyRequiredFields(this.fields)))
             },
             formatPropValue(prop, propValue){
                 switch(prop){

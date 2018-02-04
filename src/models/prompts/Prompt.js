@@ -8,7 +8,6 @@ export default class Prompt {
         this.network = _network;
         this.data = _data;
         this.responder = _responder;
-        this.closeWindow = null;
     }
 
     static placeholder(){ return new Prompt(); }

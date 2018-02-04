@@ -45,7 +45,6 @@
             </figure>
             <cin v-if="!isNew" :text="`${identity.network.host}:${identity.network.port}`" disabled="true"></cin>
             <sel v-else :selected="identity.network" :options="networks" :parser="(network) => network.unique()" v-on:changed="changed => bind(changed, 'identity.network')"></sel>
-            <!-- TODO: ELSE SELECT FIELD -->
         </section>
 
         <!-- Account -->
@@ -63,7 +62,6 @@
                  :text="(identity.account) ? `${identity.account.name}@${identity.account.authority}` : ''"
                  v-on:untagged="removeAccount"
                  v-on:changed="changed => bind(changed, 'accountNameOrPrivateKey')"></cin>
-            <!--<btn text="New Account" v-on:clicked="createAccount" half="true" margined="true"></btn>-->
             <btn :disabled="identity.account" text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
 
         </section>
@@ -166,16 +164,10 @@
             },
             importAccount(){
                 //5JzA2rLfhNYv1fE7BdAC4pWCNwpDrw9HVU7XqsGZdZ55UuwcGS4
-                AccountService.importFromKey(this.accountNameOrPrivateKey, this[Actions.PUSH_ALERT]).then(imported => {
+                AccountService.importFromKey(this.accountNameOrPrivateKey, this.identity.network, this).then(imported => {
                     this.identity.account = imported.account;
                     this.keypair = imported.keypair;
                 });
-            },
-            createAccount(){
-                AccountService.create(this.accountNameOrPrivateKey, this[Actions.PUSH_ALERT]).then(created => {
-                    this.identity.account = created.account;
-                    this.keypair = created.keypair;
-                })
             },
             saveIdentity(){
                 if(!Identity.nameIsValid(this.identity.name)){
@@ -191,25 +183,15 @@
 
                 const scatter = this.scatter.clone();
                 scatter.keychain.identities = scatter.keychain.identities.filter(x => x.hash !== this.identity.hash);
+                scatter.keychain.identities.push(this.identity);
 
-                const identityIsRegistered = () => {
-                    // Adding the updated identity
-                    scatter.keychain.identities.push(this.identity);
-                    this[Actions.UPDATE_STORED_SCATTER](scatter);
+                // Adding possibly new keypair
+                if(this.keypair && (this.identity.account && this.identity.account.publicKey === this.keypair.publicKey)){
+                    scatter.keychain.keypairs = scatter.keychain.keypairs.filter(x => x.publicKey !== this.keypair.publicKey);
+                    scatter.keychain.keypairs.push(this.keypair);
+                }
 
-                    // Adding possibly new keypair
-                    if(this.keypair && (this.identity.account && this.identity.account.publicKey === this.keypair.publicKey)){
-                        scatter.keychain.keypairs = scatter.keychain.keypairs.filter(x => x.publicKey !== this.keypair.publicKey);
-                        scatter.keychain.keypairs.push(this.keypair);
-                    }
-
-                    const done = () => this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
-                    if(this.identity.account) AccountService.existsOrRegister(this.identity.account, this.scatter).then(() => done());
-                    else done();
-                };
-
-                if(this.isNew) IdentityService.existsOrRegister(this.identity.name, this.scatter).then(() => identityIsRegistered());
-                else identityIsRegistered();
+                this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
 
             },
             ...mapActions([

@@ -45,11 +45,8 @@
                     <b>This account will be linked to the Identity you just created.</b>
                 </figure>
             </section>
-            <!--<section class="p20">-->
-                <!--<cin icon="fa-lock" placeholder="account name" v-on:changed="changed => bind(changed, 'accountName')"></cin>-->
-                <!--<btn text="Create New Account" v-on:clicked="createNewAccount" margined="true"></btn>-->
-            <!--</section>-->
             <section class="p20">
+                <sel :selected="identity.network" :options="networks" :parser="(network) => network.unique()" v-on:changed="bindNetwork"></sel>
                 <cin icon="fa-lock" placeholder="private key" v-on:changed="changed => bind(changed, 'importKey')"></cin>
                 <btn text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
             </section>
@@ -82,10 +79,14 @@
         computed: {
             ...mapState([
                 'scatter'
+            ]),
+            ...mapGetters([
+                'networks'
             ])
         },
         methods: {
             bind(changed, original) { this[original] = changed },
+            bindNetwork(network){ this.identity.network = network; },
             firstTimeState(){
                 if(!this.scatter.keychain.identities.length && !this.identity) return 'firstIdentity';
                 else if (!this.scatter.keychain.identities.length || this.identity) return 'firstAccount';
@@ -106,23 +107,13 @@
                         return false;
                     }
 
-                    this.identity = Identity.fromJson({name:this.identityName});
+                    this.identity = Identity.fromJson({name:this.identityName, network:this.scatter.settings.networks[0]});
                 })
-            },
-
-            // Creates a new EOS account which is bound to the user's new Identity
-            createNewAccount(){
-                AccountService.create(this.accountName, this[Actions.PUSH_ALERT]).then(created => {
-                    const keypair = created.keypair;
-                    this.identity.account = created.account;
-
-                    this.addNewIdentity(keypair, this.identity);
-                });
             },
 
             // Imports an EOS account@authority which is bound to the user's new Identity
             importAccount(){
-                AccountService.importFromKey(this.importKey, this[Actions.PUSH_ALERT]).then(imported => {
+                AccountService.importFromKey(this.importKey, this.identity.network, this).then(imported => {
                     this.identity.account = imported.account;
                     this.addNewIdentity(imported.keypair, this.identity);
                 });
@@ -133,23 +124,18 @@
             addNewIdentity(keypair, identity){
                 identity.account.publicKey = keypair.publicKey;
 
+                // TODO: The first account needs to be on the network where Scatter's
+                // TODO: identity contract exists. For now disabling for easy development
+                // TODO: ----------------------------------
                 // Always using the endorsed network for the first identity/account
-                identity.network = this.scatter.settings.networks.find(x => x.isEndorsedNetwork());
+                // identity.network = this.scatter.settings.networks.find(x => x.isEndorsedNetwork());
 
-                //TODO: --------------------------------------------------------------------
-                //TODO: Might want to bind these together as a transaction so that they can
-                //TODO: be rolled back if either fails.
-                //TODO: --------------------------------------------------------------------
                 IdentityService.register(identity.name, this.scatter).then(identityHash => {
-                    AccountService.register(identity.account, this.scatter).then(accountHash => {
-                        //TODO: ------------------------------------------------------------
-
-                        let scatter = this.scatter.clone();
-                        scatter.keychain.keypairs.push(keypair);
-                        scatter.keychain.identities.push(identity);
-                        this[Actions.UPDATE_STORED_SCATTER](scatter)
-                            .then(() => this.$router.push({name:RouteNames.MAIN_MENU}))
-                    })
+                    let scatter = this.scatter.clone();
+                    scatter.keychain.keypairs.push(keypair);
+                    scatter.keychain.identities.push(identity);
+                    this[Actions.UPDATE_STORED_SCATTER](scatter)
+                        .then(() => this.$router.push({name:RouteNames.MAIN_MENU}))
                 })
             },
             ...mapActions([

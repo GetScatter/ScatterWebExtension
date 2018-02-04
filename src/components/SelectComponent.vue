@@ -58,6 +58,7 @@
         border-radius:4px;
         background:#fff;
         transition:background 0.2s ease;
+        z-index:2;
 
         &.seventy {
             width:calc(70% - 5px);
