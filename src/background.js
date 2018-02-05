@@ -12,7 +12,7 @@ import HistoricEvent from './models/histories/HistoricEvent'
 import * as HistoricEventTypes from './models/histories/HistoricEventTypes'
 import Prompt from './models/prompts/Prompt';
 import * as PromptTypes from './models/prompts/PromptTypes'
-import ArrayHelpers from './util/ArrayHelpers'
+import ObjectHelpers from './util/ObjectHelpers'
 import Permission from './models/Permission'
 const ecc = require('eosjs-ecc');
 
@@ -206,9 +206,8 @@ export default class Background {
                       network = Network.fromJson(payload.network),
                       fields = payload.fields;
 
-                IdentityService.getOrRequestIdentity(domain, network, fields, scatter, identity => {
-                    const identityFromPermission = scatter.keychain.permissions.find(perm => perm.isIdentityFor(domain, network));
-                    if(identity && !identityFromPermission) {
+                IdentityService.getOrRequestIdentity(domain, network, fields, scatter, (identity, fromPermission) => {
+                    if(identity && !fromPermission) {
                         this.addHistory(HistoricEventTypes.PROVIDED_IDENTITY, {
                             domain,
                             network,
@@ -256,7 +255,7 @@ export default class Background {
                 }
 
                 // Checking if Identity still has all the necessary accounts
-                const requiredAccounts = ArrayHelpers.flatten(
+                const requiredAccounts = ObjectHelpers.flatten(
                     payload.transaction.messages
                         .map(message => message.authorization
                             .map(auth => `${auth.account}@${auth.permission}`)));

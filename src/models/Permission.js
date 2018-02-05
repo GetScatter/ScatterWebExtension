@@ -41,4 +41,8 @@ export default class Permission {
     isIdentityFor(domain, network){
         return this.isIdentityOnly() && this.domain === domain && this.network.unique() === network.unique();
     }
+
+    identityIsNotDisabled(keychain){
+        return !this.identity(keychain).disabled;
+    }
 }

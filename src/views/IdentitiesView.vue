@@ -22,7 +22,7 @@
                     <section class="items">
                         <section class="item">
                             <span class="big">{{`${identity.account.name}@${identity.account.authority}`}}</span>
-                            <span class="big">12 EOS</span>
+                            <span class="big">{{getBalanceFor(identity)}}</span>
                         </section>
                     </section>
                 </section>
@@ -68,16 +68,20 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import { mapActions, mapGetters, mapState } from 'vuex'
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
     import Identity from '../models/Identity'
     import Scatter from '../models/Scatter'
     import AlertMsg from '../models/alerts/AlertMsg'
+    import ObjectHelpers from '../util/ObjectHelpers'
+    import AccountService from '../services/AccountService'
 
     export default {
         data(){ return {
-            searchText:''
+            searchText:'',
+            balances:{},
         }},
         computed: {
             ...mapState([
@@ -87,11 +91,38 @@
                 'identities'
             ])
         },
+        mounted(){
+            this.bindBalances();
+        },
         methods: {
             bind(changed, original) { this[original] = changed },
             fullKeysOf(obj){ return Object.keys(obj).filter(key => {
                 return (typeof obj[key] === 'string') ? obj[key].length : obj[key][Object.keys(obj[key])[0]].length
             }) },
+            bindBalances(){
+                const identityAccountMap = ObjectHelpers.distinctObjectArray(
+                    this.identities.filter(id => id.account && id.account.name).map(id => {
+                        return {account:id.account.name, network:id.network.unique()}
+                    })
+                );
+
+                const _balances = {};
+
+                Promise.all(identityAccountMap.map(id => {
+                    return AccountService.getBalance(id.account, id.network).then(balance => {
+                        if(!_balances.hasOwnProperty(id.network)) _balances[id.network] = {};
+                        _balances[id.network][id.account] = balance;
+                        return _balances;
+                    })
+                }))
+                    // Vue will not update semi-ticks
+                    .then(balanceMap => this.balances = balanceMap[0])
+            },
+            getBalanceFor(identity){
+                if(!this.balances.hasOwnProperty(identity.network.unique())) return 'Network is down';
+                if(!this.balances[identity.network.unique()].hasOwnProperty(identity.account.name)) return "Can't find account";
+                return this.balances[identity.network.unique()][identity.account.name];
+            },
             filterBySearch(){ return this.identities.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
             toggleIdentity(identity){
                 const scatter = this.scatter.clone();

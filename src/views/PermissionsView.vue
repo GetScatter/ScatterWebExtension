@@ -28,7 +28,7 @@
     import { mapActions, mapGetters, mapState } from 'vuex'
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
-    import ArrayHelpers from '../util/ArrayHelpers'
+    import ObjectHelpers from '../util/ObjectHelpers'
     import Permission from '../models/Permission'
 
     export default {
@@ -38,7 +38,7 @@
             routeNames:RouteNames
         }},
         mounted(){
-            this.domains = ArrayHelpers.groupBy(this.permissions, 'domain');
+            this.domains = ObjectHelpers.groupBy(this.permissions, 'domain');
         },
         computed: {
             ...mapState([

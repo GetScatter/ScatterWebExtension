@@ -45,7 +45,7 @@
     import Scatter from '../models/Scatter'
     import Permission from '../models/Permission'
     import AlertMsg from '../models/alerts/AlertMsg'
-    import ArrayHelpers from '../util/ArrayHelpers'
+    import ObjectHelpers from '../util/ObjectHelpers'
 
     export default {
         data(){ return {
@@ -62,8 +62,8 @@
         },
         methods: {
             bind(changed, original) { this[original] = changed },
-            groupByIdentity(permissions){ return ArrayHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'identityHash'); },
-            groupByContract(permissions){ return ArrayHelpers.groupBy(permissions.filter(perm => perm.isContractAction()), 'contractAddress'); },
+            groupByIdentity(permissions){ return ObjectHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'identityHash'); },
+            groupByContract(permissions){ return ObjectHelpers.groupBy(permissions.filter(perm => perm.isContractAction()), 'contractAddress'); },
             breadcrumbs(){ return ['Permissions', 'Revoke']; },
 
             filterBySearch(){

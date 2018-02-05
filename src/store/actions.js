@@ -1,5 +1,5 @@
 import * as Actions from './constants'
-import PasswordHasher from '../util/PasswordHasher'
+import Hasher from '../util/Hasher'
 import Mnemonic from '../util/Mnemonic'
 import Scatter from '../models/Scatter'
 import Network from '../models/Network'

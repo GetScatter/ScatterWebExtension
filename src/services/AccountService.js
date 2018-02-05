@@ -68,4 +68,18 @@ export default class AccountService {
             });
         })
     }
+
+    static getBalance(accountName, networkUnique){
+        return new Promise((resolve, reject) => {
+            const eos = Eos.Localnet({httpEndpoint:`http://${networkUnique}`});
+            eos.getAccount(accountName).then(account => {
+                if(!account){
+                    resolve(0);
+                    return false;
+                }
+
+                resolve(account.eos_balance);
+            }).catch(e => resolve(0))
+        })
+    }
 }

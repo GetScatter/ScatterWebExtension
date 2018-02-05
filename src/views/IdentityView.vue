@@ -163,7 +163,6 @@
                 })
             },
             importAccount(){
-                //5JzA2rLfhNYv1fE7BdAC4pWCNwpDrw9HVU7XqsGZdZ55UuwcGS4
                 AccountService.importFromKey(this.accountNameOrPrivateKey, this.identity.network, this).then(imported => {
                     this.identity.account = imported.account;
                     this.keypair = imported.keypair;

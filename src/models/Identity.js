@@ -1,8 +1,8 @@
 import IdGenerator from '../util/IdGenerator'
 import Account from './Account';
 import Network from './Network';
-import ArrayHelpers from '../util/ArrayHelpers'
-import PasswordHasher from '../util/PasswordHasher'
+import ObjectHelpers from '../util/ObjectHelpers'
+import Hasher from '../util/Hasher'
 
 
 /********************************************/
@@ -133,8 +133,8 @@ export default class Identity {
      * @param returnOnly - If true only returns the hash instead of binding it.
      */
     encryptHash(returnOnly = false){
-        if(returnOnly) return PasswordHasher.hash(this.hash);
-        else this.hash = PasswordHasher.hash(this.hash);
+        if(returnOnly) return Hasher.hash(this.hash);
+        else this.hash = Hasher.hash(this.hash);
     }
 
     /***
@@ -143,7 +143,7 @@ export default class Identity {
      */
     asOnlyRequiredFields(fields){
         // Adding mandatory fields and converting to lowercase
-        fields = ArrayHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'name', 'network']));
+        fields = ObjectHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'name', 'network']));
 
         const clone = {personal:{},location:{}};
         fields.map(field => {

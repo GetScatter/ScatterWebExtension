@@ -86,7 +86,7 @@
     import { mapActions, mapGetters, mapState } from 'vuex'
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
-    import ArrayHelpers from '../util/ArrayHelpers'
+    import ObjectHelpers from '../util/ObjectHelpers'
     import Permission from '../models/Permission'
     import * as HistoricEventTypes from '../models/histories/HistoricEventTypes'
 

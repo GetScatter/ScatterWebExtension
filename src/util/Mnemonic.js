@@ -1,4 +1,4 @@
-import PasswordHasher from "./PasswordHasher";
+import Hasher from "./Hasher";
 import bip39 from 'bip39'
 
 export class Mnemonic {
@@ -9,7 +9,7 @@ export class Mnemonic {
      * @returns {[string,string]}
      */
     static generateMnemonic(password) {
-        const hash = PasswordHasher.hash(password);
+        const hash = Hasher.hash(password);
         let mnemonic = bip39.entropyToMnemonic(hash);
         return [mnemonic, bip39.mnemonicToSeedHex(mnemonic)];
     }
@@ -41,7 +41,7 @@ export class Mnemonic {
      * @returns {boolean}
      */
     static mnemonicPassesFromPassword(password, seed) {
-        const hash = PasswordHasher.hash(password);
+        const hash = Hasher.hash(password);
         let mnemonic = bip39.entropyToMnemonic(hash);
         if(!bip39.validateMnemonic(mnemonic)) return false;
         return bip39.mnemonicToSeedHex(mnemonic) === seed

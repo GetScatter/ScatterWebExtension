@@ -40,7 +40,11 @@ export default class IdentityService {
     static getOrRequestIdentity(domain, network, fields, scatter, callback){
 
         // Possibly getting an Identity that has been synced with this application.
-        const identityFromPermission = scatter.keychain.permissions.find(perm => perm.isIdentityFor(domain, network));
+        const identityFromPermission = scatter.keychain.permissions.find(perm =>
+            perm.isIdentityFor(domain, network) &&
+            perm.identityIsNotDisabled(scatter.keychain)
+        );
+
         let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
 
         console.log('identity', identity)
@@ -51,7 +55,7 @@ export default class IdentityService {
                 return false;
             }
             id.encryptHash();
-            callback(id.asOnlyRequiredFields(fields));
+            callback(id.asOnlyRequiredFields(fields), !!identityFromPermission);
         };
 
         if(identity){
