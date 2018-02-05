@@ -19,8 +19,8 @@ const ecc = require('eosjs-ecc');
 // Gets bound when a user logs into scatter
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
-// let seed = '';
-let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
+let seed = '';
+// let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
 
 // This is the script that runs in the extension's background ( singleton )
