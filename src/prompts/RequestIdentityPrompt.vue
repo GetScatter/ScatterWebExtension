@@ -112,6 +112,7 @@
     import {RouteNames} from '../vue/Routing'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
+    import NotificationService from '../services/NotificationService'
     import Identity from '../models/Identity'
 
     export default {
@@ -156,11 +157,11 @@
                 }
                 const identity = this.identities.find(id => id.hash === this.selectedIdentity.hash);
                 this.prompt.responder(identity);
-                window.close();
+                NotificationService.close();
             },
             denied(){
                 this.prompt.responder(null);
-                window.close();
+                NotificationService.close();
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,

@@ -12,12 +12,15 @@ import HistoricEvent from './models/histories/HistoricEvent'
 import * as HistoricEventTypes from './models/histories/HistoricEventTypes'
 import Prompt from './models/prompts/Prompt';
 import * as PromptTypes from './models/prompts/PromptTypes'
+import ArrayHelpers from './util/ArrayHelpers'
+import Permission from './models/Permission'
 const ecc = require('eosjs-ecc');
 
 // Gets bound when a user logs into scatter
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
-let seed = '';
+// let seed = '';
+let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
 
 // This is the script that runs in the extension's background ( singleton )
@@ -204,13 +207,23 @@ export default class Background {
                       fields = payload.fields;
 
                 IdentityService.getOrRequestIdentity(domain, network, fields, scatter, identity => {
-                    if(identity) this.addHistory(HistoricEventTypes.PROVIDED_IDENTITY, {
-                        domain,
-                        network,
-                        provided:!!identity,
-                        identityName:identity ? identity.name : false,
-                        identityHash:(identity) ? identity.hash : false
-                    });
+                    const identityFromPermission = scatter.keychain.permissions.find(perm => perm.isIdentityFor(domain, network));
+                    if(identity && !identityFromPermission) {
+                        this.addHistory(HistoricEventTypes.PROVIDED_IDENTITY, {
+                            domain,
+                            network,
+                            provided:!!identity,
+                            identityName:identity ? identity.name : false,
+                            identityHash:(identity) ? identity.hash : false
+                        });
+
+                        this.addPermission(Permission.fromJson({
+                            domain,
+                            network,
+                            identityHash:identity.hash,
+                            timestamp:+ new Date()
+                        }))
+                    }
                     sendResponse(identity)
                 });
             });
@@ -226,33 +239,97 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
                 console.log('payload', payload);
-                // TODO: Mock
+
+                // Checking if identity still exists
+                const identity = scatter.keychain.findIdentity(payload.identityHash);
+                if(!identity){
+                    // TODO: Give back a better error message
+                    sendResponse(null);
+                    return false;
+                }
+
+                // Checking if the identity is on the same network
+                if(identity.network.unique() !== Network.fromJson(payload.network).unique()){
+                    // TODO: Give back a better error message
+                    sendResponse(null);
+                    return false;
+                }
+
+                // Checking if Identity still has all the necessary accounts
+                const requiredAccounts = ArrayHelpers.flatten(
+                    payload.transaction.messages
+                        .map(message => message.authorization
+                            .map(auth => `${auth.account}@${auth.permission}`)));
+
+                const identityAccountAuth = `${identity.account.name}@${identity.account.authority}`;
+
+                // TODO: Needs to change in the future to support multi-sign
+                if(!requiredAccounts.every(accountAuth => accountAuth === identityAccountAuth)) {
+                    // TODO: Give back a better error message
+                    sendResponse(null);
+                    return false;
+                }
+
 
                 // TODO: Check in whitelist for permissions
 
-                // TODO: Prompt user for signature authorization
                 NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
+                    if(!approval || !approval.hasOwnProperty('accepted')){
+                        console.log("Not accepted");
+                        sendResponse(null);
+                        return false;
+                    }
+
+                    const whitelisting = approval.whitelisted;
+                    //TODO: Add to whitelist
+                    if(whitelisting){
+                        // const permission = Permission.fromJson({
+                        //     domain:payload.domain,
+                        //     network:payload.network,
+                        //     identityHash:identity.hash,
+                        //     contractAddress:'0x1',
+                        //     contract:'hello',
+                        //     action:'world',
+                        //     checksum:'abcd', // <-- should be a hash of the contract message keys or abi or something
+                        //     timestamp:+ new Date()
+                        // })
+                        // const scatter = scatter.clone();
+                        // scatter.keychain.permissions.push(permission);
+                        // this.update(() => {
+                        //     //...
+                        // }, scatter);
+                    }
+
+
+                    this.publicToPrivate(privateKey => {
+                        if(!privateKey){
+                            // TODO: Give back a better error message
+                            console.log("Couldn't decrypt private key");
+                            sendResponse(null);
+                            return false;
+                        }
+
+                        const buf = Buffer.from(payload.buf.data, 'utf8');
+                        let signed = ecc.sign(buf, privateKey);
+
+
+                        // Adding historic event
+                        this.addHistory(HistoricEventTypes.SIGNED_TRANSACTION, {
+                            domain:payload.domain,
+                            network:payload.network,
+                            identityName:identity.name,
+                            identityHash:identity.hash,
+                            account:identity.account,
+                            transaction:payload.transaction,
+                            hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
+                        });
+
+
+                        sendResponse([signed]);
+                    }, identity.account.publicKey);
 
                 }));
 
-                // let signed = ecc.sign(new Buffer(payload.buf.data), privateKey);
-                // sendResponse(signed);
-
-                // TODO: Mock for testing only
-                const identity = scatter.keychain.identities[0];
-                identity.encryptHash();
-                const signed = true;
-                if(signed) this.addHistory(HistoricEventTypes.SIGNED_TRANSACTION, {
-                    domain:payload.domain,
-                    network:payload.network,
-                    identityName:identity.name,
-                    identityHash:identity.hash,
-                    account:identity.account,
-                    transaction:payload.transaction,
-                    hash:''
-                });
-
-                sendResponse(null);
             })
         })
     }
@@ -277,6 +354,14 @@ export default class Background {
         else cb();
     }
 
+
+
+    // TODO: ---------------------------------------
+    // TODO: There's a possibility of race conditions here.
+    // TODO: Perhaps the keychain should be stored in multiple stores
+    // TODO: and only merged when retrieving.
+    // TODO: ---------------------------------------
+
     /***
      * Adds a historic event to the keychain
      * @param historicEvent
@@ -284,6 +369,17 @@ export default class Background {
     static addHistory(type, data){
         this.load(scatter => {
             scatter.histories.unshift(new HistoricEvent(type, data));
+            this.update(() => {}, scatter);
+        })
+    }
+
+    /***
+     * Adds a permission to the keychain
+     * @param permission
+     */
+    static addPermission(permission){
+        this.load(scatter => {
+            scatter.keychain.permissions.unshift(permission);
             this.update(() => {}, scatter);
         })
     }

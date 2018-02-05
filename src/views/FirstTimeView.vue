@@ -153,7 +153,7 @@
         width:100%;
         padding:40px;
         padding-top:20px;
-        height:390px;
+        /*height:390px;*/
         font-family:'Raleway', sans-serif;
 
         .title {

@@ -2,7 +2,7 @@
     <section class="prompt-base" v-if="prompt">
 
         <section class="head">
-            <figure class="type">{{camelToTitle(prompt.type)}}</figure>
+            <figure class="type">{{flipWords(camelToTitle(prompt.type))}}</figure>
             <!--<figure class="description">-->
                 <!--An application is <b>requesting an Identity.</b>-->
             <!--</figure>-->
@@ -39,6 +39,9 @@
         methods: {
             camelToTitle(camel){
                 return StringHelpers.camelToTitle(camel);
+            },
+            flipWords(words){
+                return words.split(" ").reverse().join(" ")
             },
             ...mapActions([
                 Actions.SET_MNEMONIC,
@@ -109,12 +112,6 @@
         > .body {
             height:436px;
             background:#f9f9f9;
-        }
-
-        .footer {
-            height:150px;
-            padding:20px;
-
         }
     }
 </style>

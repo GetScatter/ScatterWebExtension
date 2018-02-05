@@ -38,8 +38,7 @@ class Content {
         // encrypted streams are synced.
         stream.onSync(() => {
             // Pushing an instance of Scatterdapp to the web application
-            const pushScatter = NetworkMessage.signal(NetworkMessageTypes.PUSH_SCATTER);
-            stream.send(pushScatter, PairingTags.INJECTED);
+            stream.send(NetworkMessage.signal(NetworkMessageTypes.PUSH_SCATTER), PairingTags.INJECTED);
 
             // Dispatching the loaded event to the web application.
             document.dispatchEvent(new CustomEvent("scatterLoaded"));
@@ -59,7 +58,6 @@ class Content {
     }
 
     contentListener(msg){
-        console.log('content script msg', msg)
         if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) { stream.send({type:'error'}, "mal-warn"); return; }
         let nonSyncMessage = NetworkMessage.fromJson(msg);
 
@@ -67,7 +65,6 @@ class Content {
             case 'sync': this.sync(msg); break;
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
-
             default: this.rejectWithError(nonSyncMessage.error('No such message can be parsed'))
         }
     }

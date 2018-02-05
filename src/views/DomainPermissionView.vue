@@ -4,11 +4,11 @@
         <search v-on:changed="changed => bind(changed, 'searchText')" :placeholder="'Search: ' + domain"></search>
 
         <section class="p20 scroller with-search">
-            <section v-for="(networkPerms, hash) in filterBySearch()" class="panel-box" :class="{'disabled':networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain.identities).disabled}">
+            <section v-for="(networkPerms, hash) in filterBySearch()" class="panel-box" :class="{'disabled':networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).disabled}">
 
                 <!-- Account Information -->
                 <section class="panel">
-                    <figure class="header big identity-header">{{networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain.identities).name}}</figure>
+                    <figure class="header big identity-header">{{networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).name}}</figure>
                     <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:networkPerms.find(perm => perm.isIdentityOnly())})">Revoke Identity</figure>
                     <figure class="header small margin" style="overflow:hidden;">
                         <figure style="float:left;">

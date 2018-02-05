@@ -24,4 +24,13 @@ export default class NotificationService {
         popup.data = notification;
     }
 
+    /***
+     * Always use this method for closing notification popups.
+     * Otherwise you will double send responses and one will always be null.
+     */
+    static close(){
+        window.onbeforeunload = () => {};
+        window.close();
+    }
+
 }

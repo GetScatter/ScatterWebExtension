@@ -43,70 +43,70 @@
             console.log(this.scatter);
 
             // TODO: Inserting test data
-            if(this.scatter.keychain.identities.length === 1 && this.scatter.keychain.permissions.length === 0){
-                const network = Network.fromJson({host:'test.eos.io', port:8080});
-
-                const identity = Identity.fromJson({name:'helloworld', network});
-
-                const permissions = [
-                    Permission.fromJson({
-                        domain:'tester.com',
-                        network:this.scatter.settings.networks[0],
-                        identityHash:this.scatter.keychain.identities[0].hash,
-                        timestamp:+ new Date()
-                    }),
-                    Permission.fromJson({
-                        domain:'cryptocrap.com',
-                        network:this.scatter.settings.networks[0],
-                        identityHash:this.scatter.keychain.identities[0].hash,
-                        timestamp:+ new Date()
-                    }),
-                    Permission.fromJson({
-                        domain:'cryptocrap.com',
-                        network:this.scatter.settings.networks[0],
-                        identityHash:this.scatter.keychain.identities[0].hash,
-                        contractAddress:'0x1',
-                        contract:'hello',
-                        action:'world',
-                        checksum:'abcd',
-                        timestamp:+ new Date()
-                    }),
-                    Permission.fromJson({
-                        domain:'cryptocrap.com',
-                        network:this.scatter.settings.networks[0],
-                        identityHash:this.scatter.keychain.identities[0].hash,
-                        contractAddress:'0x1',
-                        contract:'hello',
-                        action:'free',
-                        checksum:'abcde',
-                        timestamp:+ new Date()
-                    }),
-                    Permission.fromJson({
-                        domain:'cryptocrap.com',
-                        network:network,
-                        identityHash:identity.hash,
-                        timestamp:+ new Date()
-                    }),
-                    Permission.fromJson({
-                        domain:'cryptocrap.com',
-                        network:network,
-                        identityHash:identity.hash,
-                        contractAddress:'0x1',
-                        contract:'hello',
-                        action:'world',
-                        checksum:'abcd',
-                        timestamp:+ new Date()
-                    })
-                ];
-
-                const scatter = this.scatter.clone();
-                scatter.settings.networks.push(network);
-                scatter.keychain.identities.push(identity);
-                scatter.keychain.permissions = permissions;
-
-                this[Actions.UPDATE_STORED_SCATTER](scatter);
-
-            }
+//            if(this.scatter.keychain.identities.length === 1 && this.scatter.keychain.permissions.length === 0){
+//                const network = Network.fromJson({host:'test.eos.io', port:8080});
+//
+//                const identity = Identity.fromJson({name:'helloworld', network});
+//
+//                const permissions = [
+//                    Permission.fromJson({
+//                        domain:'tester.com',
+//                        network:this.scatter.settings.networks[0],
+//                        identityHash:this.scatter.keychain.identities[0].hash,
+//                        timestamp:+ new Date()
+//                    }),
+//                    Permission.fromJson({
+//                        domain:'cryptocrap.com',
+//                        network:this.scatter.settings.networks[0],
+//                        identityHash:this.scatter.keychain.identities[0].hash,
+//                        timestamp:+ new Date()
+//                    }),
+//                    Permission.fromJson({
+//                        domain:'cryptocrap.com',
+//                        network:this.scatter.settings.networks[0],
+//                        identityHash:this.scatter.keychain.identities[0].hash,
+//                        contractAddress:'0x1',
+//                        contract:'hello',
+//                        action:'world',
+//                        checksum:'abcd',
+//                        timestamp:+ new Date()
+//                    }),
+//                    Permission.fromJson({
+//                        domain:'cryptocrap.com',
+//                        network:this.scatter.settings.networks[0],
+//                        identityHash:this.scatter.keychain.identities[0].hash,
+//                        contractAddress:'0x1',
+//                        contract:'hello',
+//                        action:'free',
+//                        checksum:'abcde',
+//                        timestamp:+ new Date()
+//                    }),
+//                    Permission.fromJson({
+//                        domain:'cryptocrap.com',
+//                        network:network,
+//                        identityHash:identity.hash,
+//                        timestamp:+ new Date()
+//                    }),
+//                    Permission.fromJson({
+//                        domain:'cryptocrap.com',
+//                        network:network,
+//                        identityHash:identity.hash,
+//                        contractAddress:'0x1',
+//                        contract:'hello',
+//                        action:'world',
+//                        checksum:'abcd',
+//                        timestamp:+ new Date()
+//                    })
+//                ];
+//
+//                const scatter = this.scatter.clone();
+//                scatter.settings.networks.push(network);
+//                scatter.keychain.identities.push(identity);
+//                scatter.keychain.permissions = permissions;
+//
+//                this[Actions.UPDATE_STORED_SCATTER](scatter);
+//
+//            }
 
 
         },

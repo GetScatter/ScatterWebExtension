@@ -26,8 +26,8 @@ export default class Permission {
         return p;
     }
 
-    identity(identities){
-        return identities.find(id => id.hash === this.identityHash);
+    identity(keychain){
+        return keychain.findIdentity(this.identityHash);
     }
 
     isIdentityOnly(){

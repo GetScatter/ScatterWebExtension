@@ -40,16 +40,24 @@ export default class Scatterdapp {
 
     constructor(_stream){
         this.network = null;
+        this.identityHash = null;
         stream = _stream;
         resolvers = [];
         this._subscribe(instanceRef);
 
         // Sets up the provider to be used by eosjs
         provider = async signargs => {
+            if(!this.identityHash) {
+                throws('You must select an Identity to use before requesting transaction signatures. ' +
+                       'Request an Identity and then use scatter.useIdentity() with the hash.');
+                return null;
+            }
+
             const domain = location.host;
             const network = this.network;
-            await this._send(NetworkMessageTypes.REQUEST_SIGNATURE,
-                Object.assign(signargs, {domain, network})
+            const identityHash = this.identityHash;
+            return await this._send(NetworkMessageTypes.REQUEST_SIGNATURE,
+                Object.assign(signargs, {domain, network, identityHash})
             , instanceRef);
         }
     }
@@ -185,6 +193,14 @@ export default class Scatterdapp {
             network:this.network,
             fields
         }, instanceRef);
+    }
+
+    /***
+     * Sets which Identity to use for transaction signing
+     * @param _identityHash - The hash of the identity
+     */
+    useIdentity(_identityHash){
+        this.identityHash = _identityHash;
     }
 
 }

@@ -22,7 +22,10 @@ const getters = {
     networks:state => state.scatter.settings.networks,
     backupToBlockchain:state => state.scatter.settings.backupToBlockchain,
     histories:state => state.scatter.histories,
-    fields:state => state.prompt.data || []
+
+    // FOR PROMPTS ONLY
+    fields:state => state.prompt.data || [],
+    messages:state => state.prompt.data.transaction.messages || []
 };
 
 export const store = new Vuex.Store({

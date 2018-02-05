@@ -1,7 +1,76 @@
 <template>
-    <section class="prompt-body">
+    <section class="request-signature">
 
-        Request Signature Prompt
+        <section class="floating-header">
+            <figure class="identity-name">{{identity().name}}</figure>
+            <figure class="account-authority">{{`${identity().account.name}@${identity().account.authority}`}}</figure>
+            <figure class="switches">
+                <figure class="switch"
+                        v-for="displayType in displayTypes"
+                        v-on:click="setDisplayType(displayType)"
+                        :class="{'active':selectedDisplayType === displayType}">
+                    {{displayType}}
+                </figure>
+            </figure>
+        </section>
+
+        <section class="prompt-body">
+            <section class="partitioned"
+                     v-if="selectedDisplayType === displayTypes.PROPS"
+                     v-for="message in messages">
+                <section class="partition">
+
+                    <!-- Contract Name -->
+                    <figure class="label">contract</figure>
+                    <figure class="value big">{{message.code}}</figure>
+
+                    <!-- Contract Action -->
+                    <figure class="label">action</figure>
+                    <figure class="value big">{{message.type}}</figure>
+
+                </section>
+                <section class="partition">
+
+                    <section v-for="(value, key) in sortedMessageData(message.data)">
+                        <figure class="label">{{key}}</figure>
+                        <figure class="value" :class="{'red':value !== '' && !isNaN(value)}">{{value}}</figure>
+                    </section>
+                </section>
+            </section>
+
+            <section class="json-display" v-else>
+                <pre><code>{{messages}}</code></pre>
+            </section>
+        </section>
+
+        <section class="prompt-footer">
+
+            <section class="whitelist">
+                <figure class="header">
+                    Do you want to whitelist this contract action?
+                </figure>
+                <figure class="sub-header">
+                    <section class="checkbox">
+                        <cin :tag="(whitelisted) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleWhitelist"></cin>
+                    </section>
+                    You can whitelist this action so that next time you wont have to manually authorize this.
+                    This will pass when the contract, action, account, identity, and all properties of the transaction ( not values )
+                    are the same. Though Scatter does some checks to make sure a ‘to’ property never becomes a ‘from’
+                    property, be diligent with this. Never use it for currency transactions.
+                    <br>
+                    <br>
+
+                    If the contract is updated and this action changes your permissions will not allow it through,
+                    and you will have to re-issue this permission since the parameters have changed.
+                </figure>
+            </section>
+
+            <section class="actions">
+                <btn text="Deny" v-on:clicked="denied"></btn>
+                <btn text="Accept" margined="true" is-blue="true" v-on:clicked="accepted"></btn>
+            </section>
+
+        </section>
 
     </section>
 </template>
@@ -12,17 +81,80 @@
     import {RouteNames} from '../vue/Routing'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
+    import NotificationService from '../services/NotificationService'
+
+    const displayTypes = {
+        JSON:'json',
+        PROPS:'properties'
+    };
 
     export default {
         data(){ return {
-
+            selectedDisplayType:displayTypes.PROPS,
+            displayTypes,
+            whitelisted:false,
         }},
         computed: {
             ...mapState([
-                'scatter'
+                'scatter',
+                'prompt'
+            ]),
+            ...mapGetters([
+                'messages',
+                'identities'
             ])
         },
         methods: {
+            setDisplayType(type){ this.selectedDisplayType = type; },
+
+            /***
+             * Sorts the message by importance.
+             * Numeric values come first
+             * @param data
+             * @returns {*|{}}
+             */
+            sortedMessageData(data){
+                return Object.keys(data)
+                    .sort((keyA,keyB) => {
+                        const valueA = data[keyA];
+                        const valueB = data[keyB];
+                        if(!valueA || valueA === '' || !valueB || valueB === '') return -1;
+                        if(isNaN(valueA) || isNaN(valueB)) return 1;
+                        return 0;
+                    })
+                    .reduce((acc, key) => {
+                        acc[key] = data[key];
+                        return acc;
+                    }, {})
+            },
+            identity(){
+                return this.scatter.keychain.findIdentity(this.prompt.data.identityHash);
+            },
+            accepted(){
+                this.prompt.responder({accepted:true, whitelisted:this.whitelisted});
+                NotificationService.close();
+            },
+            denied(){
+                this.prompt.responder(null);
+                NotificationService.close();
+            },
+            isCurrencyContract(){ return !!this.messages.find(message => message.code === 'eos') },
+            toggleWhitelist(){
+                const flip = () => this.whitelisted = !this.whitelisted;
+
+                if(this.isCurrencyContract() && !this.whitelisted) {
+                    const alert = AlertMsg.AreYouSure('You Are About To Whitelist A Currency Contract', ['Request', 'Signature', 'Whitelist'],
+                        'Whitelisting currency based contracts is dangerous, and should never be done. There are specific cases where this is okay, ' +
+                        'but unless you are absolutely sure this is one of them, you should not be whitelisting this contract action. ' +
+                        'Are you sure you still want to whitelist this?')
+                    this[Actions.PUSH_ALERT](alert).then(res => {
+                        if(!res || !res.hasOwnProperty('accepted')) return false;
+                        flip();
+                    });
+                }
+                else flip();
+
+            },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,
                 Actions.PUSH_ALERT,
@@ -33,15 +165,165 @@
 </script>
 
 <style lang="scss">
-    .prompt-body {
+    .request-signature {
         font-family: 'Open Sans', sans-serif;
 
-        .description {
-            margin-top:5px;
-            font-size:9px;
-            color:#b8b8b8;
+        .floating-header {
+            position:absolute;
+            top:40px;
+            right:50px;
+            text-align:right;
 
-            b { color:#707070; }
+            .identity-name {
+                font-family: 'Raleway', sans-serif;
+                font-size:14px;
+                font-weight:bold;
+                color:#4f4f4f;
+                margin-bottom:2px;
+            }
+
+            .account-authority {
+                color:#54a7fc;
+                font-size:9px;
+                margin-bottom:5px;
+                font-weight: bold;
+            }
+
+            .switches {
+
+                .switch {
+                    cursor: pointer;
+                    height:15px;
+                    line-height:13px;
+                    font-size:9px;
+                    float:right;
+                    padding:0 5px;
+                    background:transparent;
+                    border:1px solid #4f4f4f;
+                    border-radius:4px;
+                    color:#4f4f4f;
+                    margin-left:5px;
+
+                    &:hover, &.active {
+                        background:#4f4f4f;
+                        color:#fff;
+                    }
+                }
+            }
+        }
+
+
+        .prompt-body {
+            height:287px;
+            overflow:hidden;
+
+            .description {
+                margin-top:5px;
+                font-size:9px;
+                color:#b8b8b8;
+
+                b { color:#707070; }
+            }
+
+            .partitioned {
+                overflow:hidden;
+                height:287px;
+                width:100%;
+
+                .partition {
+                    width:50%;
+                    float:left;
+                    height:287px;
+                    overflow-y:auto;
+                    position: relative;
+                    display:block;
+                    padding:40px 50px;
+
+                    &:first-child { text-align: left; }
+                    &:last-child { text-align: right; border-left:1px solid rgba(0,0,0,0.02); }
+                }
+            }
+
+            .label {
+                font-size:9px;
+                color:#bbbbbb;
+            }
+
+            .value {
+                color:#707070;
+                font-size:12px;
+                line-height:12px;
+                font-style: italic;
+                font-weight: 600;
+                margin-bottom:15px;
+
+                &.big {
+                    font-size:30px;
+                    line-height:30px;
+                    font-weight:200;
+                }
+
+                &.red {
+                    font-size:20px;
+                    line-height:20px;
+                    padding:5px 10px 5px 5px;
+                    color:#fff;
+                    background:#ff0d0c;
+                    display:inline-block;
+                    border-radius:4px;
+                }
+            }
+
+            .json-display {
+                padding:20px;
+                font-size:14px;
+                height:287px;
+                overflow-y:auto;
+            }
+        }
+
+        .prompt-footer {
+            height:150px;
+            padding:20px;
+            background:#fff;
+            overflow:hidden;
+
+            .whitelist {
+                width:calc(100% - 150px);
+                padding-right:20px;
+                float:left;
+
+                .checkbox {
+                    width:56px;
+                    float:left;
+                    margin-right:15px;
+                }
+
+                &:not(:last-child){
+                    border-bottom:1px solid #eaeaea;
+                }
+
+                .header {
+                    color:#cecece;
+                    font-size:11px;
+                    padding-bottom:5px;
+                    margin-top:-5px;
+                    margin-bottom:10px;
+                    border-bottom:1px solid #eaeaea;
+                }
+
+                .sub-header {
+                    color:#aeaeae;
+                    font-size:9px;
+                    margin-bottom:20px;
+                }
+            }
+
+            .actions {
+                width:150px;
+                float:left;
+            }
         }
     }
+
 </style>

@@ -41,7 +41,9 @@ export default class IdentityService {
 
         // Possibly getting an Identity that has been synced with this application.
         const identityFromPermission = scatter.keychain.permissions.find(perm => perm.isIdentityFor(domain, network));
-        let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain.identities) : null;
+        let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
+
+        console.log('identity', identity)
 
         const sendBackIdentity = id => {
             if(!id){
