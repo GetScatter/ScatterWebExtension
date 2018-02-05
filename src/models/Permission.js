@@ -42,6 +42,9 @@ export default class Permission {
         return this.isIdentityOnly() && this.domain === domain && this.network.unique() === network.unique();
     }
 
+    // TODO: There will be a problem with multiple identity permissions where an
+    // TODO: identity was disabled, and another was used in it's place. Possibly if there is
+    // TODO: already a permission for any identity another should not be added.
     identityIsNotDisabled(keychain){
         return !this.identity(keychain).disabled;
     }
