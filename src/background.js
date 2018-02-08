@@ -22,12 +22,16 @@ const ecc = require('eosjs-ecc');
 let seed = '';
 // let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
+const TIMEOUT_VERIFY_INTERVAL = 1 * 60000; // one minute
+const TIMEOUT_INACTIVITY_INTERVAL = 15 * 60000; // fifteen minutes default
+let lastActionTimestamp = Date.now();
 
 // This is the script that runs in the extension's background ( singleton )
 export default class Background {
 
     constructor(){
         this.setupInternalMessaging();
+        this.timeoutLocker();
     }
 
 
@@ -44,12 +48,24 @@ export default class Background {
         })
     }
 
+    // Lock the user due to inactivity
+    timeoutLocker() {
+        const inactivityTime = Date.now() - lastActionTimestamp;
+
+        if(inactivityTime > TIMEOUT_INACTIVITY_INTERVAL && seed) {
+            seed = '';
+        }
+
+        setTimeout(() => this.timeoutLocker(), TIMEOUT_VERIFY_INTERVAL);
+    }
+
     /***
      * Delegates message processing to methods by message type
      * @param sendResponse - Delegating response handler
      * @param message - The message to be dispensed
      */
     dispenseMessage(sendResponse, message){
+        lastActionTimestamp = Date.now();
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                 Background.setSeed(sendResponse, message.payload); break;
             case InternalMessageTypes.IS_UNLOCKED:              Background.isUnlocked(sendResponse); break;
@@ -93,6 +109,7 @@ export default class Background {
                 scatter.decrypt(seed);
                 sendResponse(typeof scatter.keychain === 'object')
             } catch(e) {
+                seed = '';
                 sendResponse(false);
             }
         });

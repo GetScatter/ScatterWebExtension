@@ -2,9 +2,11 @@
     <section>
         <section v-if="!scatter.settings.hasEncryptionKey">
             <section class="p20">
-                <cin icon="fa-lock" placeholder="password" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
-                <cin icon="fa-lock" placeholder="confirm password" type="password" v-on:changed="changed => bind(changed, 'passwordConfirmation')"></cin>
-                <btn text="Create New Scatter" v-on:clicked="create" margined="true"></btn>
+                <form v-on:submit.prevent="create">
+                  <cin icon="fa-lock" placeholder="password" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
+                  <cin icon="fa-lock" placeholder="confirm password" type="password" v-on:changed="changed => bind(changed, 'passwordConfirmation')"></cin>
+                  <btn text="Create New Scatter" type="submit" margined="true"></btn>
+                </form>
             </section>
             <figure class="line"></figure>
             <section class="p20">
@@ -14,8 +16,10 @@
         <section v-else>
             <section class="p20" style="overflow:hidden;">
                 <section class="unlocker" :class="{'hiding':hiding}">
-                    <cin icon="fa-lock" placeholder="password" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
-                    <btn text="Unlock" v-on:clicked="unlock" margined="true"></btn>
+                    <form v-on:submit.prevent="unlock">
+                      <cin icon="fa-lock" placeholder="password" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
+                      <btn text="Unlock" type="submit" margined="true"></btn>
+                    </form>
                 </section>
             </section>
         </section>
