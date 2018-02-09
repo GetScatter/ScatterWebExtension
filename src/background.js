@@ -33,7 +33,7 @@ export default class Background {
 
 
     /********************************************/
-    /*                   VueInitializer                  */
+    /*               VueInitializer             */
     /********************************************/
 
     // Watches the internal messaging system ( LocalStream )
@@ -93,6 +93,7 @@ export default class Background {
                 scatter.decrypt(seed);
                 sendResponse(typeof scatter.keychain === 'object')
             } catch(e) {
+                seed = '';
                 sendResponse(false);
             }
         });
@@ -187,7 +188,7 @@ export default class Background {
      * @param payload
      */
     static requestUnlock(sendResponse, payload){
-        if(seed.length) sendResponse(true)
+        if(seed.length) sendResponse(true);
         else {
             // TODO: Prompt user to unlock Scatter
             sendResponse(false);
@@ -237,7 +238,9 @@ export default class Background {
     static requestSignature(sendResponse, payload){
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
-                console.log('payload', payload);
+
+                //TODO: This is too much code here, it should be put into a separate file with
+                //TODO: a clear intent and single concern.
 
                 // Checking if identity still exists
                 const identity = scatter.keychain.findIdentity(payload.identityHash);
@@ -274,7 +277,7 @@ export default class Background {
 
                 NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
                     if(!approval || !approval.hasOwnProperty('accepted')){
-                        console.log("Not accepted");
+                        // TODO: Give back a better error message
                         sendResponse(null);
                         return false;
                     }
@@ -323,8 +326,10 @@ export default class Background {
                             hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
                         });
 
-
-                        sendResponse([signed]);
+                        sendResponse({
+                            signatures:[signed],
+                            returnedFields:approval.returnedFields
+                        });
                     }, identity.account.publicKey);
 
                 }));
@@ -363,7 +368,8 @@ export default class Background {
 
     /***
      * Adds a historic event to the keychain
-     * @param historicEvent
+     * @param type
+     * @param data
      */
     static addHistory(type, data){
         this.load(scatter => {

@@ -47,8 +47,6 @@ export default class IdentityService {
 
         let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
 
-        console.log('identity', identity)
-
         const sendBackIdentity = id => {
             if(!id){
                 callback(null);

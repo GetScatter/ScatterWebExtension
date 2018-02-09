@@ -31,6 +31,7 @@ export class PersonalInformation {
 
 /* Requirable Fields for an Identity's LocationInformation */
 export const LocationFields = {
+    phone:'phone',
     address:'address',
     city:'city',
     state:'state',
@@ -39,7 +40,11 @@ export const LocationFields = {
 };
 
 export class LocationInformation {
-    constructor(){ Object.keys(LocationFields).forEach(fieldName => this[fieldName] = ''); }
+    constructor(){
+        this.name = 'Unnamed Location';
+        this.isDefault = false;
+        Object.keys(LocationFields).forEach(fieldName => this[fieldName] = '');
+    }
     static placeholder(){ return new LocationInformation(); }
     static fromJson(json){ return Object.assign(this.placeholder(), json); }
     findFields(fields){
@@ -76,7 +81,7 @@ export default class Identity {
         this.network = null;
 
         this.personal = PersonalInformation.placeholder();
-        this.location = LocationInformation.placeholder();
+        this.locations = [LocationInformation.placeholder()];
 
         this.disabled = false;
     }
@@ -87,11 +92,18 @@ export default class Identity {
         if(json.hasOwnProperty('account') && json.account) p.account = Account.fromJson(json.account);
         if(json.hasOwnProperty('network') && json.network) p.network = Network.fromJson(json.network);
         p.personal = PersonalInformation.fromJson(json.personal);
-        p.location = LocationInformation.fromJson(json.location);
+        if(json.hasOwnProperty('locations')) p.locations = json.locations.map(location => LocationInformation.fromJson(location));
+        else p.locations = [LocationInformation.placeholder()];
         return p;
     }
 
     clone(){ return Identity.fromJson(JSON.parse(JSON.stringify(this))) }
+
+    /***
+     * Returns a pre-defined default location or the first on the stack
+     * @returns {T|*}
+     */
+    defaultLocation(){ return this.locations.find(location => location.isDefault) || this.locations[0]; }
 
     /***
      * Checks if this Identity has an associated account.
@@ -113,7 +125,8 @@ export default class Identity {
 
         if(fields.includes(IdentityFields.account) && this.hasAccount()) foundFields.push(IdentityFields.account);
         foundFields = foundFields.concat(this.personal.findFields(fields));
-        foundFields = foundFields.concat(this.location.findFields(fields));
+        this.locations.map(location => foundFields = foundFields.concat(location.findFields(fields)));
+        foundFields = ObjectHelpers.distinct(foundFields);
         return fields.every(field => foundFields.includes(field));
     }
 
@@ -124,7 +137,7 @@ export default class Identity {
     getPropertyValueByName(requirable){
         if(Object.keys(this).includes(requirable)) return this[requirable];
         else if(Object.keys(this.personal).includes(requirable)) return this.personal[requirable];
-        else return this.location[requirable];
+        else return this.defaultLocation()[requirable];
     }
 
     /***
@@ -151,7 +164,7 @@ export default class Identity {
            if(Object.keys(PersonalFields).includes(field))
                clone.personal[PersonalFields[field]] = this.personal[PersonalFields[field]];
            if(Object.keys(LocationFields).includes(field))
-               clone.location[LocationFields[field]] = this.location[LocationFields[field]];
+               clone.location[LocationFields[field]] = this.defaultLocation()[LocationFields[field]];
         });
 
         if(!Object.keys(clone.personal).length) delete clone.personal;

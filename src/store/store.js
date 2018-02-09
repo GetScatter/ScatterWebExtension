@@ -24,8 +24,9 @@ const getters = {
     histories:state => state.scatter.histories,
 
     // FOR PROMPTS ONLY
-    fields:state => state.prompt.data || [],
-    messages:state => state.prompt.data.transaction.messages || []
+    identityFields:state => state.prompt.data || [],
+    messages:state => state.prompt.data.transaction.messages || [],
+    requiredFields:state => state.prompt.data.requiredFields || [],
 };
 
 export const store = new Vuex.Store({

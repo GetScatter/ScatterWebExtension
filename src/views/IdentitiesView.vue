@@ -39,13 +39,15 @@
                 </section>
 
                 <!-- Location Information -->
-                <section class="panel" v-if="fullKeysOf(identity.location).length">
-                    <figure class="header small reverse-margin">location information</figure>
-                    <section class="items">
-                        <section class="item" v-for="key in fullKeysOf(identity.location)">
-                            <span>{{key}}</span>
-                            <span v-if="key === 'country'">{{identity.location[key].name}}</span>
-                            <span v-else>{{identity.location[key]}}</span>
+                <section class="panel" v-for="location in identity.locations">
+                    <section v-if="fullKeysOf(location).length">
+                        <figure class="header small reverse-margin">location information</figure>
+                        <section class="items">
+                            <section class="item" v-for="key in fullKeysOf(location)">
+                                <span>{{key}}</span>
+                                <span v-if="key === 'country'">{{location[key].name}}</span>
+                                <span v-else>{{location[key]}}</span>
+                            </section>
                         </section>
                     </section>
                 </section>
@@ -97,7 +99,12 @@
         methods: {
             bind(changed, original) { this[original] = changed },
             fullKeysOf(obj){ return Object.keys(obj).filter(key => {
-                return (typeof obj[key] === 'string') ? obj[key].length : obj[key][Object.keys(obj[key])[0]].length
+                switch(typeof obj[key]){
+                    case 'string': return obj[key].length;
+                    case 'boolean': return true;
+                    default: return obj[key][Object.keys(obj[key])[0]].length;
+                }
+//                return (typeof obj[key] === 'string') ? obj[key].length : obj[key][Object.keys(obj[key])[0]].length
             }) },
             bindBalances(){
                 const identityAccountMap = ObjectHelpers.distinctObjectArray(

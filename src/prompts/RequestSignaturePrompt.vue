@@ -15,6 +15,7 @@
         </section>
 
         <section class="prompt-body">
+
             <section class="partitioned"
                      v-if="selectedDisplayType === displayTypes.PROPS"
                      v-for="message in messages">
@@ -27,6 +28,25 @@
                     <!-- Contract Action -->
                     <figure class="label">action</figure>
                     <figure class="value big">{{message.type}}</figure>
+
+                    <section class="key-value" v-if="prompt.data.requiredFields.length">
+                        <figure class="key">requires</figure>
+                        <figure class="value">
+                            {{prompt.data.requiredFields.join(', ')}}
+                        </figure>
+
+                        <section v-if="viableLocations.length && selectedLocation">
+                            <sel :selected="selectedLocation"
+                                 :options="viableLocations"
+                                 :parser="location => location.name"
+                                 v-on:changed="changed => bind(changed, 'selectedLocation')"></sel>
+
+                            <section style="margin-top:10px;" v-for="(value, key) in selectedLocation" v-if="requiredFields.includes(key)">
+                                <figure class="label">{{key}}</figure>
+                                <figure class="value">{{typeof value === 'object' ? value.name : value}}</figure>
+                            </section>
+                        </section>
+                    </section>
 
                 </section>
                 <section class="partition">
@@ -82,6 +102,8 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import NotificationService from '../services/NotificationService'
+    import {LocationFields, PersonalFields} from '../models/Identity'
+    import ObjectHelpers from '../util/ObjectHelpers'
 
     const displayTypes = {
         JSON:'json',
@@ -93,6 +115,11 @@
             selectedDisplayType:displayTypes.PROPS,
             displayTypes,
             whitelisted:false,
+
+            viableLocations:[],
+            selectedLocation:null,
+
+            returnedFields:{},
         }},
         computed: {
             ...mapState([
@@ -101,11 +128,40 @@
             ]),
             ...mapGetters([
                 'messages',
-                'identities'
+                'identities',
+                'requiredFields'
             ])
+        },
+        mounted(){
+            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields);
+
+            if(!hasAllRequiredFields){
+                this[Actions.PUSH_ALERT](AlertMsg.NoIdentityWithProperties(this.requiredFields)).then(closed => {
+                    //TODO: Better error handling
+                    this.prompt.responder(null);
+                    NotificationService.close();
+                });
+            }
+
+            if(this.requiresLocationDetails()){
+                const requiredLocationFields = Object.keys(LocationFields).filter(field => this.requiredFields.includes(field));
+                this.viableLocations = this.identity().locations.filter(location => location.findFields(requiredLocationFields).length === requiredLocationFields.length);
+                this.selectedLocation = this.viableLocations.find(location => location.isDefault) || this.viableLocations[0];
+                this.returnedFields.location = this.selectedLocation;
+            }
         },
         methods: {
             setDisplayType(type){ this.selectedDisplayType = type; },
+
+            bind(changed, dotNotation) {
+                let props = dotNotation.split(".");
+                const lastKey = props.pop();
+                props.reduce((obj,key)=> obj[key], this)[lastKey] = changed;
+            },
+
+            requiresLocationDetails(){
+                return !!this.requiredFields.find(field => Object.keys(LocationFields).includes(field));
+            },
 
             /***
              * Sorts the message by importance.
@@ -131,10 +187,21 @@
                 return this.scatter.keychain.findIdentity(this.prompt.data.identityHash);
             },
             accepted(){
-                this.prompt.responder({accepted:true, whitelisted:this.whitelisted});
+
+                // Gathering required field results
+                let returnedFields = {};
+                this.requiredFields.map(field => {
+                    let fullPath = '';
+                    if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
+                    if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
+                    returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(this.returnedFields, fullPath);
+                });
+
+                this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields});
                 NotificationService.close();
             },
             denied(){
+                // TODO: Better error handling
                 this.prompt.responder(null);
                 NotificationService.close();
             },
@@ -217,6 +284,26 @@
             height:287px;
             overflow:hidden;
 
+            .key-value {
+                padding:20px;
+                border:2px dashed rgba(0,0,0,0.05);
+                border-radius: 4px;
+                margin-bottom:20px;
+                margin-top:20px;
+
+                .key {
+                    font-size:9px;
+                    color:#bbbbbb;
+                }
+
+                .value {
+                    font-size:12px;
+                    color:#707070;
+                    font-weight:900;
+                    font-style: italic;
+                }
+            }
+
             .description {
                 margin-top:5px;
                 font-size:9px;
@@ -258,8 +345,8 @@
                 margin-bottom:15px;
 
                 &.big {
-                    font-size:30px;
-                    line-height:30px;
+                    font-size:22px;
+                    line-height:22px;
                     font-weight:200;
                 }
 
