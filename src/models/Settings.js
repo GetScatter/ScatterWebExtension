@@ -7,7 +7,7 @@ export default class Settings {
         this.networks = [];
         this.backupToBlockchain = false;
         this.hasEncryptionKey = false;
-        this.timeoutInactivityInterval = TimingHelpers.minutes(15)
+        this.inactivityInterval = TimingHelpers.minutes(15)
     }
 
     static placeholder(){ return new Settings(); }

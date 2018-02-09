@@ -23,7 +23,7 @@ const ecc = require('eosjs-ecc');
 let seed = '';
 // let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
-let timeoutInactivityInterval = 0;
+let inactivityInterval = 0;
 let lastActionTimestamp = Date.now();
 
 // This is the script that runs in the extension's background ( singleton )
@@ -31,7 +31,6 @@ export default class Background {
 
     constructor(){
         this.setupInternalMessaging();
-        this.timeoutLocker();
     }
 
 
@@ -46,17 +45,6 @@ export default class Background {
             const message = InternalMessage.fromJson(request);
             this.dispenseMessage(sendResponse, message);
         })
-    }
-
-    // Lock the user due to inactivity
-    timeoutLocker() {
-        const inactivityTime = TimingHelpers.since(lastActionTimestamp);
-
-        if(inactivityTime > timeoutInactivityInterval && seed) {
-            seed = '';
-        }
-
-        setTimeout(() => this.timeoutLocker(), TimingHelpers.minutes(1));
     }
 
     /***
@@ -80,7 +68,12 @@ export default class Background {
         }
     }
 
-
+    // Lock the user due to inactivity
+    static checkAutoLock() {
+        const inactivityTime = TimingHelpers.since(lastActionTimestamp);
+        if(inactivityTime > inactivityInterval && seed) seed = '';
+        setTimeout(() => Background.checkAutoLock(), TimingHelpers.minutes(1));
+    }
 
 
 
@@ -95,21 +88,7 @@ export default class Background {
      */
     static setSeed(sendResponse, _seed){
         seed = _seed;
-        sendResponse(true);
-    }
-
-    /***
-     * Sets the timeout interval on scope to determine the lockout time
-     * @param sendResponse - Delegating response handler
-     * @param _timeoutMinutes - The timeout minutes to set
-     */
-    static setTimeout(sendResponse, _timeoutMinutes){
-        this.load(scatter => {
-            timeoutInactivityInterval = TimingHelpers.minutes(_timeoutMinutes);
-            scatter.settings.timeoutInactivityInterval = timeoutInactivityInterval;
-            this.update(() => {}, scatter);
-        });
-
+        Background.checkAutoLock();
         sendResponse(true);
     }
 
@@ -142,7 +121,7 @@ export default class Background {
         StorageService.get().then(scatter => {
 
             // sync the timeout inactivity interval
-            timeoutInactivityInterval = scatter.settings.timeoutInactivityInterval;
+            inactivityInterval = scatter.settings.inactivityInterval;
 
             if(seed.length) scatter.decrypt(seed);
             sendResponse(scatter)
@@ -200,6 +179,21 @@ export default class Background {
             chrome.storage.local.clear();
             sendResponse(true);
         })
+    }
+
+    /***
+     * Sets the timeout interval on scope to determine the lockout time
+     * @param sendResponse - Delegating response handler
+     * @param _timeoutMinutes - The timeout minutes to set
+     */
+    static setTimeout(sendResponse, _timeoutMinutes){
+        this.load(scatter => {
+            inactivityInterval = TimingHelpers.minutes(_timeoutMinutes);
+            scatter.settings.inactivityInterval = inactivityInterval;
+            this.update(() => {}, scatter);
+        });
+
+        sendResponse(true);
     }
 
 

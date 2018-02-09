@@ -22,6 +22,7 @@ const getters = {
     networks:state => state.scatter.settings.networks,
     backupToBlockchain:state => state.scatter.settings.backupToBlockchain,
     histories:state => state.scatter.histories,
+    autoLockInterval:state => state.scatter.settings.inactivityInterval,
 
     // FOR PROMPTS ONLY
     identityFields:state => state.prompt.data || [],

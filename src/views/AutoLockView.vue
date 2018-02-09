@@ -3,15 +3,15 @@
 
         <!-- Verified -->
         <section class="panel">
-            <figure class="header">Timeout Minutes</figure>
+            <figure class="header">Auto Lock Timer</figure>
             <figure class="sub-header">
-                By changing your timeout minutes, once you validate your password in Scatter popup, your session
-                will be enabled and will not ask it anymore for the amount of time chosen.
+                Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter
+                when you step away.
             </figure>
-            <sel :options="options" key=""
-                 :selected="timeoutMinutes"
+            <sel v-if="selectedTimeout" :options="options"
+                 :selected="selectedTimeout"
                  :parser="(obj) => obj.name"
-                 v-on:changed="changed => bind(changed, 'timeoutMinutes')"></sel>
+                 v-on:changed="changed => bind(changed, 'selectedTimeout')"></sel>
             <btn v-on:clicked="changeTimeout" text="Change Timeout" :margined="true"></btn>
         </section>
 
@@ -24,34 +24,40 @@
     import {RouteNames} from '../vue/Routing';
     import TimingHelpers from '../util/TimingHelpers';
 
-    const minutesOptions = [
-        {code: 1, name:'1 Minute'},
-        {code: 3, name:'3 Minutes'},
-        {code: 5, name:'5 Minutes'},
-        {code: 10, name:'10 Minutes'},
-        {code: 15, name:'15 Minutes'},
-        {code: 30, name:'30 Minutes'},
-        {code: 60, name:'1 Hour'},
-        {code: 120, name:'2 Hours'},
-        {code: 240, name:'4 Hours'},
+    const timeoutOptions = [
+        {minutes: 1, name:'1 Minute'},
+        {minutes: 3, name:'3 Minutes'},
+        {minutes: 5, name:'5 Minutes'},
+        {minutes: 10, name:'10 Minutes'},
+        {minutes: 15, name:'15 Minutes'},
+        {minutes: 30, name:'30 Minutes'},
+        {minutes: 60, name:'1 Hour'},
+        {minutes: 120, name:'2 Hours'},
+        {minutes: 240, name:'4 Hours'},
     ];
 
     export default {
         data(){ return {
-            options: minutesOptions,
-            timeoutMinutes: minutesOptions.find(i => i.code ===
-                TimingHelpers.minutesFromMillis(this.$store.state.scatter.settings.timeoutInactivityInterval))
+            options: timeoutOptions,
+            selectedTimeout: null,
         }},
         computed: {
             ...mapState([
                 'scatter'
+            ]),
+            ...mapGetters([
+                'autoLockInterval'
             ])
+        },
+        mounted(){
+            this.selectedTimeout = timeoutOptions.find(option => option.minutes ===
+                TimingHelpers.minutesFromMillis(this.autoLockInterval))
         },
         methods: {
             bind(changed, original) { this[original] = changed },
             changeTimeout(){
-                this[Actions.SET_TIMEOUT](this.timeoutMinutes.code).then(() => {
-                    this.$router.push({name:RouteNames.SETTINGS});
+                this[Actions.SET_TIMEOUT](this.selectedTimeout.minutes).then(() => {
+                    this.$router.back();
                 });
             },
             ...mapActions([
