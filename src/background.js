@@ -24,7 +24,7 @@ let seed = '';
 // let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
 let inactivityInterval = 0;
-let lastActionTimestamp = Date.now();
+let timeoutLocker = null;
 
 // This is the script that runs in the extension's background ( singleton )
 export default class Background {
@@ -53,7 +53,7 @@ export default class Background {
      * @param message - The message to be dispensed
      */
     dispenseMessage(sendResponse, message){
-        lastActionTimestamp = Date.now();
+        Background.checkAutoLock();
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                 Background.setSeed(sendResponse, message.payload); break;
             case InternalMessageTypes.SET_TIMEOUT:              Background.setTimeout(sendResponse, message.payload); break;
@@ -70,9 +70,8 @@ export default class Background {
 
     // Lock the user due to inactivity
     static checkAutoLock() {
-        const inactivityTime = TimingHelpers.since(lastActionTimestamp);
-        if(inactivityTime > inactivityInterval && seed) seed = '';
-        setTimeout(() => Background.checkAutoLock(), TimingHelpers.minutes(1));
+        if (timeoutLocker) clearTimeout(timeoutLocker);
+        if (seed) timeoutLocker = setTimeout(() => seed = '', inactivityInterval);
     }
 
 
@@ -88,7 +87,6 @@ export default class Background {
      */
     static setSeed(sendResponse, _seed){
         seed = _seed;
-        Background.checkAutoLock();
         sendResponse(true);
     }
 
