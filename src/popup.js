@@ -35,18 +35,12 @@ class Popup {
             else next();
         };
 
-        new VueInitializer(routes, components, middleware);
+        new VueInitializer(routes, components, middleware, (router, store) => {
+            store.dispatch(Actions.IS_UNLOCKED)
+                .then(unlocked => { if(unlocked) router.push({name:RouteNames.MAIN_MENU}); });
+        });
     }
 
 }
 
 const popup = new Popup();
-
-
-
-
-
-
-
-
-

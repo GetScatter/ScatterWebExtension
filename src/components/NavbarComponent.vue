@@ -57,6 +57,7 @@
                     case RouteNames.BACKUP:
                     case RouteNames.EXPORT_JSON: return 'Backup';
                     case RouteNames.DESTROY: return 'Destroy';
+                    case RouteNames.TIMEOUT_SETTINGS: return 'Timeout Settings';
                 }
                 return 'Undefined'
             },
