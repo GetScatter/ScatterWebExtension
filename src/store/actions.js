@@ -22,6 +22,14 @@ export const actions = {
         })
     },
 
+    [Actions.SET_TIMEOUT]:({commit}, timeoutMinutes) => {
+        return new Promise((resolve, reject) => {
+            InternalMessage.payload(InternalMessageTypes.SET_TIMEOUT, timeoutMinutes).send().then(() => {
+                resolve(timeoutMinutes)
+            })
+        })
+    },
+
     [Actions.LOAD_SCATTER]:({dispatch}) => {
         return new Promise((resolve, reject) => {
             InternalMessage.signal(InternalMessageTypes.LOAD).send().then(_scatter => {

@@ -14,6 +14,7 @@ import Prompt from './models/prompts/Prompt';
 import * as PromptTypes from './models/prompts/PromptTypes'
 import ObjectHelpers from './util/ObjectHelpers'
 import Permission from './models/Permission'
+import TimingHelpers from './util/TimingHelpers';
 const ecc = require('eosjs-ecc');
 
 // Gets bound when a user logs into scatter
@@ -22,8 +23,7 @@ const ecc = require('eosjs-ecc');
 let seed = '';
 // let seed = '2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e';
 
-const TIMEOUT_VERIFY_INTERVAL = 1 * 60000; // one minute
-const TIMEOUT_INACTIVITY_INTERVAL = 15 * 60000; // fifteen minutes default
+let timeoutInactivityInterval = 0;
 let lastActionTimestamp = Date.now();
 
 // This is the script that runs in the extension's background ( singleton )
@@ -50,13 +50,13 @@ export default class Background {
 
     // Lock the user due to inactivity
     timeoutLocker() {
-        const inactivityTime = Date.now() - lastActionTimestamp;
+        const inactivityTime = TimingHelpers.since(lastActionTimestamp);
 
-        if(inactivityTime > TIMEOUT_INACTIVITY_INTERVAL && seed) {
+        if(inactivityTime > timeoutInactivityInterval && seed) {
             seed = '';
         }
 
-        setTimeout(() => this.timeoutLocker(), TIMEOUT_VERIFY_INTERVAL);
+        setTimeout(() => this.timeoutLocker(), TimingHelpers.minutes(1));
     }
 
     /***
@@ -68,6 +68,7 @@ export default class Background {
         lastActionTimestamp = Date.now();
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                 Background.setSeed(sendResponse, message.payload); break;
+            case InternalMessageTypes.SET_TIMEOUT:              Background.setTimeout(sendResponse, message.payload); break;
             case InternalMessageTypes.IS_UNLOCKED:              Background.isUnlocked(sendResponse); break;
             case InternalMessageTypes.LOAD:                     Background.load(sendResponse); break;
             case InternalMessageTypes.UPDATE:                   Background.update(sendResponse, message.payload); break;
@@ -98,6 +99,21 @@ export default class Background {
     }
 
     /***
+     * Sets the timeout interval on scope to determine the lockout time
+     * @param sendResponse - Delegating response handler
+     * @param _timeoutMinutes - The timeout minutes to set
+     */
+    static setTimeout(sendResponse, _timeoutMinutes){
+        this.load(scatter => {
+            timeoutInactivityInterval = TimingHelpers.minutes(_timeoutMinutes);
+            scatter.settings.timeoutInactivityInterval = timeoutInactivityInterval;
+            this.update(() => {}, scatter);
+        });
+
+        sendResponse(true);
+    }
+
+    /***
      * Checks whether Scatter is locked
      * @param sendResponse - Delegating response handler
      * @returns {boolean}
@@ -124,6 +140,10 @@ export default class Background {
      */
     static load(sendResponse){
         StorageService.get().then(scatter => {
+
+            // sync the timeout inactivity interval
+            timeoutInactivityInterval = scatter.settings.timeoutInactivityInterval;
+
             if(seed.length) scatter.decrypt(seed);
             sendResponse(scatter)
         })

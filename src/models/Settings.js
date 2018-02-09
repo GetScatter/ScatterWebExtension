@@ -1,4 +1,5 @@
 import Network from './Network';
+import TimingHelpers from '../util/TimingHelpers';
 
 export default class Settings {
 
@@ -6,6 +7,7 @@ export default class Settings {
         this.networks = [];
         this.backupToBlockchain = false;
         this.hasEncryptionKey = false;
+        this.timeoutInactivityInterval = TimingHelpers.minutes(15)
     }
 
     static placeholder(){ return new Settings(); }
