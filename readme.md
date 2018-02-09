@@ -66,7 +66,10 @@ const eosOptions = {};
  
 // Tell Scatter to prepare and instance of eosjs with a 
 // Scatter Signature Provider pre-configured. There is no way for
-// you to use a custom built eosjs with a Scatter provider.
+// you to use a custom built eosjs with a Scatter provider. This is also a
+// proxy, and does not return the actual pre-configured eosjs instance but rather 
+// a catchable reference. For all intents and purposes it functions the exact same
+// as a normal eosjs instance on the application's side.
 const eos = scatter.eos( Eos.Localnet, network, eosOptions );
 ```
 
@@ -74,8 +77,6 @@ const eos = scatter.eos( Eos.Localnet, network, eosOptions );
 #### Requesting an Identity
 
 Once an Identity is provided it will not need to be re-approved every time. 
-**You should re-request the identity before signature requests to make sure it has
-not changed**. Check the flow diagram for more details.
 
 ```
 // You can require certain fields
@@ -107,26 +108,46 @@ scatter.getIdentity(requirements).then(identity => {
 
 
 #### Requesting a Signature
+
+You can optionally pass in required fields to the eosjs options if you want it to give you back 
+certain user-selected Identity properties such as address. _Do not rely on previously acquired Identity 
+properties, since users might have multiple locations such as Work and Home._
 ``` 
-eos.transfer(identity.account.name, 'inita', 10, '').then(transaction => {
+const requiredFields = ['address', 'country', 'phone'];
+eos.transfer(identity.account.name, 'inita', 10, '', {requiredFields}).then(transaction => {
     //...
 }).catch(error => { 
     //.. 
 });
 ```
-That's it! There is no difference using eosjs through Scatter than using eosjs with your own provider.
-The only thing that changes is the **user's** flow.
+The resulting json will include the required fields along with the normal eosjs json if the signing was successful. 
+```
+{
+    transaction:{...},
+    transaction_id:'...',
+    returnedFields:{
+        address:'420 Paper St. Wilmington DE 19886',
+        country:{ code:'US', name:'United States' },
+        phone:5555555
+    }
+}
+```
+This allows you to request all information needed for a physical sale with one click.
+_For instance in this case we could be a shopping website that needs shipping details along with 
+the transfer of digital currency._
 
 #### Transactions at the Identity
+
+All transactions **at** an identity are using solely eosjs. They should not be passed through to Scatter.
 ```
-// Standard inita key
+// Standard inita key from EOS docs
 const keyProvider = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
  
 // Create your own instance of eosjs with your keyProvider and network
-let customEos = Eos.Localnet({httpEndpoint:`http://${network.host}:${network.port}`, keyProvider});
+let eosjs = Eos.Localnet({httpEndpoint:`http://${network.host}:${network.port}`, keyProvider});
  
 // The same process as before but now you own the keys.
-customEos.transfer('inita', identity.account.name, 100000, '').then(transaction => {
+eosjs.transfer('inita', identity.account.name, 100000, '').then(transaction => {
     //...
 }).catch(error => { 
     //... 
