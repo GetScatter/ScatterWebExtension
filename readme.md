@@ -98,6 +98,7 @@ scatter.getIdentity(requirements).then(identity => {
 - lastname
 - email
 - birthdate
+- phone
 - address
 - city
 - state
@@ -131,3 +132,33 @@ customEos.transfer('inita', identity.account.name, 100000, '').then(transaction 
     //... 
 });
 ```
+
+
+### Contributing
+
+Contributions are always welcome. 
+
+If you are not a developer and would simply like to contribute feature requests, user experience suggestions,
+or anything else you can visit our [community Trello board.](https://trello.com/invite/b/9XJfndSc/5ed0679da31231717971cc97edd559c1/scatter-community-board)
+
+If you **are** a developer there's a few stipulations to contributing.
+
+* **Never** use the `npm run build` command if you plan on submitting changes. 
+  This will cause a compilation of the zip file and will make it so your branch/pull-request cannot
+  be merged due to binary conflicts that cannot be resolved on GitHub. When a new build is ready for the public an official Scatter maintainer will pull the latest 
+  master and rebuild the zip file.
+  
+* _Keep things verbose._ This repo is not only read by developers but also non-developers that simply want
+  to verify that their keys are safe and not being abused. Document your code and don't use abbreviations such 
+  as `i`, instead use `index`. For instance `[1,2,3].map(index => ...)`
+  
+* If you're working on a card from Trello, move it to the "I got this" list. This will hopefully help avoid
+  multiple people working on the same issues.
+  
+* There are TODOs littered through out the code as placeholders for further development while we are in these 
+early stages. If you see something you can instantly fix feel free to do so. If you are working on a piece of code that will need something in the future 
+you may also add a //TODO: but be aware that it might cause your pull request to not be merged because of 
+the lack of complete functionality in the future.
+  
+__If you have any questions or would like to chat with the Scatter team or others who are involved in
+the project you can join us on [Telegram](https://t.me/Scatter)__
