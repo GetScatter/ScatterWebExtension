@@ -14,7 +14,7 @@
 
             <section class="partition">
 
-                <section v-if="fields.length">
+                <section v-if="identityFields.length">
                     <section class="description">
                         <b>cryptocrap.com</b> is requesting additional information.
                     </section>
@@ -22,7 +22,7 @@
                     <section class="key-value">
                         <figure class="key">requires</figure>
                         <figure class="value">
-                            {{fields.join(', ')}}
+                            {{identityFields.join(', ')}}
                         </figure>
                     </section>
 
@@ -76,7 +76,7 @@
                     <section class="panel">
                         <figure class="header small reverse-margin">required properties</figure>
                         <section class="items">
-                            <section class="item" v-for="prop in fields">
+                            <section class="item" v-for="prop in identityFields">
                                 <figure>
                                     <span>{{prop}}</span>
                                     <span>{{formatPropValue(prop, identity.getPropertyValueByName(prop))}}</span>
@@ -127,7 +127,7 @@
             ]),
             ...mapGetters([
                 'identities',
-                'fields'
+                'identityFields'
             ])
         },
         methods: {
@@ -135,9 +135,8 @@
             filteredIdentities(){
                 return this.identities
                     .filter(id => id.network.unique() === this.prompt.network.unique())
-                    .filter(id => id.hasRequiredFields(this.fields))
+                    .filter(id => id.hasRequiredFields(this.identityFields))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
-                    .map(id => Identity.fromJson(id.asOnlyRequiredFields(this.fields)))
             },
             formatPropValue(prop, propValue){
                 switch(prop){

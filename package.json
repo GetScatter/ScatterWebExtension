@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "set SCATTER_ENV=testing&& mocha-webpack --webpack-config webpack.config.js --require tests/setup.js \"tests/**/*.spec.js\"",
-    "testfile": "set SCATTER_ENV=testing&& mocha-webpack --webpack-config webpack.config.js --require tests/setup.js \"tests/models/identity.spec.js\"",
+    "testfile": "set SCATTER_ENV=testing&& mocha-webpack --webpack-config webpack.config.js --require tests/setup.js \"tests/util/ObjectHelpers.spec.js\"",
     "start": "set SCATTER_ENV=development&& webpack --watch",
     "build": "set SCATTER_ENV=production&& webpack"
   },

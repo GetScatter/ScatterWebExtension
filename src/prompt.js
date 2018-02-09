@@ -11,6 +11,7 @@ import Alert from './components/alerts/Alert.vue'
 import ButtonComponent from './components/ButtonComponent.vue'
 import SearchComponent from './components/SearchComponent.vue'
 import InputComponent from './components/InputComponent.vue'
+import SelectComponent from './components/SelectComponent.vue'
 
 // TODO: Find naming scheme that doesnt overwrite models
 class PromptWindow {
@@ -45,6 +46,7 @@ class PromptWindow {
             {tag:'btn', vue:ButtonComponent},
             {tag:'search', vue:SearchComponent},
             {tag:'cin', vue:InputComponent},
+            {tag:'sel', vue:SelectComponent},
             {tag:'alert', vue:Alert},
         ];
         const routes = Routing.routes(true);

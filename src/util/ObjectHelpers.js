@@ -71,4 +71,15 @@ export default class ObjectHelpers {
         }))
     }
 
+    /***
+     * Gets a field from an object by string dot notation, such as `location.country.code`
+     * @param object
+     * @param dotNotation
+     * @returns {*}
+     */
+    static getFieldFromObjectByDotNotation(object, dotNotation){
+        let props = dotNotation.split(".");
+        return props.reduce((obj,key)=> obj[key], object)
+    }
+
 }

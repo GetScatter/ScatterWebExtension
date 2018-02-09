@@ -90,11 +90,25 @@
                 in order to know where to send your purchased goods to.
             </figure>
 
-            <cin placeholder="Address" :text="identity.location.address" v-on:changed="changed => bind(changed, 'identity.location.address')"></cin>
-            <cin placeholder="City" half="true" :text="identity.location.city" v-on:changed="changed => bind(changed, 'identity.location.city')"></cin>
-            <cin placeholder="Postal" second-half="true" :text="identity.location.zipcode" v-on:changed="changed => bind(changed, 'identity.location.zipcode')"></cin>
-            <sel placeholder="Country" :seventy="identity.location.country.code === 'US'" :options="countries" :selected="identity.location.country" :parser="(obj) => obj.name" v-on:changed="changed => bind(changed, 'identity.location.country')"></sel>
-            <cin placeholder="State" v-if="identity.location.country.code === 'US'" thirty="true" :text="identity.location.state" v-on:changed="changed => bind(changed, 'identity.location.state')"></cin>
+            <btn text="Add New Location" v-on:clicked="addNewLocation"></btn>
+            <sel :selected="selectedLocation" :options="identity.locations" :parser="(location) => location.name.length ? location.name : 'Unnamed Location'" v-on:changed="changed => bind(changed, 'selectedLocation')"></sel>
+
+
+
+
+        </section>
+
+        <section class="panel" v-if="selectedLocation">
+            <btn v-if="!selectedLocation.isDefault" is-blue="true" text="Set as Default" v-on:clicked="setAsDefaultLocation" :key="randomKey()"></btn>
+            <cin placeholder="Location Name" :text="selectedLocation.name" v-on:changed="changed => bind(changed, 'selectedLocation.name')" :key="randomKey()"></cin>
+            <cin placeholder="Phone" :text="selectedLocation.phone" v-on:changed="changed => bind(changed, 'selectedLocation.phone')" :key="randomKey()"></cin>
+            <cin placeholder="Address" :text="selectedLocation.address" v-on:changed="changed => bind(changed, 'selectedLocation.address')" :key="randomKey()"></cin>
+            <cin placeholder="City" half="true" :text="selectedLocation.city" v-on:changed="changed => bind(changed, 'selectedLocation.city')" :key="randomKey()"></cin>
+            <cin placeholder="Postal" second-half="true" :text="selectedLocation.zipcode" v-on:changed="changed => bind(changed, 'selectedLocation.zipcode')" :key="randomKey()"></cin>
+            <sel placeholder="Country" :seventy="selectedLocation.country.code === 'US'" :options="countries" :selected="selectedLocation.country" :parser="(obj) => obj.name" v-on:changed="changed => bind(changed, 'selectedLocation.country')" :key="randomKey()"></sel>
+            <cin placeholder="State" v-if="selectedLocation.country.code === 'US'" thirty="true" :text="selectedLocation.state" v-on:changed="changed => bind(changed, 'selectedLocation.state')" :key="randomKey()"></cin>
+
+            <btn v-if="identity.locations.length > 1" margined="true" is-red="true" text="Remove This Location" v-on:clicked="removeSelectedLocation"></btn>
         </section>
 
     </section>
@@ -107,6 +121,7 @@
     import Identity from '../models/Identity'
     import Scatter from '../models/Scatter'
     import Account from '../models/Account'
+    import {LocationInformation} from '../models/Identity'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import AccountService from '../services/AccountService'
@@ -123,7 +138,8 @@
                 {code:'UK', name:'United Kingdom'},
                 {code:'FR', name:'France'},
                 {code:'GR', name:'Germany'},
-            ]
+            ],
+            selectedLocation:null,
         }},
         computed: {
             ...mapState([
@@ -141,9 +157,13 @@
                 identity.network = this.networks[0];
                 this.identity = identity;
             }
+
+            this.selectedLocation = this.identity.defaultLocation();
+
             this.isNew = !existing;
         },
         methods: {
+            randomKey(){ return Math.random() * 10000 + 1 },
             bind(changed, dotNotation) {
                 let props = dotNotation.split(".");
                 const lastKey = props.pop();
@@ -168,6 +188,25 @@
                     this.keypair = imported.keypair;
                 });
             },
+            setAsDefaultLocation(){
+                this.identity.defaultLocation().isDefault = false;
+                this.selectedLocation.isDefault = true;
+            },
+            addNewLocation(){
+                if(!this.identity.locations.find(location => location.isDefault)){
+                    this.identity.locations[0].isDefault = true;
+                }
+
+                const newLocation = LocationInformation.placeholder();
+                this.identity.locations.push(newLocation);
+                this.selectedLocation = newLocation;
+            },
+            removeSelectedLocation(){
+                const wasDefault = this.selectedLocation.isDefault;
+                const index = this.identity.locations.indexOf(this.selectedLocation);
+                this.identity.locations.splice(index, 1);
+                if(wasDefault) this.identity.locations[0].isDefault = true;
+            },
             saveIdentity(){
                 if(!Identity.nameIsValid(this.identity.name)){
                     this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
@@ -176,6 +215,7 @@
 
                 //TODO: More Error handling
                 // -----
+                // Location names must not be empty
                 // * Email
                 // * State ( if exists, only 2 characters )
 

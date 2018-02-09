@@ -25,11 +25,81 @@ class DanglingResolver {
 let provider = new WeakMap();
 let stream = new WeakMap();
 let resolvers = new WeakMap();
+let network = new WeakMap();
+let identityHash = new WeakMap();
 
-// This is used to verify that private method calls came
-// explicitly from inside the class
-let instanceRef = new WeakMap();
-instanceRef = IdGenerator.text(128);
+
+
+/***
+ * Messages do not come back on the same thread.
+ * To accomplish a future promise structure this method
+ * catches all incoming messages and dispenses
+ * them to the open promises. */
+const _subscribe = () => {
+    stream.listenWith(msg => {
+        if(!msg || !msg.hasOwnProperty('type')) return false;
+        for(let i=0; i < resolvers.length; i++) {
+            if (resolvers[i].id === msg.resolver) {
+                if(msg.type === 'error') resolvers[i].reject(msg.payload);
+                else resolvers[i].resolve(msg.payload);
+                resolvers = resolvers.slice(i, 1);
+            }
+        }
+    });
+};
+
+/***
+ * Binds a network to this instance of scatterdapp.
+ * Only one network can be bound, and it cannot be re-bound.
+ * @param _network
+ * @returns {boolean}
+ */
+const _bindNetwork = (_network) => {
+    if(network)
+        throws("You can only bind a network once.");
+
+    if(!_network || !_network.hasOwnProperty('host') || !_network.hasOwnProperty('port'))
+        throws('Malformed network. { host:string, port:number }');
+
+    if(isNaN(_network.port) || !_network.host.length || _network.host.indexOf('.') === -1)
+        throws('"port" must be a number and "host" must be a string of a domain or an ip.');
+
+    network = _network;
+};
+
+/***
+ * Only a Scatterdapp which has had a network bound to it
+ * can be used.
+ * @param _reject
+ * @param _runIfNetworkBound
+ */
+const _networkGuard = (_reject, _runIfNetworkBound) => {
+
+    if(!network) {
+        throws(`It seems that a network was not set. 
+                Did you create your eosjs instance using scatter.eos() ?`);
+        _reject(null);
+    }
+    _runIfNetworkBound();
+};
+
+/***
+ * Turns message sending between the application
+ * and the content script into async promises
+ * @param _type
+ * @param _payload
+ */
+const _send = (_type, _payload) => {
+
+    return new Promise((resolve, reject) => {
+        _networkGuard(reject, () => {
+            let id = IdGenerator.numeric(6);
+            let message = new NetworkMessage(_type, _payload, id, network, location.host);
+            resolvers.push(new DanglingResolver(id, resolve, reject));
+            stream.send(message, PairingTags.SCATTER);
+        });
+    });
+};
 
 /***
  * Scatterdapp is the object injected into the web application that
@@ -39,130 +109,13 @@ instanceRef = IdGenerator.text(128);
 export default class Scatterdapp {
 
     constructor(_stream){
-        this.network = null;
-        this.identityHash = null;
         stream = _stream;
+        network = null;
+        identityHash = null;
         resolvers = [];
-        this._subscribe(instanceRef);
-
-        // Sets up the provider to be used by eosjs
-        provider = async signargs => {
-            if(!this.identityHash) {
-                throws('You must select an Identity to use before requesting transaction signatures. ' +
-                       'Request an Identity and then use scatter.useIdentity() with the hash.');
-                return null;
-            }
-
-            const domain = location.host;
-            const network = this.network;
-            const identityHash = this.identityHash;
-            return await this._send(NetworkMessageTypes.REQUEST_SIGNATURE,
-                Object.assign(signargs, {domain, network, identityHash})
-            , instanceRef);
-        }
+        _subscribe();
     }
 
-
-
-    /********************************/
-    /*                              */
-    /*           Private            */
-    /*     --------------------     */
-    /*     Methods here are         */
-    /*     protected using weak     */
-    /*     maps and a random id     */
-    /*                              */
-    /********************************/
-
-    /***
-     * Messages do not come back on the same thread.
-     * To accomplish a future promise structure this method
-     * catches all incoming messages and dispenses
-     * them to the open promises. */
-    _subscribe(_instanceRef) {
-        if(instanceRef !== _instanceRef) throws('Can only subscribe internally.');
-
-        stream.listenWith(msg => {
-            if(!msg || !msg.hasOwnProperty('type')) return false;
-            for(let i=0; i < resolvers.length; i++) {
-                if (resolvers[i].id === msg.resolver) {
-                    if(msg.type === 'error') resolvers[i].reject(msg.payload);
-                    else resolvers[i].resolve(msg.payload);
-                    resolvers = resolvers.slice(i, 1);
-                }
-            }
-        });
-    }
-
-    /***
-     * Binds a network to this instance of scatterdapp.
-     * Only one network can be bound, and it cannot be re-bound.
-     * @param _network
-     * @param _instanceRef
-     * @returns {boolean}
-     */
-    _bindNetwork(_network, _instanceRef){
-        if(instanceRef !== _instanceRef) throws('Can only bind network internally.');
-
-        if(this.network)
-            throws("You can only bind a network once.");
-
-        if(!_network || !_network.hasOwnProperty('host') || !_network.hasOwnProperty('port'))
-            throws('Malformed network. { host:string, port:number }');
-
-        if(isNaN(_network.port) || !_network.host.length || _network.host.indexOf('.') === -1)
-            throws('"port" must be a number and "host" must be a string of a domain or an ip.');
-
-        this.network = _network;
-    }
-
-    /***
-     * Only a Scatterdapp which has had a network bound to it
-     * can be used.
-     * @param _reject
-     * @param _runIfNetworkBound
-     * @param _instanceRef
-     */
-    _networkGuard(_reject, _runIfNetworkBound, _instanceRef){
-        if(instanceRef !== _instanceRef) throws('Can only check network guard internally.');
-
-        if(!this.network) {
-            throws(`It seems that a network was not set. 
-                Did you create your eosjs instance using scatter.eos() ?`);
-            _reject(null);
-        }
-        _runIfNetworkBound();
-    }
-
-    /***
-     * Turns message sending between the application
-     * and the content script into async promises
-     * @param _type
-     * @param _payload
-     * @param _instanceRef
-     */
-    _send(_type, _payload, _instanceRef) {
-        if(instanceRef !== _instanceRef) throws('Can only send messages internally.');
-
-        return new Promise((resolve, reject) => {
-            this._networkGuard(reject, () => {
-                let id = IdGenerator.numeric(6);
-                let message = new NetworkMessage(_type, _payload, id, this.network, location.host);
-                resolvers.push(new DanglingResolver(id, resolve, reject));
-                stream.send(message, PairingTags.SCATTER);
-            }, _instanceRef);
-        })
-
-    }
-
-
-
-
-    /********************************/
-    /*                              */
-    /*           Public             */
-    /*                              */
-    /********************************/
 
     /***
      * Returns an instance of eosjs with a signature provider and endpoint bound
@@ -174,9 +127,71 @@ export default class Scatterdapp {
      * @returns {*}
      */
     eos(_eos, _network, _options = {}){
-        this._bindNetwork(_network, instanceRef);
+        //TODO: Clean up and extrapolate
+
+        _bindNetwork(_network);
         const httpEndpoint = `http://${_network.host}:${_network.port}`;
-        return _eos(Object.assign(_options, {httpEndpoint, signProvider: provider}))
+
+        // The proxy stands between the eosjs object and scatter.
+        // This is used to add special functionality like adding `requiredFields` arrays to transactions
+        return new Proxy(_eos(), {
+            get(eosInstance, method) {
+
+                // We're holding a reference to the returned fields
+                // in the case of a requirement during transactions
+                let returnedFields = null;
+
+                return (...args) => {
+
+                    // It is possible to pass requiredFields to the eosjs options parameter
+                    // which will be sent along with the signature request to scatter and return
+                    // with the signature.
+                    let requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields'));
+                    requiredFields = requiredFields ? requiredFields.requiredFields : [];
+
+                    // The signature provider which gets elevated into the user's Scatter
+                    const signProvider = async signargs => {
+
+                        // TODO: We might not need this now that we can pass things into the transaction
+                        // TODO: itself. We should check to see if it's a better workflow to just pass
+                        // TODO: the identity hash here instead.
+                        if(!identityHash) {
+                            throws('You must select an Identity to use before requesting transaction signatures. ' +
+                                'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {identityHash:anIdentityHash}.');
+                            return null;
+                        }
+
+                        const payload = Object.assign(signargs, { domain:location.host, network, identityHash, requiredFields });
+                        const result = await _send(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
+
+                        //TODO: This will need to be returned as an error message in the future
+                        if(!result) return null;
+
+                        // Scatter has some special logic for signature requests
+                        if(result.hasOwnProperty('signatures')){
+                            // Holding onto the returned fields for the result to the application.
+                            returnedFields = result.returnedFields;
+
+                            // Returning only the signatures to eosjs
+                            return result.signatures;
+                        }
+
+                        return result;
+                    };
+
+                    // TODO: We need to check about the implications of multiple eosjs instances
+                    return new Promise((resolve, reject) => {
+                        _eos(Object.assign(JSON.stringify(_options), {httpEndpoint, signProvider}))[method](...args)
+                            .then(result => {
+                                // We are binding back the required fields that were stored earlier
+                                if(requiredFields.length) result = Object.assign(result, {returnedFields});
+                                resolve(result)
+                            })
+                            .catch(error => reject(error))
+                    })
+                }
+            }
+        });
     }
 
 
@@ -188,11 +203,11 @@ export default class Scatterdapp {
      * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
      */
     getIdentity(fields = []){
-        return this._send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
+        return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
             domain:location.host,
-            network:this.network,
+            network:network,
             fields
-        }, instanceRef);
+        });
     }
 
     /***
@@ -200,7 +215,7 @@ export default class Scatterdapp {
      * @param _identityHash - The hash of the identity
      */
     useIdentity(_identityHash){
-        this.identityHash = _identityHash;
+        identityHash = _identityHash;
     }
 
 }
