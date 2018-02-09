@@ -12,6 +12,7 @@ import DomainPermissionView from '../views/DomainPermissionView.vue'
 import BackupView from '../views/BackupView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import DestroyView from '../views/DestroyView.vue'
+import TimeoutSettingsView from '../views/TimeoutSettingsView.vue'
 import ExportJsonView from '../views/ExportJsonView.vue'
 import HistoryView from '../views/HistoryView.vue'
 
@@ -41,6 +42,7 @@ export const RouteNames = {
     BACKUP:'backup',
     EXPORT_JSON:'exportJson',
     DESTROY:'destroy',
+    TIMEOUT_SETTINGS:'timeoutSettings',
 
     PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
     PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
@@ -66,6 +68,7 @@ const RouteViews = {
     [RouteNames.BACKUP]:BackupView,
     [RouteNames.EXPORT_JSON]:ExportJsonView,
     [RouteNames.DESTROY]:DestroyView,
+    [RouteNames.TIMEOUT_SETTINGS]:TimeoutSettingsView,
 
     [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
     [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
@@ -88,6 +91,7 @@ export const RouteDepth = {
     [RouteNames.NETWORKS]:101,
     [RouteNames.NETWORK]:102,
     [RouteNames.CHANGE_PASSWORD]:101,
+    [RouteNames.TIMEOUT_SETTINGS]:101,
     [RouteNames.BACKUP]:101,
     [RouteNames.EXPORT_JSON]:102,
     [RouteNames.DESTROY]:101,

@@ -7,6 +7,7 @@ export const BACKUP_SCATTER_ON_BLOCKCHAIN = 'backupScatterOnBlockchain';
 export const CREATE_NEW_SCATTER = 'createNewScatter';
 export const SET_MNEMONIC = 'setMnemonic';
 export const SET_SEED = 'setSeed';
+export const SET_TIMEOUT = 'setTimeout';
 export const LOCK = 'lock';
 export const DESTROY = 'destroy';
 

@@ -38,7 +38,13 @@ class Popup {
         new VueInitializer(routes, components, middleware, (router, store) => {
             store.dispatch(Actions.IS_UNLOCKED)
                 .then(unlocked => {
-                    if(unlocked) router.push({name:RouteNames.MAIN_MENU});
+                    if(unlocked &&
+                        (!store.state.scatter.keychain.identities.length ||
+                            (store.state.scatter.keychain.identities.length === 1 &&
+                                store.state.scatter.keychain.identities[0].account === null)))
+                        router.push({name:RouteNames.FIRST_TIME});
+                    else if(unlocked)
+                        router.push({name:RouteNames.MAIN_MENU});
                 });
         });
     }
@@ -46,12 +52,3 @@ class Popup {
 }
 
 const popup = new Popup();
-
-
-
-
-
-
-
-
-
