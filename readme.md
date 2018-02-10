@@ -34,11 +34,6 @@ This repository is under construction.
 
 ## Interacting with Scatter
 
-#### Important: [Click here for a full diagram of the interaction flow.](https://drive.google.com/file/d/1QVw9WozcKjOQXO6uQKQVqaKt3C3lUr2F/view?usp=sharing)
-
-There are some caveats to using Scatter, you should get familiar with them from the flow diagram before
-continuing, otherwise you risk getting rejected transactions every time a user changes their Scatter Identity.
- 
  
 #### Catching browsers with Scatter installed
 ```
