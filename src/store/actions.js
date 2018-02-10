@@ -24,6 +24,7 @@ export const actions = {
 
     [Actions.SET_TIMEOUT]:({commit}, timeoutMinutes) => {
         return new Promise((resolve, reject) => {
+            commit(Actions.SET_TIMEOUT, timeoutMinutes);
             InternalMessage.payload(InternalMessageTypes.SET_TIMEOUT, timeoutMinutes).send().then(() => {
                 resolve(timeoutMinutes)
             })
