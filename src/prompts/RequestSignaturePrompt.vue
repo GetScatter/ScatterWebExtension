@@ -189,6 +189,9 @@
             },
             accepted(){
 
+                // Setting the selected location on the returned fields
+                this.returnedFields.location = this.selectedLocation;
+
                 // Gathering required field results
                 let returnedFields = {};
                 this.requiredFields.map(field => {
