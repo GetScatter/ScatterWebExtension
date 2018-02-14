@@ -211,6 +211,17 @@ export default class Scatterdapp {
     }
 
     /***
+     * Allows an application to prompt the user to add the network they are using to the user's Scatter
+     * Will instantly return true if the network already exists
+     */
+    suggestNetwork(){
+        return _send(NetworkMessageTypes.REQUEST_ADD_NETWORK, {
+            domain:location.host,
+            network:network
+        });
+    }
+
+    /***
      * Sets which Identity to use for transaction signing
      * @param _identityHash - The hash of the identity
      */

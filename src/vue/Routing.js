@@ -19,6 +19,7 @@ import HistoryView from '../views/HistoryView.vue'
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
 import RequestSignaturePrompt from '../prompts/RequestSignaturePrompt.vue'
+import RequestAddNetwork from '../prompts/RequestAddNetwork.vue'
 
 export const promptPrefix = 'prompt_';
 
@@ -46,6 +47,7 @@ export const RouteNames = {
 
     PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
     PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
+    PROMPT_REQUEST_ADD_NETWORK:`${promptPrefix}${PromptTypes.REQUEST_ADD_NETWORK}`,
 };
 
 const RouteViews = {
@@ -72,6 +74,7 @@ const RouteViews = {
 
     [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
     [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
+    [RouteNames.PROMPT_REQUEST_ADD_NETWORK]:RequestAddNetwork,
 };
 
 export const RouteDepth = {
