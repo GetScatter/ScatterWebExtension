@@ -99,14 +99,14 @@
         </section>
 
         <section class="panel" v-if="selectedLocation">
-            <btn v-if="!selectedLocation.isDefault" is-blue="true" text="Set as Default" v-on:clicked="setAsDefaultLocation" :key="randomKey()"></btn>
-            <cin placeholder="Location Name" :text="selectedLocation.name" v-on:changed="changed => bind(changed, 'selectedLocation.name')" :key="randomKey()"></cin>
-            <cin placeholder="Phone" :text="selectedLocation.phone" v-on:changed="changed => bind(changed, 'selectedLocation.phone')" :key="randomKey()"></cin>
-            <cin placeholder="Address" :text="selectedLocation.address" v-on:changed="changed => bind(changed, 'selectedLocation.address')" :key="randomKey()"></cin>
-            <cin placeholder="City" half="true" :text="selectedLocation.city" v-on:changed="changed => bind(changed, 'selectedLocation.city')" :key="randomKey()"></cin>
-            <cin placeholder="Postal" second-half="true" :text="selectedLocation.zipcode" v-on:changed="changed => bind(changed, 'selectedLocation.zipcode')" :key="randomKey()"></cin>
-            <sel placeholder="Country" :seventy="selectedLocation.country.code === 'US'" :options="countries" :selected="selectedLocation.country" :parser="(obj) => obj.name" v-on:changed="changed => bind(changed, 'selectedLocation.country')" :key="randomKey()"></sel>
-            <cin placeholder="State" v-if="selectedLocation.country.code === 'US'" thirty="true" :text="selectedLocation.state" v-on:changed="changed => bind(changed, 'selectedLocation.state')" :key="randomKey()"></cin>
+            <btn v-if="!selectedLocation.isDefault" is-blue="true" text="Set as Default" v-on:clicked="setAsDefaultLocation" :key="locationKey(1)"></btn>
+            <cin placeholder="Location Name" :text="selectedLocation.name" v-on:changed="changed => bind(changed, 'selectedLocation.name')" :key="locationKey(2)"></cin>
+            <cin placeholder="Phone" :text="selectedLocation.phone" v-on:changed="changed => bind(changed, 'selectedLocation.phone')" :key="locationKey(3)"></cin>
+            <cin placeholder="Address" :text="selectedLocation.address" v-on:changed="changed => bind(changed, 'selectedLocation.address')" :key="locationKey(4)"></cin>
+            <cin placeholder="City" half="true" :text="selectedLocation.city" v-on:changed="changed => bind(changed, 'selectedLocation.city')" :key="locationKey(5)"></cin>
+            <cin placeholder="Postal" second-half="true" :text="selectedLocation.zipcode" v-on:changed="changed => bind(changed, 'selectedLocation.zipcode')" :key="locationKey(6)"></cin>
+            <sel placeholder="Country" :seventy="selectedLocation.country.code === 'US'" :options="countries" :selected="selectedLocation.country" :parser="(obj) => obj.name" v-on:changed="changed => bind(changed, 'selectedLocation.country')" :key="locationKey(7)"></sel>
+            <cin placeholder="State" v-if="selectedLocation.country.code === 'US'" thirty="true" :text="selectedLocation.state" v-on:changed="changed => bind(changed, 'selectedLocation.state')" :key="locationKey(8)"></cin>
 
             <btn v-if="identity.locations.length > 1" margined="true" is-red="true" text="Remove This Location" v-on:clicked="removeSelectedLocation"></btn>
         </section>
@@ -163,7 +163,8 @@
             this.isNew = !existing;
         },
         methods: {
-            randomKey(){ return Math.random() * 10000 + 1 },
+            // This is just a fix for vuejs reusing components and losing uniqueness
+            locationKey(index){ return this.identity.locations.indexOf(this.selectedLocation)+index; },
             bind(changed, dotNotation) {
                 let props = dotNotation.split(".");
                 const lastKey = props.pop();

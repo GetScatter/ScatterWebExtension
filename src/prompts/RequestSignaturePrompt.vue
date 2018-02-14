@@ -147,6 +147,7 @@
                 const requiredLocationFields = Object.keys(LocationFields).filter(field => this.requiredFields.includes(field));
                 this.viableLocations = this.identity().locations.filter(location => location.findFields(requiredLocationFields).length === requiredLocationFields.length);
                 this.selectedLocation = this.viableLocations.find(location => location.isDefault) || this.viableLocations[0];
+                this.returnedFields = this.identity().clone();
                 this.returnedFields.location = this.selectedLocation;
             }
         },
@@ -193,7 +194,8 @@
                 this.requiredFields.map(field => {
                     let fullPath = '';
                     if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
-                    if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
+                    else if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
+                    else fullPath = field;
                     returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(this.returnedFields, fullPath);
                 });
 
