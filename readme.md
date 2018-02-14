@@ -15,7 +15,7 @@ This repository is under construction.
 **From Repository** - 
 * Clone repository
 * `npm install` to get dependencies
-* `npm run build` to compile a `build` folder.
+* `npm start` to compile a `build` folder.
 
 
 **From Zip File** - 
