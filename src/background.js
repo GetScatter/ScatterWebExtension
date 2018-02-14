@@ -65,6 +65,7 @@ export default class Background {
             case InternalMessageTypes.REQUEST_UNLOCK:           Background.requestUnlock(sendResponse); break;
             case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:  Background.getOrRequestIdentity(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_SIGNATURE:        Background.requestSignature(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_ADD_NETWORK:      Background.requestAddNetwork(sendResponse, message.payload); break;
         }
     }
 
@@ -224,7 +225,7 @@ export default class Background {
     }
 
     /***
-     * Destroys this instance of Scatter
+     * Prompts a request for Identity provision
      * @param sendResponse
      * @param payload
      */
@@ -259,7 +260,7 @@ export default class Background {
     }
 
     /***
-     * Destroys this instance of Scatter
+     * Prompts a request for a transaction signature
      * @param sendResponse
      * @param payload
      */
@@ -361,6 +362,34 @@ export default class Background {
                     }, identity.account.publicKey);
 
                 }));
+
+            })
+        })
+    }
+
+    /***
+     *
+     * @param sendResponse
+     * @param payload
+     */
+    static requestAddNetwork(sendResponse, payload){
+        this.lockGuard(sendResponse, () => {
+            Background.load(scatter => {
+
+                const network = Network.fromJson(payload.network);
+                
+                if(scatter.settings.networks.find(_network => _network.unique() === network.unique())){
+                    sendResponse(true);
+                } else {
+                    NotificationService.open(new Prompt(PromptTypes.REQUEST_ADD_NETWORK, payload.domain, payload.network, network, approved => {
+                        if(approved){
+                            scatter.settings.networks.push(network);
+                            this.update(() => {
+                                sendResponse(approved)
+                            }, scatter);
+                        } else sendResponse(approved)
+                    }));
+                }
 
             })
         })

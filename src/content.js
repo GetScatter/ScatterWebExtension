@@ -61,10 +61,13 @@ class Content {
         if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) { stream.send({type:'error'}, "mal-warn"); return; }
         let nonSyncMessage = NetworkMessage.fromJson(msg);
 
+        console.log(msg);
+
         switch(msg.type){
             case 'sync': this.sync(msg); break;
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
+            case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
             default: this.rejectWithError(nonSyncMessage.error('No such message can be parsed'))
         }
     }
@@ -93,6 +96,12 @@ class Content {
         InternalMessage.payload(InternalMessageTypes.REQUEST_SIGNATURE, message.payload)
             .send().then(res => this.respond(message, res))
             .catch(e => this.rejectWithError(message.error('User refused to sign transaction')))
+    }
+
+    requestAddNetwork(message){
+        InternalMessage.payload(InternalMessageTypes.REQUEST_ADD_NETWORK, message.payload)
+            .send().then(res => this.respond(message, res))
+            .catch(e => this.rejectWithError(message.error('User refused to add the Network')))
     }
 
 }

@@ -9,3 +9,4 @@ export const DESTROY = 'destroy';
 export const REQUEST_UNLOCK = 'requestUnlock';
 export const GET_OR_REQUEST_IDENTITY = 'getOrRequestIdentity';
 export const REQUEST_SIGNATURE = 'requestSignature';
+export const REQUEST_ADD_NETWORK = 'requestAddNetwork';

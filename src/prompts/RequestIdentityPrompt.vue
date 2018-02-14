@@ -16,7 +16,7 @@
 
                 <section v-if="identityFields.length">
                     <section class="description">
-                        <b>cryptocrap.com</b> is requesting additional information.
+                        <b>{{prompt.domain}}</b> is requesting additional information.
                     </section>
 
                     <section class="key-value">
