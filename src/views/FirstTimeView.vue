@@ -25,8 +25,10 @@
                 </figure>
             </section>
             <section class="p20">
-                <cin icon="fa-lock" placeholder="name your identity" v-on:changed="changed => bind(changed, 'identityName')"></cin>
-                <btn text="Create Identity" v-on:clicked="createNewIdentity" margined="true"></btn>
+                <form v-on:submit.prevent="createNewIdentity">
+                    <cin icon="fa-lock" placeholder="name your identity" v-on:changed="changed => bind(changed, 'identityName')"></cin>
+                    <btn text="Create Identity" type="submit" margined="true"></btn>
+                </form>
             </section>
         </section>
 
@@ -46,9 +48,11 @@
                 </figure>
             </section>
             <section class="p20">
-                <sel :selected="identity.network" :options="networks" :parser="(network) => network.unique()" v-on:changed="bindNetwork"></sel>
-                <cin icon="fa-lock" placeholder="private key" v-on:changed="changed => bind(changed, 'importKey')"></cin>
-                <btn text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
+                <form v-on:submit.prevent="importAccount">
+                    <sel :selected="identity.network" :options="networks" :parser="(network) => network.unique()" v-on:changed="bindNetwork"></sel>
+                    <cin icon="fa-lock" placeholder="private key" v-on:changed="changed => bind(changed, 'importKey')"></cin>
+                    <btn text="Import Account" type="submit" margined="true"></btn>
+                </form>
             </section>
         </section>
 
