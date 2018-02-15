@@ -1,7 +1,9 @@
-### Scatter
+# Scatter
 
-The new home of the EOS Scatter extension.
-This repository is under construction.
+Scatter is a browser extension that allows you to sign transactions on the EOS blockchain using your private keys
+from web applications without ever exposing your keys. 
+
+**Keys never leave the extension, only signatures**
 
 
 
