@@ -48,8 +48,8 @@ export default class IdentityService {
         let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
 
         const sendBackIdentity = id => {
-            if(!id){
-                callback(null);
+            if(!id || id.hasOwnProperty('isError')){
+                callback(null, null);
                 return false;
             }
             id.encryptHash();
@@ -67,9 +67,6 @@ export default class IdentityService {
                 // TODO: Remove permission
             }
         }
-        else {
-            const prompt = new Prompt(PromptTypes.REQUEST_IDENTITY, domain, network, fields, sendBackIdentity);
-            NotificationService.open(prompt);
-        }
+        else NotificationService.open(new Prompt(PromptTypes.REQUEST_IDENTITY, domain, network, fields, sendBackIdentity));
     }
 }

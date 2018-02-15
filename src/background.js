@@ -15,6 +15,7 @@ import * as PromptTypes from './models/prompts/PromptTypes'
 import ObjectHelpers from './util/ObjectHelpers'
 import Permission from './models/Permission'
 import TimingHelpers from './util/TimingHelpers';
+import Error from './models/errors/Error'
 const ecc = require('eosjs-ecc');
 
 // Gets bound when a user logs into scatter
@@ -237,7 +238,12 @@ export default class Background {
                       fields = payload.fields;
 
                 IdentityService.getOrRequestIdentity(domain, network, fields, scatter, (identity, fromPermission) => {
-                    if(identity && !fromPermission) {
+                    if(!identity){
+                        sendResponse(Error.signatureError("identity_rejected", "User rejected the provision of an Identity"));
+                        return false;
+                    }
+
+                    if(!fromPermission) {
                         this.addHistory(HistoricEventTypes.PROVIDED_IDENTITY, {
                             domain,
                             network,
@@ -253,7 +259,8 @@ export default class Background {
                             timestamp:+ new Date()
                         }))
                     }
-                    sendResponse(identity)
+
+                    sendResponse(identity);
                 });
             });
         })
@@ -274,15 +281,13 @@ export default class Background {
                 // Checking if identity still exists
                 const identity = scatter.keychain.findIdentity(payload.identityHash);
                 if(!identity){
-                    // TODO: Give back a better error message
-                    sendResponse(null);
+                    sendResponse(Error.signatureError("identity_missing", "Identity no longer exists on the user's keychain"));
                     return false;
                 }
 
                 // Checking if the identity is on the same network
                 if(identity.network.unique() !== Network.fromJson(payload.network).unique()){
-                    // TODO: Give back a better error message
-                    sendResponse(null);
+                    sendResponse(Error.signatureError("wrong_network", "Identity is not on the same network"));
                     return false;
                 }
 
@@ -294,10 +299,8 @@ export default class Background {
 
                 const identityAccountAuth = `${identity.account.name}@${identity.account.authority}`;
 
-                // TODO: Needs to change in the future to support multi-sign
                 if(!requiredAccounts.every(accountAuth => accountAuth === identityAccountAuth)) {
-                    // TODO: Give back a better error message
-                    sendResponse(null);
+                    sendResponse(Error.signatureError("account_missing", "Missing required accounts"));
                     return false;
                 }
 
@@ -306,8 +309,7 @@ export default class Background {
 
                 NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
                     if(!approval || !approval.hasOwnProperty('accepted')){
-                        // TODO: Give back a better error message
-                        sendResponse(null);
+                        sendResponse(Error.signatureError("signature_rejected", "User rejected the signature request"));
                         return false;
                     }
 
@@ -334,9 +336,8 @@ export default class Background {
 
                     this.publicToPrivate(privateKey => {
                         if(!privateKey){
-                            // TODO: Give back a better error message
                             console.log("Couldn't decrypt private key");
-                            sendResponse(null);
+                            sendResponse(Error.maliciousEvent());
                             return false;
                         }
 
@@ -377,19 +378,17 @@ export default class Background {
             Background.load(scatter => {
 
                 const network = Network.fromJson(payload.network);
-                
-                if(scatter.settings.networks.find(_network => _network.unique() === network.unique())){
-                    sendResponse(true);
-                } else {
-                    NotificationService.open(new Prompt(PromptTypes.REQUEST_ADD_NETWORK, payload.domain, payload.network, network, approved => {
-                        if(approved){
-                            scatter.settings.networks.push(network);
-                            this.update(() => {
-                                sendResponse(approved)
-                            }, scatter);
-                        } else sendResponse(approved)
-                    }));
-                }
+
+                // Already has network, returning true
+                if(scatter.settings.networks.find(_network => _network.unique() === network.unique())) sendResponse(true);
+
+                // Prompting for network addition
+                else NotificationService.open(new Prompt(PromptTypes.REQUEST_ADD_NETWORK, payload.domain, payload.network, network, approved => {
+                    if(approved){
+                        scatter.settings.networks.push(network);
+                        this.update(() => sendResponse(approved), scatter);
+                    } else sendResponse(approved)
+                }));
 
             })
         })
@@ -410,8 +409,10 @@ export default class Background {
      * @param cb - Callback to perform if open
      */
     static lockGuard(sendResponse, cb){
-        // TODO: Change failure to a more explanatory message
-        if(!seed.length) sendResponse(null);
+        if(!seed.length) {
+            NotificationService.open(Prompt.scatterIsLocked());
+            sendResponse(Error.locked());
+        }
         else cb();
     }
 

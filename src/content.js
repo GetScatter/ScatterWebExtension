@@ -5,6 +5,7 @@ import NetworkMessage from './messages/NetworkMessage';
 import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import InternalMessage from './messages/InternalMessage';
 import * as InternalMessageTypes from './messages/InternalMessageTypes'
+import Error from './models/errors/Error'
 
 import Identity from './models/Identity'
 import Scatterdapp from './scatterdapp'
@@ -58,7 +59,12 @@ class Content {
     }
 
     contentListener(msg){
-        if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) { stream.send({type:'error'}, "mal-warn"); return; }
+        if(!msg) return;
+        if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) {
+            stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED);
+            return;
+        }
+
         let nonSyncMessage = NetworkMessage.fromJson(msg);
 
         switch(msg.type){
@@ -66,16 +72,15 @@ class Content {
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
-            default: this.rejectWithError(nonSyncMessage.error('No such message can be parsed'))
+            default:                                                    stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED)
         }
     }
 
     respond(message, payload){
-        stream.send(message.respond(payload), PairingTags.INJECTED);
-    }
-
-    rejectWithError(err, reject = null){
-        stream.send(err, PairingTags.INJECTED); if(reject) reject(err);
+        const response = (!payload || payload.hasOwnProperty('isError'))
+            ? message.error(payload)
+            : message.respond(payload);
+        stream.send(response, PairingTags.INJECTED);
     }
 
     sync(message){
@@ -87,19 +92,16 @@ class Content {
     getOrRequestIdentity(message){
         InternalMessage.payload(InternalMessageTypes.GET_OR_REQUEST_IDENTITY, message.payload)
             .send().then(res => this.respond(message, res))
-            .catch(e => this.rejectWithError(message.error('Could not get an identity')))
     }
 
     requestSignature(message){
         InternalMessage.payload(InternalMessageTypes.REQUEST_SIGNATURE, message.payload)
             .send().then(res => this.respond(message, res))
-            .catch(e => this.rejectWithError(message.error('User refused to sign transaction')))
     }
 
     requestAddNetwork(message){
         InternalMessage.payload(InternalMessageTypes.REQUEST_ADD_NETWORK, message.payload)
             .send().then(res => this.respond(message, res))
-            .catch(e => this.rejectWithError(message.error('User refused to add the Network')))
     }
 
 }

@@ -1,4 +1,5 @@
 import {RouteNames, promptPrefix} from '../../vue/Routing'
+import * as PromptTypes from './PromptTypes'
 
 export default class Prompt {
 
@@ -17,8 +18,8 @@ export default class Prompt {
         return `${promptPrefix}${this.type}`;
     }
 
-    typeToTitle(){
-
+    static scatterIsLocked(){
+        return new Prompt(PromptTypes.REQUEST_UNLOCK, '', {host:'',port:0}, {}, function(){});
     }
 
 }

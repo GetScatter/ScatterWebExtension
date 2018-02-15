@@ -39,8 +39,9 @@ class PromptWindow {
 
         // TODO: Request unlock for prompt
         const middleware = (to, next, store) => {
-            store.dispatch(Actions.IS_UNLOCKED)
-                .then(unlocked => (unlocked) ? next() : next({name:RouteNames.ENTRY}));
+            next();
+            // store.dispatch(Actions.IS_UNLOCKED)
+            //     .then(unlocked => (unlocked) ? next() : next({name:RouteNames.PROMPT_REQUEST_UNLOCK}));
         };
 
         new VueInitializer(routes, components, middleware, (router, store) => {

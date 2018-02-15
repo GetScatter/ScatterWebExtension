@@ -206,7 +206,6 @@
                 NotificationService.close();
             },
             denied(){
-                // TODO: Better error handling
                 this.prompt.responder(null);
                 NotificationService.close();
             },
