@@ -63,7 +63,6 @@ export default class Background {
             case InternalMessageTypes.UPDATE:                   Background.update(sendResponse, message.payload); break;
             case InternalMessageTypes.PUB_TO_PRIV:              Background.publicToPrivate(sendResponse, message.payload); break;
             case InternalMessageTypes.DESTROY:                  Background.destroy(sendResponse); break;
-            case InternalMessageTypes.REQUEST_UNLOCK:           Background.requestUnlock(sendResponse); break;
             case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:  Background.getOrRequestIdentity(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_SIGNATURE:        Background.requestSignature(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_ADD_NETWORK:      Background.requestAddNetwork(sendResponse, message.payload); break;
@@ -211,19 +210,6 @@ export default class Background {
     /********************************************/
     /*              Web Application             */
     /********************************************/
-
-    /***
-     * Returns true if unlock or requests that the user unlock Scatter
-     * @param sendResponse
-     * @param payload
-     */
-    static requestUnlock(sendResponse, payload){
-        if(seed.length) sendResponse(true);
-        else {
-            // TODO: Prompt user to unlock Scatter
-            sendResponse(false);
-        }
-    }
 
     /***
      * Prompts a request for Identity provision
