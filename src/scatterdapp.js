@@ -40,7 +40,9 @@ const _subscribe = () => {
         if(!msg || !msg.hasOwnProperty('type')) return false;
         for(let i=0; i < resolvers.length; i++) {
             if (resolvers[i].id === msg.resolver) {
-                if(msg.type === 'error') resolvers[i].reject(msg.payload);
+                // if(msg.type === 'error') resolvers[i].reject(msg.payload);
+                // Temporary error handling to catch rejector
+                if(msg.payload === null) resolvers[i].reject(msg.payload);
                 else resolvers[i].resolve(msg.payload);
                 resolvers = resolvers.slice(i, 1);
             }

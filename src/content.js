@@ -61,8 +61,6 @@ class Content {
         if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) { stream.send({type:'error'}, "mal-warn"); return; }
         let nonSyncMessage = NetworkMessage.fromJson(msg);
 
-        console.log(msg);
-
         switch(msg.type){
             case 'sync': this.sync(msg); break;
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
