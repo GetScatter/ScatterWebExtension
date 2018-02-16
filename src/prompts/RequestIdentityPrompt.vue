@@ -64,7 +64,7 @@
                     <!-- Header -->
                     <section class="panel">
                         <figure class="header big identity-header">{{identity.name}}</figure>
-                        <figure class="select-identity"
+                        <figure v-if="!identity.disabled" class="select-identity"
                                 v-on:click="selectIdentity(identity)"
                                 :class="{'selected':selectedIdentity && selectedIdentity.hash === identity.hash}">
                             Select Identity
@@ -137,6 +137,7 @@
                     .filter(id => id.network.unique() === this.prompt.network.unique())
                     .filter(id => id.hasRequiredFields(this.identityFields))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
+                    .sort((a,b) => !a.disabled || !b.disabled ? 1 : -1)
             },
             formatPropValue(prop, propValue){
                 switch(prop){
