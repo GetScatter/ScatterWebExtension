@@ -64,17 +64,12 @@
                     return false;
                 }
 
-                if(!Network.portIsValid(this.network.port)){
-                    this[Actions.PUSH_ALERT](AlertMsg.NetworkPortInvalid());
-                    return false;
-                }
-
                 if(this.networks.map(x => x.unique()).includes(this.network.unique())){
                     this[Actions.PUSH_ALERT](AlertMsg.NetworkExists());
                     return false;
                 }
 
-                scatter.settings.networks.push(this.network);
+                scatter.settings.networks.unshift(this.network);
 
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => {
                     this.$router.back();

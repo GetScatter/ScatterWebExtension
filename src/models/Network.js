@@ -21,13 +21,6 @@ export default class Network {
      */
     isEndorsedNetwork(){ return this.host === 'mainnet.eos.io' && this.port === 8080 }
 
-    /***
-     * Makes sure a port is not reserved
-     * @param port
-     * @returns {boolean}
-     */
-    static portIsValid(port){ return Number(port) > 1000 || Number(port) === 80 }
-
     // TODO: Mock
     static hostIsValid(host){ return host.indexOf('.') > -1 }
 
