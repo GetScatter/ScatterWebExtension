@@ -83,6 +83,8 @@ scatter.getIdentity(requirements).then(identity => {
  
     // Identities must be bound to scatter to be 
     // able to request transaction signatures
+    scatter.useIdentity(identity);
+    or
     scatter.useIdentity(identity.hash);
     
 }).catch(error => {

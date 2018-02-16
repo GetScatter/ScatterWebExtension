@@ -225,10 +225,11 @@ export default class Scatterdapp {
 
     /***
      * Sets which Identity to use for transaction signing
-     * @param _identityHash - The hash of the identity
+     * @param _identityObjectOrHash - The hash of the identity, or an Identity object
      */
-    useIdentity(_identityHash){
-        identityHash = _identityHash;
+    useIdentity(_identityObjectOrHash){
+        identityHash = typeof _identityObjectOrHash === 'string' ? _identityObjectOrHash :
+            _identityObjectOrHash.hasOwnProperty('hash') ? _identityObjectOrHash.hash : '';
     }
 
 }
