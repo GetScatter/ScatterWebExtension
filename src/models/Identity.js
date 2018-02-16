@@ -174,6 +174,25 @@ export default class Identity {
     }
 
     /***
+     * Sets up the fields returned to the application
+     * @param requiredFields
+     * @param fieldsObject
+     * @param selectedLocation
+     */
+    static asReturnedFields(requiredFields, fieldsObject, selectedLocation){
+        fieldsObject.location = selectedLocation;
+        let returnedFields = {};
+        requiredFields.map(field => {
+            let fullPath = '';
+            if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
+            else if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
+            else fullPath = field;
+            returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(fieldsObject, fullPath);
+        });
+        return returnedFields;
+    }
+
+    /***
      * Checks if a name is valid
      * Names must be alphanumeric and may contain spaces, dashes, and underscores.
      * @param name - The name to validate

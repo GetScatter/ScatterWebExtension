@@ -39,4 +39,13 @@ export default class Keychain {
     findIdentity(identityHash){
         return this.identities.find(id => id.hash === identityHash) || this.identities.find(id => id.encryptHash(true) === identityHash);
     }
+
+    /***
+     * Checks if Scatter has a specific permission
+     * @param checksum
+     */
+    hasContractPermission(checksum){
+        if(!checksum) return false;
+        return !!this.permissions.find(permission => permission.checksum === checksum);
+    }
 }

@@ -4,25 +4,25 @@
         <search v-on:changed="changed => bind(changed, 'searchText')" :placeholder="'Search: ' + domain"></search>
 
         <section class="p20 scroller with-search">
-            <section v-for="(networkPerms, hash) in filterBySearch()" class="panel-box" :class="{'disabled':networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).disabled}">
+            <section v-for="(domainPermissions, hash) in filterBySearch()" class="panel-box" :class="{'disabled':domainPermissions.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).disabled}">
 
                 <!-- Account Information -->
                 <section class="panel">
-                    <figure class="header big identity-header">{{networkPerms.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).name}}</figure>
-                    <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:networkPerms.find(perm => perm.isIdentityOnly())})">Revoke Identity</figure>
+                    <figure class="header big identity-header">{{domainPermissions.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).name}}</figure>
+                    <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:domainPermissions.find(perm => perm.isIdentityOnly())})">Revoke Identity</figure>
                     <figure class="header small margin" style="overflow:hidden;">
                         <figure style="float:left;">
                             <i class="fa fa-globe"></i>
-                            {{networkPerms.find(perm => perm.isIdentityOnly()).network.host}}
+                            {{domainPermissions.find(perm => perm.isIdentityOnly()).network.host}}
                         </figure>
                         <figure style="float:right">
-                            {{networkPerms.find(perm => perm.isIdentityOnly()).timestamp/1000 | moment('from', 'now')}}
+                            {{domainPermissions.find(perm => perm.isIdentityOnly()).timestamp/1000 | moment('from', 'now')}}
                         </figure>
                     </figure>
                 </section>
 
                 <!-- Contract Permissions -->
-                <section class="panel" v-for="(actions, contractAddress) in groupByContract(networkPerms)">
+                <section class="panel" v-for="(actions, contractAddress) in groupByContract(domainPermissions)">
                     <figure class="header contract-header">{{actions[0].contract}}</figure>
                     <figure class="revoke-contract-actions" v-on:click="revoke({type:'contract', address:contractAddress, network:actions[0].network})">revoke contract</figure>
                     <section class="items">
@@ -59,6 +59,9 @@
             ...mapGetters([
                 'permissions'
             ])
+        },
+        mounted(){
+            console.log(this.permissions);
         },
         methods: {
             bind(changed, original) { this[original] = changed },

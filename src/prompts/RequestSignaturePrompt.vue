@@ -74,14 +74,11 @@
                         <cin :tag="(whitelisted) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleWhitelist"></cin>
                     </section>
                     You can whitelist this action so that next time you wont have to manually authorize this.
-                    This will pass when the contract, action, account, identity, and all properties of the transaction ( not values )
-                    are the same. Though Scatter does some checks to make sure a ‘to’ property never becomes a ‘from’
-                    property, be diligent with this. Never use it for currency transactions.
-                    <br>
-                    <br>
-
-                    If the contract is updated and this action changes your permissions will not allow it through,
-                    and you will have to re-issue this permission since the parameters have changed.
+                    If any of the properties of the transaction changes the permission will become invalid. This is based on the messages themselves,
+                    so different bundles of messages will pass if they include some or all of the same messages.
+                    <br><br>
+                    <b>This also includes required personal data, and permissions are not revoked when you update your Identity's information.</b>
+                    However, if you have multiple locations it will always provide a prompt regardless of the permission.
                 </figure>
             </section>
 
@@ -102,6 +99,7 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import NotificationService from '../services/NotificationService'
+    import Identity from '../models/Identity'
     import {LocationFields, PersonalFields} from '../models/Identity'
     import ObjectHelpers from '../util/ObjectHelpers'
 
@@ -189,18 +187,7 @@
             },
             accepted(){
 
-                // Setting the selected location on the returned fields
-                this.returnedFields.location = this.selectedLocation;
-
-                // Gathering required field results
-                let returnedFields = {};
-                this.requiredFields.map(field => {
-                    let fullPath = '';
-                    if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
-                    else if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
-                    else fullPath = field;
-                    returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(this.returnedFields, fullPath);
-                });
+                const returnedFields = Identity.asReturnedFields(this.requiredFields, this.returnedFields, this.selectedLocation);
 
                 this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields});
                 NotificationService.close();

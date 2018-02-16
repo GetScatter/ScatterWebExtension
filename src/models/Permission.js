@@ -10,7 +10,6 @@ export default class Permission {
         this.identityHash = '';
 
         // Optional
-        this.contractAddress = null;
         this.contract = null;
         this.action = null;
         this.checksum = null;

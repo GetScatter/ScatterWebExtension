@@ -17,6 +17,7 @@ from web applications without ever exposing your keys.
 **From Repository** - 
 * Clone repository
 * `npm install` to get dependencies
+* copy the `.env.example` file to `.env`
 * `npm start` to compile a `build` folder.
 
 

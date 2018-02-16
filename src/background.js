@@ -6,6 +6,7 @@ import StorageService from './services/StorageService'
 import Scatter from './models/Scatter'
 import Network from './models/Network'
 import Identity from './models/Identity'
+import {LocationFields} from './models/Identity'
 import IdentityService from './services/IdentityService'
 import NotificationService from './services/NotificationService'
 import HistoricEvent from './models/histories/HistoricEvent'
@@ -16,6 +17,7 @@ import ObjectHelpers from './util/ObjectHelpers'
 import Permission from './models/Permission'
 import TimingHelpers from './util/TimingHelpers';
 import Error from './models/errors/Error'
+import ContractHelpers from './util/ContractHelpers'
 const ecc = require('eosjs-ecc');
 
 // Gets bound when a user logs into scatter
@@ -238,12 +240,12 @@ export default class Background {
                             identityHash:(identity) ? identity.hash : false
                         });
 
-                        this.addPermission(Permission.fromJson({
+                        this.addPermissions([Permission.fromJson({
                             domain,
                             network,
                             identityHash:identity.hash,
                             timestamp:+ new Date()
-                        }))
+                        })])
                     }
 
                     sendResponse(identity);
@@ -291,38 +293,9 @@ export default class Background {
                 }
 
 
-                // TODO: Check in whitelist for permissions
-
-                NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
-                    if(!approval || !approval.hasOwnProperty('accepted')){
-                        sendResponse(Error.signatureError("signature_rejected", "User rejected the signature request"));
-                        return false;
-                    }
-
-                    const whitelisting = approval.whitelisted;
-                    //TODO: Add to whitelist
-                    if(whitelisting){
-                        // const permission = Permission.fromJson({
-                        //     domain:payload.domain,
-                        //     network:payload.network,
-                        //     identityHash:identity.hash,
-                        //     contractAddress:'0x1',
-                        //     contract:'hello',
-                        //     action:'world',
-                        //     checksum:'abcd', // <-- should be a hash of the contract message keys or abi or something
-                        //     timestamp:+ new Date()
-                        // })
-                        // const scatter = scatter.clone();
-                        // scatter.keychain.permissions.push(permission);
-                        // this.update(() => {
-                        //     //...
-                        // }, scatter);
-                    }
-
-
+                const sign = (returnedFields) => {
                     this.publicToPrivate(privateKey => {
                         if(!privateKey){
-                            console.log("Couldn't decrypt private key");
                             sendResponse(Error.maliciousEvent());
                             return false;
                         }
@@ -344,10 +317,46 @@ export default class Background {
 
                         sendResponse({
                             signatures:[signed],
-                            returnedFields:approval.returnedFields
+                            returnedFields:returnedFields
                         });
                     }, identity.account.publicKey);
+                };
 
+                const needsLocationAndIdentityHasMultiple = identity.locations.length > 1 &&
+                    payload.requiredFields.some(field => Object.keys(LocationFields).includes(field));
+
+                const hasTransactionPermissions = payload.transaction.messages.every(message => {
+                    const checksum = ContractHelpers.messageChecksum(message, identity.account.name, payload.domain, payload.network, payload.requiredFields);
+                    return scatter.keychain.hasContractPermission(checksum)
+                });
+
+                if(!needsLocationAndIdentityHasMultiple && hasTransactionPermissions) {
+                    const identityClone = identity.clone();
+                    const returnedFields = Identity.asReturnedFields(payload.requiredFields, identityClone, identityClone.locations[0]);
+                    sign(returnedFields);
+                }
+                else NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
+                    if(!approval || !approval.hasOwnProperty('accepted')){
+                        sendResponse(Error.signatureError("signature_rejected", "User rejected the signature request"));
+                        return false;
+                    }
+
+                    if(approval.whitelisted){
+                        this.addPermissions(payload.transaction.messages.map(message => {
+                            const checksum = ContractHelpers.messageChecksum(message, identity.account.name, payload.domain, payload.network, payload.requiredFields);
+                            return Permission.fromJson({
+                                domain:payload.domain,
+                                network:payload.network,
+                                identityHash:identity.encryptHash(true),
+                                contract:message.code,
+                                action:message.type,
+                                checksum,
+                                timestamp:+ new Date()
+                            });
+                        }));
+                    }
+
+                    sign(approval.returnedFields);
                 }));
 
             })
@@ -424,11 +433,13 @@ export default class Background {
 
     /***
      * Adds a permission to the keychain
-     * @param permission
+     * @param permissions
      */
-    static addPermission(permission){
+    static addPermissions(permissions){
         this.load(scatter => {
-            scatter.keychain.permissions.unshift(permission);
+            permissions
+                .filter(permission => permission.isIdentityOnly() || !scatter.keychain.hasContractPermission(permission.checksum))
+                .map(permission => scatter.keychain.permissions.unshift(permission));
             this.update(() => {}, scatter);
         })
     }
