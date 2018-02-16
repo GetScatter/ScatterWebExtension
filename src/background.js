@@ -380,7 +380,7 @@ export default class Background {
                 // Prompting for network addition
                 else NotificationService.open(new Prompt(PromptTypes.REQUEST_ADD_NETWORK, payload.domain, payload.network, network, approved => {
                     if(approved){
-                        scatter.settings.networks.push(network);
+                        scatter.settings.networks.unshift(network);
                         this.update(() => sendResponse(approved), scatter);
                     } else sendResponse(approved)
                 }));
