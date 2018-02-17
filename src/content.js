@@ -17,6 +17,8 @@ let stream = new WeakMap();
 // The filename of the injected communication script.
 let INJECTION_SCRIPT_FILENAME = 'inject.js';
 
+let isReady = false;
+
 /***
  * The content script is what gets run on the application.
  * It also injects and instance of Scatterdapp
@@ -42,6 +44,7 @@ class Content {
             stream.send(NetworkMessage.signal(NetworkMessageTypes.PUSH_SCATTER), PairingTags.INJECTED);
 
             // Dispatching the loaded event to the web application.
+            isReady = true;
             document.dispatchEvent(new CustomEvent("scatterLoaded"));
         })
     }
@@ -59,6 +62,7 @@ class Content {
     }
 
     contentListener(msg){
+        if(!isReady) return;
         if(!msg) return;
         if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) {
             stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED);
@@ -77,6 +81,7 @@ class Content {
     }
 
     respond(message, payload){
+        if(!isReady) return;
         const response = (!payload || payload.hasOwnProperty('isError'))
             ? message.error(payload)
             : message.respond(payload);
@@ -90,16 +95,19 @@ class Content {
     }
 
     getOrRequestIdentity(message){
+        if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.GET_OR_REQUEST_IDENTITY, message.payload)
             .send().then(res => this.respond(message, res))
     }
 
     requestSignature(message){
+        if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.REQUEST_SIGNATURE, message.payload)
             .send().then(res => this.respond(message, res))
     }
 
     requestAddNetwork(message){
+        if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.REQUEST_ADD_NETWORK, message.payload)
             .send().then(res => this.respond(message, res))
     }

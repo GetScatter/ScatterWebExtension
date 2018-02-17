@@ -56,6 +56,7 @@ export default class Background {
      * @param message - The message to be dispensed
      */
     dispenseMessage(sendResponse, message){
+        console.log(message);
         Background.checkAutoLock();
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                 Background.setSeed(sendResponse, message.payload); break;
@@ -294,15 +295,21 @@ export default class Background {
 
 
                 const sign = (returnedFields) => {
+
+                    // Pre loading the buffer so that it doesn't waste time before the key is released.
+                    const buf = Buffer.from(payload.buf.data, 'utf8');
+
                     this.publicToPrivate(privateKey => {
                         if(!privateKey){
                             sendResponse(Error.maliciousEvent());
                             return false;
                         }
 
-                        const buf = Buffer.from(payload.buf.data, 'utf8');
+                        // Signing the transaction
                         let signed = ecc.sign(buf, privateKey);
 
+                        // Overwriting memory pointer
+                        privateKey = 'RELEASED';
 
                         // Adding historic event
                         this.addHistory(HistoricEventTypes.SIGNED_TRANSACTION, {
@@ -398,7 +405,7 @@ export default class Background {
     /********************************************/
 
     /***
-     * Returns a null response if Scatter is locked,
+     * Returns a an error if Scatter is locked,
      * or passes through the callback if Scatter is open
      * @param sendResponse - Delegating response handler
      * @param cb - Callback to perform if open

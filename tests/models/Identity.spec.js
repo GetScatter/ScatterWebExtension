@@ -1,7 +1,7 @@
 import {IdentityFields, PersonalFields, PersonalInformation, LocationInformation, LocationFields} from '../../src/models/Identity'
 import Identity from '../../src/models/Identity'
 import Account from '../../src/models/Account'
-import ArrayHelpers from '../../src/util/ArrayHelpers'
+import ObjectHelpers from '../../src/util/ObjectHelpers'
 import { expect, assert } from 'chai';
 import 'mocha';
 
@@ -30,7 +30,7 @@ describe('Identity', () => {
         const fields = ['firstname'];
         const mandatoryFields = ['name', 'hash', 'network']
 
-        const requiredOnlyFields = ArrayHelpers.objectToFlatKeys(identity.asOnlyRequiredFields(fields));
+        const requiredOnlyFields = ObjectHelpers.objectToFlatKeys(identity.asOnlyRequiredFields(fields));
         assert(requiredOnlyFields.every(a => fields.concat(mandatoryFields).includes(a)), "Came back with too many or too few required fields")
     })
 
