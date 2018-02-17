@@ -335,7 +335,7 @@ That is their password verification, nullifying the need for the hash to be stor
 
 
 
-### Contributing
+## Contributing
 
 Contributions are always welcome. 
 
