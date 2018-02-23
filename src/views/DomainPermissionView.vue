@@ -22,9 +22,9 @@
                 </section>
 
                 <!-- Contract Permissions -->
-                <section class="panel" v-for="(actions, contractAddress) in groupByContract(domainPermissions)">
+                <section class="panel" v-for="(actions, contract) in groupByContract(domainPermissions)">
                     <figure class="header contract-header">{{actions[0].contract}}</figure>
-                    <figure class="revoke-contract-actions" v-on:click="revoke({type:'contract', address:contractAddress, network:actions[0].network})">revoke contract</figure>
+                    <figure class="revoke-contract-actions" v-on:click="revoke({type:'contract', contract, network:actions[0].network})">revoke contract</figure>
                     <section class="items">
                         <section class="item" v-for="action in actions">
                             <span><u><b>{{action.action}}</b></u> <i>( {{action.timestamp/1000 | moment('from', 'now')}} )</i></span>
@@ -66,7 +66,7 @@
         methods: {
             bind(changed, original) { this[original] = changed },
             groupByIdentity(permissions){ return ObjectHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'identityHash'); },
-            groupByContract(permissions){ return ObjectHelpers.groupBy(permissions.filter(perm => perm.isContractAction()), 'contractAddress'); },
+            groupByContract(permissions){ return ObjectHelpers.groupBy(permissions.filter(perm => perm.isContractAction()), 'contract'); },
             breadcrumbs(){ return ['Permissions', 'Revoke']; },
 
             filterBySearch(){
@@ -85,7 +85,7 @@
             revoke(revokeObject){
                 switch(revokeObject.type){
                     case 'identity':this.removeIdentityPermissions(revokeObject.perm); break;
-                    case 'contract': this.removeContractPermissions(revokeObject.address, revokeObject.network); break;
+                    case 'contract': this.removeContractPermissions(revokeObject.contract, revokeObject.network); break;
                     case 'action': this.removeActionPermissions(revokeObject.perm); break;
                 }
             },
@@ -113,10 +113,10 @@
 
             /***
              * Removes a contract's permissions by removing all actions associated with it under an Identity and Network
-             * @param address
+             * @param contract
              * @param network
              */
-            removeContractPermissions(address, network){
+            removeContractPermissions(contract, network){
                 const msg = [
                     'Revoking Contract',
                     this.breadcrumbs(),
@@ -128,7 +128,7 @@
                     scatter.keychain.permissions = scatter.keychain.permissions.filter(perm =>
                         perm.network.unique() !== network.unique() ||
                         perm.domain !== this.domain ||
-                        perm.contractAddress !== address);
+                        perm.contract !== contract);
                     this[Actions.UPDATE_STORED_SCATTER](scatter);
                 });
             },

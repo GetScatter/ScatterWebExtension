@@ -192,8 +192,8 @@ export default class Scatterdapp {
                             // Local Multi Sig Support
                             // Dapps can pass a keyProvider either in instantation or per-request which will
                             // sign things locally outside of the scope of scatter
-                            let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('keyProvider')) ||
-                                _options.find(arg => arg.hasOwnProperty('keyProvider'));
+                            let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('keyProvider'));
+                            if(!multiSigKeyProvider) multiSigKeyProvider = _options.length ? _options.find(arg => arg.hasOwnProperty('keyProvider')) : null;
                             if(multiSigKeyProvider) {
                                 const localMutiSig = signargs.sign(signargs.buf, multiSigKeyProvider.keyProvider);
                                 result.signatures = result.signatures.concat(localMutiSig);

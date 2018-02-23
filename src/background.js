@@ -389,10 +389,11 @@ export default class Background {
 
                 // Prompting for network addition
                 else NotificationService.open(new Prompt(PromptTypes.REQUEST_ADD_NETWORK, payload.domain, payload.network, network, approved => {
-                    if(approved){
+                    if(approved === false || approved.hasOwnProperty('isError')) sendResponse(approved);
+                    else {
                         scatter.settings.networks.unshift(network);
                         this.update(() => sendResponse(approved), scatter);
-                    } else sendResponse(approved)
+                    }
                 }));
 
             })
