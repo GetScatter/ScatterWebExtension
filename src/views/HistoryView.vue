@@ -55,6 +55,16 @@
                                 </router-link>
                             </span>
                         </section>
+                        <section v-for="message in hist.data.transaction.messages">
+                            <section class="item">
+                                <span>contract</span>
+                                <span>{{message.code}}</span>
+                            </section>
+                            <section class="item">
+                                <span>action</span>
+                                <span>{{message.type}}</span>
+                            </section>
+                        </section>
                     </section>
                 </section>
 
