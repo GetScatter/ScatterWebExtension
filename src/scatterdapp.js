@@ -79,7 +79,6 @@ const _bindNetwork = (_network) => {
  * @param _runIfNetworkBound
  */
 const _networkGuard = (_reject, _runIfNetworkBound) => {
-
     if(!network) {
         throws(`It seems that a network was not set. 
                 Did you create your eosjs instance using scatter.eos() ?`);
