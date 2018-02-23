@@ -240,7 +240,7 @@ network endpoint and signProvider it can never be used maliciously for an attack
 
 The domain requesting the signature is also bound within this proxy and can not be faked as it is being taken from 
 `location.host`, and any attempt to modify this value will result in the browser changing it's actual location.
-( For instance if you type in `location.host = 'google.com'` it will physically redirect you to google )
+( For instance if you type in `location.host = 'google.com'` into chrome's inspector console it will physically redirect you to google )
 
 The only way for a website to push requests into Scatter and use it's private keys to sign signatures is like this.
 

@@ -21,6 +21,7 @@ import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
 import RequestSignaturePrompt from '../prompts/RequestSignaturePrompt.vue'
 import RequestAddNetwork from '../prompts/RequestAddNetwork.vue'
 import RequestUnlock from '../prompts/RequestUnlock.vue'
+import UpdateVersion from '../prompts/UpdateVersion.vue'
 
 export const promptPrefix = 'prompt_';
 
@@ -50,6 +51,7 @@ export const RouteNames = {
     PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
     PROMPT_REQUEST_ADD_NETWORK:`${promptPrefix}${PromptTypes.REQUEST_ADD_NETWORK}`,
     PROMPT_REQUEST_UNLOCK:`${promptPrefix}${PromptTypes.REQUEST_UNLOCK}`,
+    PROMPT_UPDATE_VERSION:`${promptPrefix}${PromptTypes.UPDATE_VERSION}`,
 };
 
 const RouteViews = {
@@ -78,6 +80,7 @@ const RouteViews = {
     [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
     [RouteNames.PROMPT_REQUEST_ADD_NETWORK]:RequestAddNetwork,
     [RouteNames.PROMPT_REQUEST_UNLOCK]:RequestUnlock,
+    [RouteNames.PROMPT_UPDATE_VERSION]:UpdateVersion,
 };
 
 export const RouteDepth = {

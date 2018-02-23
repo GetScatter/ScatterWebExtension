@@ -19,7 +19,7 @@ class Inject {
         // Waiting for scatter to push itself onto the application
         stream.listenWith(msg => {
             if(msg && msg.hasOwnProperty('type') && msg.type === NetworkMessageTypes.PUSH_SCATTER)
-                window.scatter = new Scatterdapp(stream);
+                window.scatter = new Scatterdapp(stream, msg.payload);
         });
 
         // Syncing the streams between the

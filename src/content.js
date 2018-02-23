@@ -40,12 +40,15 @@ class Content {
         // Binding Scatter to the application once the
         // encrypted streams are synced.
         stream.onSync(() => {
-            // Pushing an instance of Scatterdapp to the web application
-            stream.send(NetworkMessage.signal(NetworkMessageTypes.PUSH_SCATTER), PairingTags.INJECTED);
+            this.getVersion().then(version => {
+                // Pushing an instance of Scatterdapp to the web application
+                stream.send(NetworkMessage.payload(NetworkMessageTypes.PUSH_SCATTER, {version}), PairingTags.INJECTED);
 
-            // Dispatching the loaded event to the web application.
-            isReady = true;
-            document.dispatchEvent(new CustomEvent("scatterLoaded"));
+                // Dispatching the loaded event to the web application.
+                isReady = true;
+
+                document.dispatchEvent(new CustomEvent("scatterLoaded"));
+            });
         })
     }
 
@@ -76,6 +79,7 @@ class Content {
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
+            case NetworkMessageTypes.REQUEST_VERSION_UPDATE:            this.requestVersionUpdate(nonSyncMessage); break;
             default:                                                    stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED)
         }
     }
@@ -110,6 +114,17 @@ class Content {
         if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.REQUEST_ADD_NETWORK, message.payload)
             .send().then(res => this.respond(message, res))
+    }
+
+    requestVersionUpdate(message){
+        if(!isReady) return;
+        InternalMessage.payload(InternalMessageTypes.REQUEST_VERSION_UPDATE, message.payload)
+            .send().then(res => this.respond(message, res))
+    }
+
+    getVersion(){
+        return InternalMessage.signal(InternalMessageTypes.REQUEST_GET_VERSION)
+            .send()
     }
 
 }

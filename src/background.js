@@ -69,6 +69,8 @@ export default class Background {
             case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:  Background.getOrRequestIdentity(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_SIGNATURE:        Background.requestSignature(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_ADD_NETWORK:      Background.requestAddNetwork(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_GET_VERSION:      Background.requestGetVersion(sendResponse); break;
+            case InternalMessageTypes.REQUEST_VERSION_UPDATE:   Background.requestVersionUpdate(sendResponse, message.payload); break;
         }
     }
 
@@ -288,13 +290,14 @@ export default class Background {
 
                 const identityAccountAuth = `${identity.account.name}@${identity.account.authority}`;
 
-                if(!requiredAccounts.every(accountAuth => accountAuth === identityAccountAuth)) {
+                if(!requiredAccounts.some(accountAuth => accountAuth === identityAccountAuth)) {
                     sendResponse(Error.signatureError("account_missing", "Missing required accounts"));
                     return false;
                 }
 
 
                 const sign = (returnedFields) => {
+
 
                     // Pre loading the buffer so that it doesn't waste time before the key is released.
                     const buf = Buffer.from(payload.buf.data, 'utf8');
@@ -394,6 +397,25 @@ export default class Background {
 
             })
         })
+    }
+
+    /***
+     * Gets the current version of the app from the manifest.json
+     * @param sendResponse
+     */
+    static requestGetVersion(sendResponse){
+        sendResponse(chrome.app.getDetails().version)
+    }
+
+    /***
+     * Notifies the user that the application they are using is
+     * requiring a newer version of Scatter than they have installed
+     * @param sendResponse
+     * @param payload
+     */
+    static requestVersionUpdate(sendResponse, payload){
+        const network = Network.fromJson({host:'', port:0});
+        NotificationService.open(new Prompt(PromptTypes.UPDATE_VERSION, payload.domain, network, network, () => {}))
     }
 
 

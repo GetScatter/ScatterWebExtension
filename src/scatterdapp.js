@@ -1,6 +1,7 @@
 import NetworkMessage from './messages/NetworkMessage';
 import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import * as PairingTags from './messages/PairingTags'
+import Error from './models/errors/Error'
 import IdGenerator from './util/IdGenerator';
 
 
@@ -27,6 +28,8 @@ let stream = new WeakMap();
 let resolvers = new WeakMap();
 let network = new WeakMap();
 let identityHash = new WeakMap();
+let currentVersion = new WeakMap();
+let requiredVersion = new WeakMap();
 
 
 
@@ -92,8 +95,17 @@ const _networkGuard = (_reject, _runIfNetworkBound) => {
  * @param _payload
  */
 const _send = (_type, _payload) => {
-
     return new Promise((resolve, reject) => {
+
+        // Version requirements
+        if(!!requiredVersion && requiredVersion > currentVersion){
+            const mandatoryNetwork = network ? network : {host:'', port:0};
+            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:location.host}, -1, null, location.host);
+            stream.send(message, PairingTags.SCATTER);
+            reject(Error.requiresUpgrade());
+            return false;
+        }
+
         _networkGuard(reject, () => {
             let id = IdGenerator.numeric(6);
             let message = new NetworkMessage(_type, _payload, id, network, location.host);
@@ -110,7 +122,8 @@ const _send = (_type, _payload) => {
  */
 export default class Scatterdapp {
 
-    constructor(_stream){
+    constructor(_stream, _options){
+        currentVersion = parseFloat(_options.version);
         stream = _stream;
         network = null;
         identityHash = null;
@@ -154,6 +167,7 @@ export default class Scatterdapp {
                     // The signature provider which gets elevated into the user's Scatter
                     const signProvider = async signargs => {
 
+
                         // TODO: We might not need this now that we can pass things into the transaction
                         // TODO: itself. We should check to see if it's a better workflow to just pass
                         // TODO: the identity hash here instead.
@@ -164,7 +178,9 @@ export default class Scatterdapp {
                         }
 
                         const payload = Object.assign(signargs, { domain:location.host, network, identityHash, requiredFields });
+
                         const result = await _send(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
+
 
                         //TODO: This will need to be returned as an error message in the future
                         if(!result) return null;
@@ -173,6 +189,18 @@ export default class Scatterdapp {
                         if(result.hasOwnProperty('signatures')){
                             // Holding onto the returned fields for the result to the application.
                             returnedFields = result.returnedFields;
+
+                            // Local Multi Sig Support
+                            // Dapps can pass a keyProvider either in instantation or per-request which will
+                            // sign things locally outside of the scope of scatter
+                            let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('keyProvider')) ||
+                                _options.find(arg => arg.hasOwnProperty('keyProvider'));
+                            if(multiSigKeyProvider) {
+                                const localMutiSig = signargs.sign(signargs.buf, multiSigKeyProvider.keyProvider);
+                                result.signatures = result.signatures.concat(localMutiSig);
+                            }
+
+                            console.log(result)
 
                             // Returning only the signatures to eosjs
                             return result.signatures;
@@ -230,6 +258,15 @@ export default class Scatterdapp {
     useIdentity(_identityObjectOrHash){
         identityHash = typeof _identityObjectOrHash === 'string' ? _identityObjectOrHash :
             _identityObjectOrHash.hasOwnProperty('hash') ? _identityObjectOrHash.hash : '';
+    }
+
+    /***
+     * Sets a version requirement. If the version is not met all
+     * scatter requests will fail and notify the user of the reason.
+     * @param _version
+     */
+    requireVersion(_version){
+        requiredVersion = _version;
     }
 
 }

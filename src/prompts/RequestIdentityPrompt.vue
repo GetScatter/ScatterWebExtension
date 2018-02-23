@@ -47,7 +47,7 @@
 
                 <section v-else>
                     <section class="description">
-                        <b>cryptocrap.com</b> is <u>not</u> requesting any additional information.
+                        <b>{{prompt.domain}}</b> is <u>not</u> requesting any additional information.
                         The only thing that they are requiring is an Identity hash and name.
                     </section>
                 </section>

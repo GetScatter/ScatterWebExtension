@@ -34,4 +34,8 @@ export default class Error {
         return new Error(_type, _message, ErrorCodes.NO_SIGNATURE)
     }
 
+    static requiresUpgrade(){
+        return new Error(ErrorTypes.UPGRADE_REQUIRED, "The required version is newer than the User's Scatter", ErrorCodes.UPGRADE_REQUIRED)
+    }
+
 }
