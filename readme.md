@@ -44,7 +44,8 @@ from web applications without ever exposing your keys and provide personal infor
 
  
 #### Catching browsers with Scatter installed
-```
+
+```html
 document.addEventListener('scatterLoaded', scatterExtension => { 
     const version = scatterExtension.version;
     
@@ -57,7 +58,7 @@ document.addEventListener('scatterLoaded', scatterExtension => {
 
 #### Initializing the Scatter interface
 
-```
+```js
 const scatter = window.scatter;
  
 // It is good practice to take this off the window now.
@@ -81,7 +82,7 @@ const eos = scatter.eos( Eos.Localnet, network, eosOptions );
 
 Once an Identity is provided it will not need to be re-approved every time. 
 
-```
+```js
 // You can require certain fields
 const requirements = ['account'];
  
@@ -117,7 +118,8 @@ scatter.getIdentity(requirements).then(identity => {
 You can optionally pass in required fields to the eosjs options if you want it to give you back 
 certain user-selected Identity properties such as address. _Do not rely on previously acquired Identity 
 properties, since users might have multiple locations such as Work and Home._
-``` 
+
+```js
 const requiredFields = ['address', 'country', 'phone'];
 eos.transfer(identity.account.name, 'inita', 10, '', {requiredFields}).then(transaction => {
     //...
@@ -125,15 +127,17 @@ eos.transfer(identity.account.name, 'inita', 10, '', {requiredFields}).then(tran
     //.. 
 });
 ```
+
 The resulting json will include the required fields along with the normal eosjs json if the signing was successful. 
-```
+
+```js
 {
-    transaction:{...},
-    transaction_id:'...',
-    returnedFields:{
-        address:'420 Paper St. Wilmington DE 19886',
-        country:{ code:'US', name:'United States' },
-        phone:5555555
+    transaction: {...},
+    transaction_id: '...',
+    returnedFields: {
+        address: '420 Paper St. Wilmington DE 19886',
+        country: { code:'US', name:'United States' },
+        phone: 5555555
     }
 }
 ```
@@ -144,12 +148,13 @@ the transfer of digital currency._
 #### Transactions at the Identity
 
 All transactions **at** an identity are using solely eosjs. They should not be passed through to Scatter.
-```
+
+```js
 // Standard inita key from EOS docs
 const keyProvider = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
  
 // Create your own instance of eosjs with your keyProvider and network
-let eosjs = Eos.Localnet({httpEndpoint:`http://${network.host}:${network.port}`, keyProvider});
+const eosjs = Eos.Localnet({httpEndpoint:`http://${network.host}:${network.port}`, keyProvider});
  
 // The same process as before but now you own the keys.
 eosjs.transfer('inita', identity.account.name, 100000, '').then(transaction => {
@@ -226,10 +231,12 @@ allows a handful of methods which can interact with the Scatter extension:
 - **eos** - Used to fetch a dummy version of `eosjs` which uses Scatter as the `signProvider`.
 
 Normally when you use `eosjs` you have to give it a private key to work with.
-```
+
+```js
 const eos = Eos.Localnet({httpEndpoint:ENDPOINT, keyProvider:PRIVATE_KEY});
 eos.transfer('users_account', 'some_other_account', 100000, '');
 ```
+
 [The `eosjs` instance that is returned from `scatter.eos()`](https://github.com/EOSEssentials/Scatter/blob/master/src/scatterdapp.js#L131)
 is an empty dummy object with no options on it that catches all requests sent into it. Every time it is used it re-creates a
 fresh instance of `eosjs` with a pre-configured network ( the same one provided by the Identity request ) and a pre-configured 
@@ -244,7 +251,7 @@ The domain requesting the signature is also bound within this proxy and can not 
 
 The only way for a website to push requests into Scatter and use it's private keys to sign signatures is like this.
 
-```
+```js
 // An identity must be requested and bound before requesting transactions
 const identity = await scatter.getIdentity();
 scatter.useIdentity(identity)
