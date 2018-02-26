@@ -224,11 +224,10 @@ export default class Background {
     static getOrRequestIdentity(sendResponse, payload){
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
-                const domain = payload.domain,
-                      network = Network.fromJson(payload.network),
-                      fields = payload.fields;
+                const {domain, fields, checkOnly} = payload;
+                const network = Network.fromJson(payload.network);
 
-                IdentityService.getOrRequestIdentity(domain, network, fields, scatter, (identity, fromPermission) => {
+                IdentityService.getOrRequestIdentity(domain, network, fields, checkOnly, scatter, (identity, fromPermission) => {
                     if(!identity){
                         sendResponse(Error.signatureError("identity_rejected", "User rejected the provision of an Identity"));
                         return false;

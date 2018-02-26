@@ -223,20 +223,28 @@ export default class Scatterdapp {
         });
     }
 
-
     /***
      * Gets an Identity from the user to use.
      * You shouldn't rely on the state of this object to be immutable.
      * Identities are subject to change and if you use values you saved in
      * a database vs the values on the identity currently signature providers will not work.
-     * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
+     * @param _fields - You can specify required fields such as ['email', 'country', 'firstname']
      */
-    getIdentity(fields = []){
+    getIdentity(_fields = []){
         return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
             domain:location.host,
             network:network,
-            fields
+            _fields
         });
+    }
+
+    /***
+     * Sets which Identity to use for transaction signing
+     * @param _identityObjectOrHash - The hash of the identity, or an Identity object
+     */
+    useIdentity(_identityObjectOrHash){
+        identityHash = typeof _identityObjectOrHash === 'string' ? _identityObjectOrHash :
+            _identityObjectOrHash.hasOwnProperty('hash') ? _identityObjectOrHash.hash : '';
     }
 
     /***
@@ -248,15 +256,6 @@ export default class Scatterdapp {
             domain:location.host,
             network:network
         });
-    }
-
-    /***
-     * Sets which Identity to use for transaction signing
-     * @param _identityObjectOrHash - The hash of the identity, or an Identity object
-     */
-    useIdentity(_identityObjectOrHash){
-        identityHash = typeof _identityObjectOrHash === 'string' ? _identityObjectOrHash :
-            _identityObjectOrHash.hasOwnProperty('hash') ? _identityObjectOrHash.hash : '';
     }
 
     /***
