@@ -126,6 +126,7 @@
     import IdentityService from '../services/IdentityService'
     import AccountService from '../services/AccountService'
     import EOSKeygen from '../util/EOSKeygen'
+    import {Countries} from '../data/Countries'
 
     export default {
         data(){ return {
@@ -133,12 +134,7 @@
             keypair:null,
             accountNameOrPrivateKey:'',
             isNew:false,
-            countries:[
-                {code:'US', name:'United States'},
-                {code:'UK', name:'United Kingdom'},
-                {code:'FR', name:'France'},
-                {code:'GR', name:'Germany'},
-            ],
+            countries: Countries,
             selectedLocation:null,
         }},
         computed: {
