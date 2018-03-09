@@ -21,7 +21,7 @@
 <style lang="scss">
     .nav-actions {
         position:fixed;
-        top:0;
+        top:1px;
         right:53px;
         opacity:1;
         transition:opacity 0.5s ease;
