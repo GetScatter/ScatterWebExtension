@@ -145,6 +145,22 @@ This allows you to request all information needed for a physical sale with one c
 _For instance in this case we could be a shopping website that needs shipping details along with 
 the transfer of digital currency._
 
+
+#### Multi-part signatures involving the application AND the identity
+
+You may now also double-sign signatures using a private key from the application as well as one supplied by 
+the user.
+
+```js
+eos.contract('yourcontract', { keyProvider:'SOME_PRIVATE_KEY' }).then(contract => {
+    contract.someAction('hello', 'world');
+});
+```
+
+For a real example of this check out our [Space Invaders' demo code](https://github.com/EOSEssentials/Scatter-Demos/blob/master/src/views/SpaceInvaders.vue#L162)
+
+
+
 #### Transactions at the Identity
 
 All transactions **at** an identity are using solely eosjs. They should not be passed through to Scatter.
