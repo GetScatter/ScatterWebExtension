@@ -228,13 +228,13 @@ export default class Scatterdapp {
      * You shouldn't rely on the state of this object to be immutable.
      * Identities are subject to change and if you use values you saved in
      * a database vs the values on the identity currently signature providers will not work.
-     * @param _fields - You can specify required fields such as ['email', 'country', 'firstname']
+     * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
      */
-    getIdentity(_fields = []){
+    getIdentity(fields = []){
         return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
             domain:location.host,
             network:network,
-            _fields
+            fields
         });
     }
 
