@@ -19,6 +19,7 @@
         data(){ return {
             links:[
                 {route:RouteNames.NETWORKS, name:'Networks', icon:'globe'},
+                {route:RouteNames.KEYPAIRS, name:'Key Pairs', icon:'key'},
                 {route:RouteNames.BACKUP, name:'Backup', icon:'save'},
                 {route:RouteNames.CHANGE_PASSWORD, name:'Password', icon:'asterisk'},
                 {route:RouteNames.AUTO_LOCK, name:'Auto Lock', icon:'clock-o'},

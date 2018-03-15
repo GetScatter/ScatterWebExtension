@@ -58,6 +58,7 @@
                     case RouteNames.EXPORT_JSON: return 'Backup';
                     case RouteNames.DESTROY: return 'Destroy';
                     case RouteNames.AUTO_LOCK: return 'Timeout Settings';
+                    case RouteNames.KEYPAIRS: return 'Key Pairs';
                 }
                 return 'Undefined'
             },

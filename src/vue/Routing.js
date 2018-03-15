@@ -15,6 +15,7 @@ import DestroyView from '../views/DestroyView.vue'
 import AutoLockView from '../views/AutoLockView.vue'
 import ExportJsonView from '../views/ExportJsonView.vue'
 import HistoryView from '../views/HistoryView.vue'
+import KeyPairView from '../views/KeyPairView.vue'
 
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
@@ -46,6 +47,7 @@ export const RouteNames = {
     EXPORT_JSON:'exportJson',
     DESTROY:'destroy',
     AUTO_LOCK:'autoLock',
+    KEYPAIRS:'keypairs',
 
     PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
     PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
@@ -75,6 +77,7 @@ const RouteViews = {
     [RouteNames.EXPORT_JSON]:ExportJsonView,
     [RouteNames.DESTROY]:DestroyView,
     [RouteNames.AUTO_LOCK]:AutoLockView,
+    [RouteNames.KEYPAIRS]:KeyPairView,
 
     [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
     [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
@@ -104,6 +107,7 @@ export const RouteDepth = {
     [RouteNames.BACKUP]:101,
     [RouteNames.EXPORT_JSON]:102,
     [RouteNames.DESTROY]:101,
+    [RouteNames.KEYPAIRS]:101,
 };
 
 export class Routing {

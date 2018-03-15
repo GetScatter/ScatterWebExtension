@@ -27,7 +27,6 @@
     export default {
         data(){ return {
             links:[
-//                {route:RouteNames.TRANSFER, name:'Transfer', icon:'send'},
                 {route:RouteNames.IDENTITIES, name:'Identities', icon:'address-book'},
                 {route:RouteNames.PERMISSIONS, name:'Permissions', icon:'shield'},
                 {route:RouteNames.HISTORY, name:'History', icon:'history'},
