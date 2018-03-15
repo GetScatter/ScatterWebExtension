@@ -46,11 +46,15 @@ from web applications without ever exposing your keys and provide personal infor
 #### Catching browsers with Scatter installed
 
 ```html
-document.addEventListener('scatterLoaded', scatterExtension => { 
-    const version = scatterExtension.version;
-    
-    // This will only be given in the case of previous Identity permissions.
-    const hash = scatterExtension.identifier;
+document.addEventListener('scatterLoaded', scatterExtension => {
+    // You should take the scatter object off of the window's scope
+    // once you have a reference to it to make it inaccessible to the 
+    // inspector.
+    const scatter = window.scatter;
+    window.scatter = null;
+     
+    // If you want to require a specific version of Scatter
+    window.scatter.requireVersion(2.1);
     
     //...
 })
