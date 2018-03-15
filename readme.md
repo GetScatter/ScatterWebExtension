@@ -45,7 +45,7 @@ from web applications without ever exposing your keys and provide personal infor
  
 #### Catching browsers with Scatter installed
 
-```html
+```js
 document.addEventListener('scatterLoaded', scatterExtension => {
     // You should take the scatter object off of the window's scope
     // once you have a reference to it to make it inaccessible to the 
@@ -54,7 +54,7 @@ document.addEventListener('scatterLoaded', scatterExtension => {
     window.scatter = null;
      
     // If you want to require a specific version of Scatter
-    window.scatter.requireVersion(2.1);
+    scatter.requireVersion(2.1);
     
     //...
 })
