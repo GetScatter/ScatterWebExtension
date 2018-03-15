@@ -47,11 +47,10 @@ from web applications without ever exposing your keys and provide personal infor
 
 ```js
 document.addEventListener('scatterLoaded', scatterExtension => {
-    // You should take the scatter object off of the window's scope
-    // once you have a reference to it to make it inaccessible to the 
-    // inspector.
+    // Scatter will now be available from the window scope.
+    // At this stage the connection to Scatter from the application is 
+    // already encrypted. 
     const scatter = window.scatter;
-    window.scatter = null;
      
     // If you want to require a specific version of Scatter
     scatter.requireVersion(2.1);
