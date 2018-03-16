@@ -41,9 +41,9 @@ export default class AuthenticationService {
      * @param newPassword
      * @param context
      */
-    static changePassword(oldPassword, newPassword, context){
-        const [oldMnemonic, oldSeed] = Mnemonic.generateMnemonic(oldPassword);
-        const [newMnemonic, newSeed] = Mnemonic.generateMnemonic(newPassword);
+    static async changePassword(oldPassword, newPassword, context){
+        const [oldMnemonic, oldSeed] = await Mnemonic.generateMnemonic(oldPassword);
+        const [newMnemonic, newSeed] = await Mnemonic.generateMnemonic(newPassword);
 
         const scatter = context.scatter.clone();
         context[Actions.SET_MNEMONIC](newMnemonic);
@@ -64,7 +64,7 @@ export default class AuthenticationService {
      * Checks if a password is valid
      * @param password
      * @param confirmation
-     * @param pushAlert
+     * @param context
      * @returns {boolean}
      */
     static validPassword(password, confirmation, context){

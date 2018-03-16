@@ -65,6 +65,7 @@ class Content {
     }
 
     contentListener(msg){
+        console.log('content listener',msg);
         if(!isReady) return;
         if(!msg) return;
         if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) {

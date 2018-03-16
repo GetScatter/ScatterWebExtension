@@ -226,7 +226,7 @@ The injected script does only two things.
 
 - First it sets up an **Encrypted Stream**. Until that stream is synced and encrypted the 
 website can make no contact with Scatter what-so-ever. 
-[The encryption algorithm used is AES-256](https://github.com/brix/crypto-js/blob/develop/src/aes.js)
+[The encryption algorithm used is Stanford Javascript Crypto Library AES-128-GCM](https://github.com/bitwiseshiftleft/sjcl/blob/master/core/gcm.js)
 which is created using a randomly generated key upon every reload. This helps defend against *Man in the middle ( MITM )* attacks.
 The stream is not accessible from the website, and any attempt to send unencrypted or badly encrypted data to the content script with 
 malicious intent is immediately rejected.
@@ -334,30 +334,17 @@ are decrypted for milliseconds, used to sign the transaction, and then erased fr
 #### Passwords and Mnemonics
 
 Normally, an application creates a hash of a cleartext password using something like SHA-256 and then saves that hash within a database.
-This is an attack vector within itself because it gives an attacked a piece of information to work with.
+This is an attack vector within itself because it gives an attacker a piece of information to work with as well as a fairly easy to brute force piece of 
+information. [SHA/HMAC vs KDF or SHA-256 vs Bcrypt/Scrypt](https://security.stackexchange.com/a/16817)
 
-Scatter does not do this. When a user first sets their Scatter password it is turned into a SHA-256 hash, and a seed is derived from that 
-hash. That seed is used to generate a Mnemonic which is displayed to the user once and never stored within Scatter. The seed it then also 
-used to encrypt the user's keychain. 
+Scatter does not do this, or use SHA-256. When a user first sets their Scatter password it is turned into a `scrypt` hash. 
+That hash is used to generate a Mnemonic which is displayed to the user once and never stored within Scatter. The mnemonic is then used to derive a seed. 
+The seed is then used to encrypt the user's keychain. 
 
-Let's see what this does to a completely insecure password such as `asdfasdf`
+When a user logs into Scatter either they can decrypt the AES-128-GCM encrypted keychain stored in the local storage, or they can not. 
+That is their password verification, nullifying the need for the hash to be stored in local storage and removing the ability to use the hash to find the password.
 
-- User sets their password to be `asdfasdf`
-- Password is irreversibly hashed using the SHA-256 algorithm and turned into `2413FB3709B05939F04CF2E92F7D0897FC2596F9AD0B8A9EA855C7BFEBAAE892`
-- Seed is derived from the hash which turns it into `2d965eadab5c85a522ab146c4fe6871b2bf6e6ad028479dca622783bed78d7e5493a84396a339e972f916e93ab1fb5fd511e43c90007ff252eaf536973d6c48e`
-- Mnemonic is derived from the seed which ends up being 24 words due to the hash being 256 bits.
-  ```
-  catch panther soccer beach airport ostrich scorpion oxygen truck
-  know drama copper seat slice trade pause melody vocal betray
-  month wrong step pelican entry
-  ```
-
-What this means is that we can take a usually insecure password ( something 
-which a human can actually remember such as a pass phrase ) and turn it into something far more secure entropy wise.
-**However, a weak password should still never be used. If it can easily be guessed it can easily be brute forced**.
-
-When a user logs into Scatter either they can decrypt the AES-256 encrypted keychain stored in the local storage, or they can not. 
-That is their password verification, nullifying the need for the hash to be stored in local storage.
+**It is important to state that the password itself is always the easiest attack vector. Short, guessable passwords should never be used.**
 
 
 

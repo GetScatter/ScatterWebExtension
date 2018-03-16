@@ -120,7 +120,7 @@ export default class Identity {
     hasRequiredFields(fields){
         let foundFields = [];
 
-        // fields should always be lowercase and hash and name should never be searched for
+        // fields should always be lowercase and insecureHash and name should never be searched for
         fields = fields.map(field => field.toLowerCase()).filter(field => field !== 'hash' && field !== 'name');
 
         if(fields.includes(IdentityFields.account) && this.hasAccount()) foundFields.push(IdentityFields.account);
@@ -143,11 +143,11 @@ export default class Identity {
     /***
      * * Identities should always run this before serving the identity
      * to anywhere outside of Scatter.
-     * @param returnOnly - If true only returns the hash instead of binding it.
+     * @param returnOnly - If true only returns the insecureHash instead of binding it.
      */
     encryptHash(returnOnly = false){
-        if(returnOnly) return Hasher.hash(this.hash);
-        else this.hash = Hasher.hash(this.hash);
+        if(returnOnly) return Hasher.insecureHash(this.hash);
+        else this.hash = Hasher.insecureHash(this.hash);
     }
 
     /***

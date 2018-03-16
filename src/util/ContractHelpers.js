@@ -3,7 +3,7 @@ import Hasher from './Hasher'
 export default class ContractHelpers {
 
     /***
-     * Created a hash of the entire message
+     * Created a insecureHash of the entire message
      * @param message
      * @param signingAccountName
      * @param domain
@@ -12,7 +12,7 @@ export default class ContractHelpers {
      * @returns {*}
      */
     static messageChecksum(message, signingAccountName, domain, network, requiredFields = []){
-        return Hasher.hash(JSON.stringify(Object.assign(message, {domain, network, requiredFields})))
+        return Hasher.insecureHash(JSON.stringify(Object.assign(message, {domain, network, requiredFields})))
     }
 
     /***

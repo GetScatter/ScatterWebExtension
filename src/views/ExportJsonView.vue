@@ -63,16 +63,17 @@
                 });
             },
             exportJson(){
-                const scatter = this.scatter.clone();
-                const [mnemonic, seed] = Mnemonic.generateMnemonic(this.password);
-                scatter.keychain.keypairs.map(keypair => keypair.decrypt(seed));
-
-                const filename = `scatter_${scatter.keychain.id}.json`;
-                const filetext = JSON.stringify(scatter.keychain);
-                const filelink = document.getElementById('PRIVATE_KEY_DOWNLOAD');
-                if(!filelink) return false;
-                filelink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(filetext));
-                filelink.setAttribute('download', filename);
+                alert("no longer supported")
+//                const scatter = this.scatter.clone();
+//                const [mnemonic, seed] = Mnemonic.generateMnemonic(this.password);
+//                scatter.keychain.keypairs.map(keypair => keypair.decrypt(seed));
+//
+//                const filename = `scatter_${scatter.keychain.id}.json`;
+//                const filetext = JSON.stringify(scatter.keychain);
+//                const filelink = document.getElementById('PRIVATE_KEY_DOWNLOAD');
+//                if(!filelink) return false;
+//                filelink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(filetext));
+//                filelink.setAttribute('download', filename);
             },
             ...mapActions([
                 Actions.PUSH_ALERT,

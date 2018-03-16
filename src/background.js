@@ -322,7 +322,7 @@ export default class Background {
                             identityHash:identity.hash,
                             account:identity.account,
                             transaction:payload.transaction,
-                            hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
+                            hash:'' // <-- hmmm, what to do with this? There is no insecureHash here to track yet. :(
                         });
 
                         sendResponse({

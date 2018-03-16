@@ -32,7 +32,7 @@ export default class Keychain {
     }
 
     /***
-     * Finds an Identity on the keychain by a hash
+     * Finds an Identity on the keychain by a insecureHash
      * @param identityHash
      * @returns {*}
      */

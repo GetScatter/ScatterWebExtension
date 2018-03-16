@@ -14,8 +14,8 @@ export const actions = {
     [Actions.DESTROY]:({dispatch}) => InternalMessage.signal(InternalMessageTypes.DESTROY).send(),
 
     [Actions.SET_SEED]:({commit}, password) => {
-        return new Promise((resolve, reject) => {
-            const [mnemonic, seed] = Mnemonic.generateMnemonic(password);
+        return new Promise(async (resolve, reject) => {
+            const [mnemonic, seed] = await Mnemonic.generateMnemonic(password);
             InternalMessage.payload(InternalMessageTypes.SET_SEED, seed).send().then(() => {
                 resolve(mnemonic)
             })
