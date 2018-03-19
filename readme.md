@@ -93,14 +93,31 @@ scatter.getIdentity(requirements).then(identity => {
  
     // Identities must be bound to scatter to be 
     // able to request transaction signatures
+    
+    // If you want to hold the identity within
+    // scatter you may do so by passing the entire object
     scatter.useIdentity(identity);
-    or
+    
+    // If you are holding it yourself you can pass in 
+    // only the hash as well.
     scatter.useIdentity(identity.hash);
     
 }).catch(error => {
     //...
 });
 ```
+
+Identities that have permissions already will be fed into the scatter instance when it is loaded.
+If a user's Scatter is locked, the `identity` property will be null regardless, and no prompt will be 
+issued to the user as this would create a bad user experience.
+
+```js
+const identity = scatter.identity;
+```
+
+If the `identity` property is not null it will also be pre-fed into the scatter object.
+That way you do not have to do `scatter.useIdentity()` again. 
+
 
 ##### Fields that can be required
 - **account** ( needs to be required for signature requests )
