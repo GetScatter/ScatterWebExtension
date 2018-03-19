@@ -1,4 +1,4 @@
-import {EncryptedStream} from 'extension-streams';
+import {EncryptedStream, LocalStream} from 'extension-streams';
 import IdGenerator from './util/IdGenerator';
 import * as PairingTags from './messages/PairingTags'
 import NetworkMessage from './messages/NetworkMessage';
@@ -39,17 +39,30 @@ class Content {
 
         // Binding Scatter to the application once the
         // encrypted streams are synced.
-        stream.onSync(() => {
-            this.getVersion().then(version => {
-                // Pushing an instance of Scatterdapp to the web application
-                stream.send(NetworkMessage.payload(NetworkMessageTypes.PUSH_SCATTER, {version}), PairingTags.INJECTED);
+        stream.onSync(async () => {
+            const version = await this.getVersion();
+            const identity = await this.identityFromPermissions();
 
-                // Dispatching the loaded event to the web application.
-                isReady = true;
+            console.log('id', identity)
 
-                document.dispatchEvent(new CustomEvent("scatterLoaded"));
-            });
+            // Pushing an instance of Scatterdapp to the web application
+            stream.send(NetworkMessage.payload(NetworkMessageTypes.PUSH_SCATTER, {version, identity}), PairingTags.INJECTED);
+
+            // Dispatching the loaded event to the web application.
+            isReady = true;
+
+            document.dispatchEvent(new CustomEvent("scatterLoaded"));
         })
+    }
+
+    getVersion(){
+        return InternalMessage.signal(InternalMessageTypes.REQUEST_GET_VERSION)
+            .send()
+    }
+
+    identityFromPermissions(){
+        return InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:location.host})
+            .send()
     }
 
     /***
@@ -121,11 +134,6 @@ class Content {
         if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.REQUEST_VERSION_UPDATE, message.payload)
             .send().then(res => this.respond(message, res))
-    }
-
-    getVersion(){
-        return InternalMessage.signal(InternalMessageTypes.REQUEST_GET_VERSION)
-            .send()
     }
 
 }

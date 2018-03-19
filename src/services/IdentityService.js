@@ -37,15 +37,23 @@ export default class IdentityService {
         })
     }
 
-    static getOrRequestIdentity(domain, network, fields, scatter, callback){
-
-        // Possibly getting an Identity that has been synced with this application.
-        const identityFromPermission = scatter.keychain.permissions.find(perm =>
+    static identityPermission(domain, network, scatter){
+        return scatter.keychain.permissions.find(perm =>
             perm.isIdentityFor(domain, network) &&
             perm.identityIsNotDisabled(scatter.keychain)
         );
+    }
 
-        let identity = identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
+    static identityFromPermissionsOrNull(domain, network, scatter){
+        const identityFromPermission = IdentityService.identityPermission(domain, network, scatter);
+        return identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
+    }
+
+    static getOrRequestIdentity(domain, network, fields, scatter, callback){
+
+        // Possibly getting an Identity that has been synced with this application.
+        const identityFromPermission = IdentityService.identityFromPermissionsOrNull(domain, network, scatter);
+        let identity = identityFromPermission;
 
         const sendBackIdentity = id => {
             if(!id || id.hasOwnProperty('isError')){

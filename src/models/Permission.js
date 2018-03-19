@@ -15,6 +15,8 @@ export default class Permission {
         this.checksum = null;
 
         this.timestamp = 0;
+
+        this.fields = [];
     }
 
     static placeholder(){ return new Permission(); }
@@ -38,7 +40,7 @@ export default class Permission {
     }
 
     isIdentityFor(domain, network){
-        return this.isIdentityOnly() && this.domain === domain && this.network.unique() === network.unique();
+        return this.isIdentityOnly() && this.domain === domain && (!network || this.network.unique() === network.unique());
     }
 
     // TODO: There will be a problem with multiple identity permissions where an

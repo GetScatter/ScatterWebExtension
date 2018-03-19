@@ -56,21 +56,22 @@ export default class Background {
      * @param message - The message to be dispensed
      */
     dispenseMessage(sendResponse, message){
-        console.log(message);
         Background.checkAutoLock();
+        console.log(message)
         switch(message.type){
-            case InternalMessageTypes.SET_SEED:                 Background.setSeed(sendResponse, message.payload); break;
-            case InternalMessageTypes.SET_TIMEOUT:              Background.setTimeout(sendResponse, message.payload); break;
-            case InternalMessageTypes.IS_UNLOCKED:              Background.isUnlocked(sendResponse); break;
-            case InternalMessageTypes.LOAD:                     Background.load(sendResponse); break;
-            case InternalMessageTypes.UPDATE:                   Background.update(sendResponse, message.payload); break;
-            case InternalMessageTypes.PUB_TO_PRIV:              Background.publicToPrivate(sendResponse, message.payload); break;
-            case InternalMessageTypes.DESTROY:                  Background.destroy(sendResponse); break;
-            case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:  Background.getOrRequestIdentity(sendResponse, message.payload); break;
-            case InternalMessageTypes.REQUEST_SIGNATURE:        Background.requestSignature(sendResponse, message.payload); break;
-            case InternalMessageTypes.REQUEST_ADD_NETWORK:      Background.requestAddNetwork(sendResponse, message.payload); break;
-            case InternalMessageTypes.REQUEST_GET_VERSION:      Background.requestGetVersion(sendResponse); break;
-            case InternalMessageTypes.REQUEST_VERSION_UPDATE:   Background.requestVersionUpdate(sendResponse, message.payload); break;
+            case InternalMessageTypes.SET_SEED:                     Background.setSeed(sendResponse, message.payload); break;
+            case InternalMessageTypes.SET_TIMEOUT:                  Background.setTimeout(sendResponse, message.payload); break;
+            case InternalMessageTypes.IS_UNLOCKED:                  Background.isUnlocked(sendResponse); break;
+            case InternalMessageTypes.LOAD:                         Background.load(sendResponse); break;
+            case InternalMessageTypes.UPDATE:                       Background.update(sendResponse, message.payload); break;
+            case InternalMessageTypes.PUB_TO_PRIV:                  Background.publicToPrivate(sendResponse, message.payload); break;
+            case InternalMessageTypes.DESTROY:                      Background.destroy(sendResponse); break;
+            case InternalMessageTypes.IDENTITY_FROM_PERMISSIONS:    Background.identityFromPermissions(sendResponse, message.payload); break;
+            case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:      Background.getOrRequestIdentity(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_SIGNATURE:            Background.requestSignature(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_ADD_NETWORK:          Background.requestAddNetwork(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_GET_VERSION:          Background.requestGetVersion(sendResponse); break;
+            case InternalMessageTypes.REQUEST_VERSION_UPDATE:       Background.requestVersionUpdate(sendResponse, message.payload); break;
         }
     }
 
@@ -106,7 +107,7 @@ export default class Background {
         if(seed.length) StorageService.get().then(scatter => {
             try {
                 scatter.decrypt(seed);
-                sendResponse(typeof scatter.keychain === 'object')
+                sendResponse(typeof scatter.keychain === 'object');
             } catch(e) {
                 seed = '';
                 sendResponse(false);
@@ -216,6 +217,24 @@ export default class Background {
     /*              Web Application             */
     /********************************************/
 
+    static identityFromPermissions(sendResponse, payload){
+        if(!seed.length) {
+            sendResponse(null);
+            return false;
+        }
+
+        Background.load(scatter => {
+            const domain = payload.domain;
+            const permission = IdentityService.identityPermission(domain, null, scatter);
+            if(!permission){
+                sendResponse(null);
+                return false;
+            }
+            const identity = permission.identity(scatter.keychain);
+            sendResponse(identity.asOnlyRequiredFields(permission.fields));
+        });
+    }
+
     /***
      * Prompts a request for Identity provision
      * @param sendResponse
@@ -247,7 +266,8 @@ export default class Background {
                             domain,
                             network,
                             identityHash:identity.hash,
-                            timestamp:+ new Date()
+                            timestamp:+ new Date(),
+                            fields
                         })])
                     }
 

@@ -6,6 +6,7 @@ export const UPDATE = 'update';
 export const PUB_TO_PRIV = 'publicToPrivateKey';
 export const DESTROY = 'destroy';
 
+export const IDENTITY_FROM_PERMISSIONS = 'identityFromPermissions';
 export const GET_OR_REQUEST_IDENTITY = 'getOrRequestIdentity';
 export const REQUEST_SIGNATURE = 'requestSignature';
 export const REQUEST_ADD_NETWORK = 'requestAddNetwork';

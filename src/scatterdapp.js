@@ -123,11 +123,14 @@ export default class Scatterdapp {
 
     constructor(_stream, _options){
         currentVersion = parseFloat(_options.version);
+        identityHash = _options.identity ? _options.identity.hash : null;
+        this.identity = _options.identity;
         stream = _stream;
         network = null;
-        identityHash = null;
         resolvers = [];
         _subscribe();
+
+        if(this.identity) this.useIdentity(identityHash);
     }
 
 
@@ -243,6 +246,7 @@ export default class Scatterdapp {
      * @param _identityObjectOrHash - The hash of the identity, or an Identity object
      */
     useIdentity(_identityObjectOrHash){
+        if(typeof _identityObjectOrHash === 'object') this.identity = _identityObjectOrHash;
         identityHash = typeof _identityObjectOrHash === 'string' ? _identityObjectOrHash :
             _identityObjectOrHash.hasOwnProperty('hash') ? _identityObjectOrHash.hash : '';
     }
