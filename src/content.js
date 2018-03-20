@@ -43,8 +43,6 @@ class Content {
             const version = await this.getVersion();
             const identity = await this.identityFromPermissions();
 
-            console.log('id', identity)
-
             // Pushing an instance of Scatterdapp to the web application
             stream.send(NetworkMessage.payload(NetworkMessageTypes.PUSH_SCATTER, {version, identity}), PairingTags.INJECTED);
 
@@ -78,7 +76,6 @@ class Content {
     }
 
     contentListener(msg){
-        console.log('content listener',msg);
         if(!isReady) return;
         if(!msg) return;
         if(!stream.synced && (!msg.hasOwnProperty('type') || msg.type !== 'sync')) {
