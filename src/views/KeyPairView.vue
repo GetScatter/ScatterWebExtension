@@ -10,8 +10,9 @@
             </figure>
             <cin placeholder="Public Key" :text="publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
             <cin placeholder="Private Key" :text="privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
-            <btn text="Generate Key Pair" v-on:clicked="generateKeyPair()" margined="true"></btn>
-            <btn text="Validate Key Pair" v-on:clicked="checkKeyPair()" margined="true"></btn>
+            <btn text="Generate Key Pair" @click.native="generateKeyPair()" margined="true"></btn>
+            <btn text="Validate" half="true" @click.native="checkKeyPair()" margined="true"></btn>
+            <btn text="Copy" half="true" @click.native="copyKeyPair()" margined="true"></btn>
         </section>
 
         <section class="panel" v-if="matches !== null">
@@ -23,6 +24,9 @@
                 The public key generated from the private key did <b>not</b> match the public key provided!
             </figure>
         </section>
+
+        <!-- INPUT FIELD USED FOR COPYING -->
+        <input tabindex="-1" type="text" ref="copier" class="copier" />
 
     </section>
 </template>
@@ -55,6 +59,13 @@
         },
         methods: {
             bind(changed, original) { this[original] = changed },
+            copyKeyPair(){
+                const copier = this.$refs.copier;
+                copier.value = `Private Key: ${this.privateKey} Public Key: ${this.publicKey}`;
+                copier.select();
+                document.execCommand("copy");
+                copier.value = '';
+            },
             generateKeyPair(){
                 this.matches = null;
                 ecc.randomKey().then(privateKey => {
@@ -109,6 +120,10 @@
 </script>
 
 <style lang="scss">
+    .copier {
+        position:absolute;
+        top:-9999px;
+    }
     .network {
         font-family:'Open Sans', sans-serif;
 
