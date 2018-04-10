@@ -37,7 +37,7 @@ export default class Keychain {
      * @returns {*}
      */
     findIdentity(identityHash){
-        return this.identities.find(id => id.hash === identityHash) || this.identities.find(id => id.encryptHash(true) === identityHash);
+        return this.identities.find(id => id.hash === identityHash);
     }
 
     /***

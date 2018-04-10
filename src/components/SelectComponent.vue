@@ -1,5 +1,5 @@
 <template>
-    <section class="select" :class="{'open':open, 'seventy':seventy}">
+    <section class="select" :class="{'open':open, 'seventy':seventy, 'disabled':disabled}">
         <figure class="arrow">
             <i class="fa fa-chevron-down"></i>
         </figure>
@@ -23,7 +23,10 @@
             open:false,
         }},
         methods: {
-            toggle(){ this.open = !this.open },
+            toggle(){
+                if(this.disabled) return false;
+                this.open = !this.open
+            },
             parse(item){
                 if(typeof item === 'string') return item;
                 if(this.parser) return this.parser(item);
@@ -38,10 +41,11 @@
                 this.$emit('changed', this.selectedOption)
             }
         },
-        props:['placeholder', 'options', 'selected', 'prop', 'parser', 'seventy'],
+        props:['placeholder', 'options', 'selected', 'prop', 'parser', 'seventy', 'disabled'],
         watch:{
-            input:function(){ this.emit(); },
-            text:function(){ this.input = this.text; },
+            input(){ this.emit(); },
+            text(){ this.input = this.text; },
+            disabled(isDisabled){ if(isDisabled) this.open = false; },
         }
     }
 </script>
@@ -59,6 +63,10 @@
         background:#fff;
         transition:background 0.2s ease;
         z-index:2;
+
+        &.disabled {
+            background: #f5f5f5;
+        }
 
         &.seventy {
             width:calc(70% - 5px);

@@ -60,7 +60,7 @@ export default class IdentityService {
                 callback(null, null);
                 return false;
             }
-            id.encryptHash();
+
             callback(id.asOnlyRequiredFields(fields), !!identityFromPermission);
         };
 
@@ -68,7 +68,7 @@ export default class IdentityService {
             // Even though there is a previous permission,
             // the identity might have changed and no longer
             // meets the requirements.
-            if(identity.hasRequiredFields(fields)){
+            if(identity.hasRequiredFields(fields, network)){
                 sendBackIdentity(identity);
                 return false;
             } else {

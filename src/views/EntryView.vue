@@ -67,8 +67,8 @@
             },
             next(){
                 if(this.mnemonic) this.$router.push({name:RouteNames.SHOW_MNEMONIC});
-                else if(!this.scatter.keychain.identities.length || (this.scatter.keychain.identities.length === 1 && this.scatter.keychain.identities[0].account === null))
-                    this.$router.push({name:RouteNames.FIRST_TIME});
+//                else if(!this.scatter.keychain.identities.length || (this.scatter.keychain.identities.length === 1 && this.scatter.keychain.identities[0].account === null))
+//                    this.$router.push({name:RouteNames.FIRST_TIME});
                 else this.$router.push({name:RouteNames.MAIN_MENU});
             },
             ...mapActions([

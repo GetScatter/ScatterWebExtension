@@ -68,6 +68,9 @@
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();
                     scatter.settings.networks = scatter.settings.networks.filter(x => x.unique() !== network.unique());
+
+                    //TODO: Remove network -> account from identities
+
                     this[Actions.UPDATE_STORED_SCATTER](scatter);
                 })
             },

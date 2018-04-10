@@ -3,6 +3,7 @@ import Account from './Account';
 import Network from './Network';
 import ObjectHelpers from '../util/ObjectHelpers'
 import Hasher from '../util/Hasher'
+import AES from 'aes-oop';
 
 
 /********************************************/
@@ -71,12 +72,20 @@ export const IdentityFields = {
     account:'account'
 };
 
+let {PrivateKey, PublicKey, Signature, Aes, key_utils, config} = require('eosjs-ecc')
+
 export default class Identity {
 
     constructor(){
-        this.hash = IdGenerator.text(128);
+        this.hash = '';
+        this.privateKey = '';
+        this.publicKey = '';
+        // this.hash = IdGenerator.text(128);
+
         this.name = '';
 
+        //TODO: Change to map of (network -> account)
+        this.accounts = {};
         this.account = null;
         this.network = null;
 
@@ -84,6 +93,17 @@ export default class Identity {
         this.locations = [LocationInformation.placeholder()];
 
         this.disabled = false;
+    }
+
+    initialize(){
+        return new Promise((resolve, reject) => {
+            PrivateKey.randomKey().then(privateKey => {
+                this.privateKey = privateKey.toWif();
+                this.publicKey = privateKey.toPublic().toString();
+                this.hash = Hasher.insecureHash(this.publicKey);
+                resolve(true);
+            });
+        });
     }
 
     static placeholder(){ return new Identity(); }
@@ -99,31 +119,71 @@ export default class Identity {
 
     clone(){ return Identity.fromJson(JSON.parse(JSON.stringify(this))) }
 
+
+    /***
+     * Checks whether a private key is encrypted
+     * @returns {boolean}
+     */
+    isEncrypted(){
+        // EOS private keys are 51 characters long
+        // AES encrypted EOS private keys are 108 characters long
+        return this.privateKey.length > 70
+    }
+
+    /***
+     * Encrypts this Identity's Private Key
+     * @param seed - The seed to encrypt with
+     */
+    encrypt(seed){
+        if(!this.isEncrypted())
+            this.privateKey = AES.encrypt(this.privateKey, seed);
+    }
+
+    /***
+     * Decrypts this Identity's Private Key
+     * @param seed - The seed to decrypt with
+     */
+    decrypt(seed){
+        if(this.isEncrypted())
+            this.privateKey = AES.decrypt(this.privateKey, seed);
+    }
+
     /***
      * Returns a pre-defined default location or the first on the stack
      * @returns {T|*}
      */
     defaultLocation(){ return this.locations.find(location => location.isDefault) || this.locations[0]; }
 
+
+    setAccount(network, account){ this.accounts[network.unique()] = account; }
+
+    removeAccount(network){
+        this.accounts[network.unique()] = null;
+        delete this.accounts[network.unique()];
+    }
+
     /***
      * Checks if this Identity has an associated account.
      * @returns {boolean}
      */
-    hasAccount(){ return this.account && this.account.hasOwnProperty('name') && this.account.name.length; }
+    hasAccount(network){ return this.accounts.hasOwnProperty(network.unique()) }
+
+    networkedAccount(network) { return this.accounts[network.unique()] }
 
     /***
      * Checks if an Identity has specified fields.
      * This is used when an interacting application requires specific information.
      * @param fields - The fields to check for
+     * @param network
      * @returns {boolean}
      */
-    hasRequiredFields(fields){
+    hasRequiredFields(fields, network = null){
         let foundFields = [];
 
         // fields should always be lowercase and insecureHash and name should never be searched for
         fields = fields.map(field => field.toLowerCase()).filter(field => field !== 'hash' && field !== 'name');
 
-        if(fields.includes(IdentityFields.account) && this.hasAccount()) foundFields.push(IdentityFields.account);
+        if(fields.includes(IdentityFields.account) && this.hasAccount(network)) foundFields.push(IdentityFields.account);
         foundFields = foundFields.concat(this.personal.findFields(fields));
         this.locations.map(location => foundFields = foundFields.concat(location.findFields(fields)));
         foundFields = ObjectHelpers.distinct(foundFields);
@@ -141,22 +201,12 @@ export default class Identity {
     }
 
     /***
-     * * Identities should always run this before serving the identity
-     * to anywhere outside of Scatter.
-     * @param returnOnly - If true only returns the insecureHash instead of binding it.
-     */
-    encryptHash(returnOnly = false){
-        if(returnOnly) return Hasher.insecureHash(this.hash);
-        else this.hash = Hasher.insecureHash(this.hash);
-    }
-
-    /***
      * Returns an object with only the required fields from this Identity
      * @param fields
      */
     asOnlyRequiredFields(fields){
         // Adding mandatory fields and converting to lowercase
-        fields = ObjectHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'name', 'network']));
+        fields = ObjectHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'publicKey', 'name']));
 
         const clone = {personal:{},location:{}};
         fields.map(field => {

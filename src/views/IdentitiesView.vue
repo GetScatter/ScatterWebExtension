@@ -7,22 +7,38 @@
 
         <search v-on:changed="changed => bind(changed, 'searchText')"></search>
 
-        <section class="p20 scroller with-search">
+        <section v-if="!identities.length" class="nothing-here">
+
+            <figure class="header">
+                You don't have any Identities yet.
+            </figure>
+            <figure class="sub-header">
+                Click the <i style="font-size:20px; color:#83baff;" class="fa fa-plus-square-o"></i> button on the top right of this screen to
+                get started.
+                <br><br>
+                <b>None of the fields are mandatory</b>.
+                <br><br>
+                Some websites might require some specific fields though, such as an <b>email</b> or <b>EOS account</b>
+            </figure>
+
+        </section>
+        <section v-if="identities.length" class="p20 scroller with-search">
             <section v-for="identity in filterBySearch()" class="panel-box" :class="{'disabled':identity.disabled}">
 
                 <!-- Header -->
                 <section class="panel">
                     <figure class="header big">{{identity.name}}</figure>
-                    <figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>
+                    <!--<figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>-->
                 </section>
 
                 <!-- Account information -->
-                <section class="panel" v-if="identity.account">
-                    <figure class="header small reverse-margin">account</figure>
-                    <section class="items">
+                <section class="panel" v-if="Object.keys(identity.accounts).length">
+                    <figure class="header small reverse-margin">accounts</figure>
+                    <section class="items" v-for="network in Object.keys(identity.accounts)">
                         <section class="item">
-                            <span class="big">{{`${identity.account.name}@${identity.account.authority}`}}</span>
-                            <span class="big">{{getBalanceFor(identity)}}</span>
+                            <span>{{`${network}`}}</span>
+                            <span>{{`${identity.accounts[network].name}@${identity.accounts[network].authority}`}}</span>
+                            <!--<span class="big">{{getBalanceFor(identities.accounts[account])}}</span>-->
                         </section>
                     </section>
                 </section>
@@ -107,23 +123,25 @@
 //                return (typeof obj[key] === 'string') ? obj[key].length : obj[key][Object.keys(obj[key])[0]].length
             }) },
             bindBalances(){
-                const identityAccountMap = ObjectHelpers.distinctObjectArray(
-                    this.identities.filter(id => id.account && id.account.name).map(id => {
-                        return {account:id.account.name, network:id.network.unique()}
-                    })
-                );
-
-                const _balances = {};
-
-                Promise.all(identityAccountMap.map(id => {
-                    return AccountService.getBalance(id.account, id.network).then(balance => {
-                        if(!_balances.hasOwnProperty(id.network)) _balances[id.network] = {};
-                        _balances[id.network][id.account] = balance;
-                        return _balances;
-                    })
-                }))
-                    // Vue will not update semi-ticks
-                    .then(balanceMap => this.balances = balanceMap[0])
+                //TODO: Fix for network account map
+//                const identityAccountMap = ObjectHelpers.distinctObjectArray(
+//                    this.identities.filter(id => Object.keys(id.accounts).length).map(network => {
+//
+//                        return {account:id.account.name, network:id.network.unique()}
+//                    })
+//                );
+//
+//                const _balances = {};
+//
+//                Promise.all(identityAccountMap.map(id => {
+//                    return AccountService.getBalance(id.account, id.network).then(balance => {
+//                        if(!_balances.hasOwnProperty(id.network)) _balances[id.network] = {};
+//                        _balances[id.network][id.account] = balance;
+//                        return _balances;
+//                    })
+//                }))
+//                    // Vue will not update semi-ticks
+//                    .then(balanceMap => this.balances = balanceMap[0])
             },
             getBalanceFor(identity){
                 if(!this.balances.hasOwnProperty(identity.network.unique())) return 'Network is down';
@@ -137,10 +155,10 @@
                 this[Actions.UPDATE_STORED_SCATTER](scatter);
             },
             removeIdentity(identity){
-                if(this.identities.length === 1){
-                    this[Actions.PUSH_ALERT](AlertMsg.CantRemoveLastIdentity());
-                    return false;
-                }
+//                if(this.identities.length === 1){
+//                    this[Actions.PUSH_ALERT](AlertMsg.CantRemoveLastIdentity());
+//                    return false;
+//                }
 
                 this[Actions.PUSH_ALERT](AlertMsg.AreYouSure('Removing Identity', ['Scatter', 'Identities', 'Remove'],
                     `You are about to remove an Identity with the name '${identity.name}'. Removing Identities is not reversible and

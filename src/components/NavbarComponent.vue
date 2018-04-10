@@ -100,7 +100,7 @@
             line-height: 59px;
             font-size: 24px;
             text-align:right;
-            color: #eaeaea;
+            color: #d6d6d6;
         }
 
         .breadcrumb {

@@ -45,8 +45,10 @@
             },
             goToFirstIdentity(){
                 this[Actions.SET_MNEMONIC]('');
-                if(!this.scatter.keychain.identities.length) this.$router.push({name:RouteNames.FIRST_TIME});
-                else this.$router.push({name:RouteNames.MAIN_MENU});
+//                if(!this.scatter.keychain.identities.length) this.$router.push({name:RouteNames.FIRST_TIME});
+//                else this.$router.push({name:RouteNames.MAIN_MENU});
+
+                this.$router.push({name:RouteNames.MAIN_MENU});
             },
             ...mapActions([
                 Actions.SET_MNEMONIC,

@@ -17,6 +17,7 @@ export default class Permission {
         this.timestamp = 0;
 
         this.fields = [];
+        this.unlockedFields = [];
     }
 
     static placeholder(){ return new Permission(); }

@@ -131,7 +131,7 @@
             ])
         },
         mounted(){
-            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields);
+            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields, this.prompt.network);
 
             if(!hasAllRequiredFields){
                 this[Actions.PUSH_ALERT](AlertMsg.NoIdentityWithProperties(this.requiredFields)).then(closed => {

@@ -19,32 +19,10 @@
         <section class="panel">
             <figure class="header">Identity Name *</figure>
             <figure class="sub-header">
-                This is the name that applications will refer to you by. Think of it like your
-                username.
-                <b style="color:rgba(0,0,0,0.6);">
-                    It is unique, cannot be changed and even if you delete this Identity, it will never be
-                    able to be used again.
-                </b>
-                <br><br>
-                This is the only required field.
+                This is the name that applications will refer to you by. Think of it like your username.
+                <b>It is unique, and unless you register with RIDL you will be given a randomized name.</b>
             </figure>
-            <cin placeholder="Name" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="!isNew"></cin>
-        </section>
-
-        <!-- Network -->
-        <section class="panel">
-            <figure class="header">Network</figure>
-            <figure class="sub-header">
-                The network this account is located on can not be changed. You can copy this Identity to another network
-                but any changes made to either will not reflect on each other.
-                <br><br>
-                <b style="color:rgba(0,0,0,0.6);">
-                    This is for your safety.
-                </b>
-
-            </figure>
-            <cin v-if="!isNew" :text="`${identity.network.host}:${identity.network.port}`" disabled="true"></cin>
-            <sel v-else :selected="identity.network" :options="networks" :parser="(network) => network.unique()" v-on:changed="changed => bind(changed, 'identity.network')"></sel>
+            <cin placeholder="Name" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
         </section>
 
         <!-- Account -->
@@ -53,16 +31,19 @@
             <figure class="sub-header">
                 Accounts are what hold your funds and allow you to interact with contracts
                 on the Blockchain. In relation to Identities think of them like the bank
-                accounts connected to your passport, except your Identity can only hold
-                one account at a time per network.
+                accounts connected to your passport, they can be changed at any time.
             </figure>
 
-            <cin :placeholder="'private key'"
-                 :tag="(identity.account) ? `${identity.account.name}@${identity.account.authority}` : null"
-                 :text="(identity.account) ? `${identity.account.name}@${identity.account.authority}` : ''"
+            <sel :disabled="importing" :selected="networks[0]" :options="networks" :parser="(network) => network.unique()" v-on:changed="selectNetwork"></sel>
+
+            <cin :disabled="importing"
+                 :placeholder="'private key'"
+                 :tag="identity.hasAccount(selectedNetwork) ? `${identity.networkedAccount(selectedNetwork).name}@${identity.networkedAccount(selectedNetwork).authority}` : null"
+                 :text="identity.hasAccount(selectedNetwork) ? `${identity.networkedAccount(selectedNetwork).name}@${identity.networkedAccount(selectedNetwork).authority}` : ''"
                  v-on:untagged="removeAccount"
                  v-on:changed="changed => bind(changed, 'accountNameOrPrivateKey')"></cin>
-            <btn :disabled="identity.account" text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
+
+            <btn :disabled="importing" text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
 
         </section>
 
@@ -127,6 +108,7 @@
     import AccountService from '../services/AccountService'
     import EOSKeygen from '../util/EOSKeygen'
     import {Countries} from '../data/Countries'
+    import RIDLService from '../services/RIDLService'
 
     export default {
         data(){ return {
@@ -136,6 +118,9 @@
             isNew:false,
             countries: Countries,
             selectedLocation:null,
+            selectedNetwork:null,
+
+            importing:false,
         }},
         computed: {
             ...mapState([
@@ -146,12 +131,18 @@
             ])
         },
         mounted(){
+            this.selectedNetwork = this.networks[0];
+            console.log(this.networks);
             const existing = this.scatter.keychain.identities.find(x => x.hash === this.$route.query.hash);
             if(existing) this.identity = existing.clone();
             else {
                 const identity = Identity.placeholder();
-                identity.network = this.networks[0];
                 this.identity = identity;
+                identity.initialize().then(() => {
+                    RIDLService.randomName().then(name => {
+                        identity.name = name;
+                    });
+                })
             }
 
             this.selectedLocation = this.identity.defaultLocation();
@@ -166,24 +157,31 @@
                 const lastKey = props.pop();
                 props.reduce((obj,key)=> obj[key], this)[lastKey] = changed;
             },
+            selectNetwork(network){
+                this.selectedNetwork = network;
+            },
             removeAccount(){
                 const msg = [
                     'Removing Account',
                     ['Identity', 'Remove Account'],
-                    `You are about to remove the ${this.identity.account.name}@${this.identity.account.authority} account
+                    `You are about to remove the ${this.identity.accounts[this.selectedNetwork.unique()].name}@${this.identity.accounts[this.selectedNetwork.unique()].authority} account
                     from this Identity.`
                 ];
 
                 this[Actions.PUSH_ALERT](AlertMsg.AreYouSure(...msg)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
-                    this.identity.account = null;
+                    this.identity.removeAccount(this.selectedNetwork);
                 })
             },
             importAccount(){
-                AccountService.importFromKey(this.accountNameOrPrivateKey, this.identity.network, this).then(imported => {
-                    this.identity.account = imported.account;
+                this.importing = true;
+                console.log(this.accountNameOrPrivateKey, this.selectedNetwork)
+                AccountService.importFromKey(this.accountNameOrPrivateKey, this.selectedNetwork, this).then(imported => {
+                    this.identity.setAccount(this.selectedNetwork, imported.account);
+//                    this.identity.account = imported.account;
                     this.keypair = imported.keypair;
-                });
+                    this.importing = false;
+                }).catch(() => this.importing = false);
             },
             setAsDefaultLocation(){
                 this.identity.defaultLocation().isDefault = false;
@@ -227,6 +225,7 @@
                     scatter.keychain.keypairs.push(this.keypair);
                 }
 
+                console.log(this.identity);
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
 
             },
@@ -261,8 +260,8 @@
             }
 
             .sub-header {
-                color:#aeaeae;
-                font-size:9px;
+                color: #505050;
+                font-size:11px;
                 margin-bottom:20px;
             }
         }

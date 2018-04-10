@@ -69,7 +69,7 @@
                                 :class="{'selected':selectedIdentity && selectedIdentity.hash === identity.hash}">
                             Select Identity
                         </figure>
-                        <figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>
+                        <!--<figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>-->
                     </section>
 
                     <!-- Matching Requirements / Properties -->
@@ -134,14 +134,15 @@
             bind(changed, original) { this[original] = changed },
             filteredIdentities(){
                 return this.identities
-                    .filter(id => id.network.unique() === this.prompt.network.unique())
-                    .filter(id => id.hasRequiredFields(this.identityFields))
+                    .filter(id => Object.keys(id.accounts).indexOf(this.prompt.network.unique()) > -1)
+                    .filter(id => id.hasRequiredFields(this.identityFields, this.prompt.network))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
                     .sort((a,b) => !a.disabled || !b.disabled ? 1 : -1)
             },
             formatPropValue(prop, propValue){
+                console.log(prop, propValue)
                 switch(prop){
-                    case 'account': return `${propValue.name}@${propValue.authority}`;
+//                    case 'account': return `${propValue.name}@${propValue.authority}`;
                     case 'country': return propValue.name;
                 }
 

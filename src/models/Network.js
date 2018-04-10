@@ -21,7 +21,5 @@ export default class Network {
      */
     isEndorsedNetwork(){ return this.host === 'mainnet.eos.io' && this.port === 8080 }
 
-    // TODO: Mock
     static hostIsValid(host){ return host.indexOf('.') > -1 }
-
 }
