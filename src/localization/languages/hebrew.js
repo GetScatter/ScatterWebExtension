@@ -11,8 +11,7 @@ export default {
 
     // Identities
     [KEYS.IDENTITIES_Header]:`אין לך עדיין זהות.`,
-    [KEYS.IDENTITIES_MandatoryFields]:`אף אחד מהשדות אינו חובה.`,
-    [KEYS.IDENTITIES_FieldRequirements]:`אתרי אינטרנט מסוימים עשויים לדרוש כמה שדות ספציפיים, כגון דוא"ל או חשבון`,
+    [KEYS.IDENTITIES_Description]:`אתרי אינטרנט מסוימים עשויים לדרוש כמה שדות ספציפיים, כגון דוא"ל או חשבון`,
     [KEYS.GENERIC_New]:`New ID`,
 
 

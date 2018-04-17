@@ -25,6 +25,7 @@
     import TimingHelpers from '../util/TimingHelpers';
 
     const timeoutOptions = [
+        {minutes: 0, name:'Never Lock'},
         {minutes: 1, name:'1 Minute'},
         {minutes: 3, name:'3 Minutes'},
         {minutes: 5, name:'5 Minutes'},

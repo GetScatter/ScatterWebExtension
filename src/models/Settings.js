@@ -8,7 +8,7 @@ export default class Settings {
         this.networks = [];
         this.backupToBlockchain = false;
         this.hasEncryptionKey = false;
-        this.inactivityInterval = TimingHelpers.minutes(120);
+        this.inactivityInterval = 0;
         this.language = 'ENGLISH';
     }
 

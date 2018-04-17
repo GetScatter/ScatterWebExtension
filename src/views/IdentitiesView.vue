@@ -13,9 +13,7 @@
                 {{locale(langKeys.IDENTITIES_Header)}}
             </figure>
             <figure class="sub-header">
-                <b>{{locale(langKeys.IDENTITIES_MandatoryFields)}}</b>.
-                <br><br>
-                {{locale(langKeys.IDENTITIES_FieldRequirements)}}
+                {{locale(langKeys.IDENTITIES_Description)}}
                 <br><br>
                 <btn :text="locale(langKeys.BUTTON_CreateIdentity)" v-on:clicked="createIdentity" margined="true"></btn>
             </figure>

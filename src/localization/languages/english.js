@@ -1,6 +1,9 @@
 import * as KEYS from '../keys';
 
 export default {
+    [KEYS.GENERIC_New]:`New`,
+    [KEYS.GENERIC_Save]:`Save`,
+
     // Main Menu
     [KEYS.MAINMENU_Identities]:'Identities',
     [KEYS.MAINMENU_Permissions]:'Permissions',
@@ -9,12 +12,15 @@ export default {
 
 
 
+
     // Identities
     [KEYS.IDENTITIES_Header]:`You don't have any Identities yet.`,
-    [KEYS.IDENTITIES_MandatoryFields]:`None of the fields are mandatory.`,
-    [KEYS.IDENTITIES_FieldRequirements]:`Some websites might require some specific fields though, such as an email or EOS account`,
-    [KEYS.GENERIC_New]:`New`,
-    [KEYS.GENERIC_Save]:`Save`,
+    [KEYS.IDENTITIES_Description]:`
+        Identities are containers for personal information such as first and last names, addresses and
+        various blockchain accounts/keypairs. Identities also have keypairs and their ownership 
+        can be proven which makes them a way to authenticate with applications without passwords.
+    `,
+
 
 
     [KEYS.PLACEHOLDER_Name]:'Name',
@@ -48,8 +54,8 @@ export default {
 
     [KEYS.IDENTITY_NameHeader]:`Identity Name`,
     [KEYS.IDENTITY_NameDescription]:`
-        This is the name that applications will refer to you by. Think of it like your username. 
-        It is unique, and unless you register with RIDL you will be given a randomized name.
+        Applications may choose to use this name as your username as it is unique across all networks.
+        If you are not registered with RIDL you will be assigned a random name.
     `,
     [KEYS.IDENTITY_AccountHeader]:`Account`,
     [KEYS.IDENTITY_AccountDescription]:`

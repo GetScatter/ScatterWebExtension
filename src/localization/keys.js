@@ -35,8 +35,7 @@ export const BUTTON_SetAsDefaultLocation = 'btn_set_def_loc';
 export const BUTTON_RemoveLocation = 'btn_rem_loc';
 
 export const IDENTITIES_Header = 'ids_head';
-export const IDENTITIES_MandatoryFields = 'ids_mand';
-export const IDENTITIES_FieldRequirements = 'ids_fields';
+export const IDENTITIES_Description = 'ids_fields';
 
 export const IDENTITY_DisablingHeader = 'id_disbl_head';
 export const IDENTITY_DisablingDescription = 'id_disbl_desc';

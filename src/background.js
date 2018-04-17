@@ -75,6 +75,7 @@ export default class Background {
 
     // Lock the user due to inactivity
     static checkAutoLock() {
+        if(inactivityInterval === 0) return false;
         if (timeoutLocker) clearTimeout(timeoutLocker);
         if (seed) timeoutLocker = setTimeout(() => seed = '', inactivityInterval);
     }

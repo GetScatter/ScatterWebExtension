@@ -2,7 +2,7 @@
     <section class="networks">
 
         <nav-actions :actions="[
-            {event:'create', icon:'plus-square-o'}
+            {event:'create', text:locale(langKeys.GENERIC_New)}
         ]" v-on:create="createNetwork"></nav-actions>
 
         <search v-on:changed="changed => bind(changed, 'searchText')"></search>
@@ -45,7 +45,8 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'networks'
+                'networks',
+                'langKeys'
             ])
         },
         methods: {

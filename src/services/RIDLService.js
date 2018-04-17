@@ -4,7 +4,6 @@ const possibleSuffixes = [
     'Raccoon',
     'Ragdoll',
     'Rat',
-    'RattleSnake',
     'Reindeer',
     'Robin',
     'Royalty'

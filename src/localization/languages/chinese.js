@@ -11,8 +11,7 @@ export default {
 
     // Identities
     [KEYS.IDENTITIES_Header]:`You don't have any Identities yet.`,
-    [KEYS.IDENTITIES_MandatoryFields]:`None of the fields are mandatory.`,
-    [KEYS.IDENTITIES_FieldRequirements]:`Some websites might require some specific fields though, such as an email or EOS account`,
+    [KEYS.IDENTITIES_Description]:`Some websites might require some specific fields though, such as an email or EOS account`,
     [KEYS.GENERIC_New]:`New ID`,
 
 

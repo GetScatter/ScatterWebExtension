@@ -2,7 +2,7 @@
     <section class="network scroller" v-if="network">
 
         <nav-actions :actions="[
-            {event:'submit', icon:'check-square-o'}
+            {event:'submit', text:locale(langKeys.GENERIC_Save)}
         ]" v-on:submit="saveNetwork"></nav-actions>
 
         <section class="panel">
@@ -39,7 +39,8 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'networks'
+                'networks',
+                'langKeys'
             ])
         },
         mounted(){
