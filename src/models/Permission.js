@@ -17,14 +17,13 @@ export default class Permission {
         this.timestamp = 0;
 
         this.fields = [];
-        this.unlockedFields = [];
+        this.mutableFields = [];
     }
 
     static placeholder(){ return new Permission(); }
     static fromJson(json){
         let p = Object.assign(this.placeholder(), json);
         if(json.hasOwnProperty('network')) p.network = Network.fromJson(json.network);
-        // if(json.hasOwnProperty('identity')) p.identity = Identity.fromJson(json.identity);
         return p;
     }
 
@@ -40,8 +39,8 @@ export default class Permission {
         return !this.isIdentityOnly() && this.contract.length && this.action.length
     }
 
-    isIdentityFor(domain, network){
-        return this.isIdentityOnly() && this.domain === domain && (!network || this.network.unique() === network.unique());
+    isIdentityFor(domain){
+        return this.isIdentityOnly() && this.domain === domain;
     }
 
     // TODO: There will be a problem with multiple identity permissions where an

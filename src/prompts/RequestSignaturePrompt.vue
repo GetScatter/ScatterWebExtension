@@ -52,9 +52,14 @@
                 </section>
                 <section class="partition">
 
-                    <section v-for="(value, key) in sortedMessageData(message.data)">
-                        <figure class="label">{{key}}</figure>
-                        <figure class="value" :class="{'red':value !== '' && !isNaN(value)}">{{value}}</figure>
+                    <section class="fields-row" v-for="(value, key) in sortedMessageData(message.data)">
+                        <section class="fields">
+                            <figure class="label">{{key}}</figure>
+                            <figure class="value" :class="{'red':value !== '' && !isNaN(value)}">{{value}}</figure>
+                        </section>
+                        <figure class="mutable" v-if="whitelisted">
+                            <input type="checkbox" @click="toggleMutableField(key)" />
+                        </figure>
                     </section>
                 </section>
             </section>
@@ -75,11 +80,12 @@
                         <cin :tag="(whitelisted) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleWhitelist"></cin>
                     </section>
                     You can whitelist this action so that next time you wont have to manually authorize this.
-                    If any of the properties of the transaction changes the permission will become invalid. This is based on the messages themselves,
-                    so different bundles of messages will pass if they include some or all of the same messages.
+                    Every property that has a check next to it will become mutable, meaning that you can allow
+                    certain properties of this transaction to change and only if the other properties are changed will
+                    it fail to be whitelisted.
                     <br><br>
-                    <b>This also includes required personal data, and permissions are not revoked when you update your Identity's information.</b>
-                    However, if you have multiple locations it will always provide a prompt regardless of the permission.
+                    <b>This includes required personal information, and changes to your Identity do not remove permissions.</b>
+                    If you have multiple locations and a transaction requires a location you will always be prompted.
                 </figure>
             </section>
 
@@ -120,6 +126,7 @@
             selectedLocation:null,
 
             returnedFields:{},
+            mutableFields:[],
         }},
         computed: {
             ...mapState([
@@ -191,7 +198,7 @@
 
                 const returnedFields = Identity.asReturnedFields(this.requiredFields, this.returnedFields, this.selectedLocation);
 
-                this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields});
+                this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields, mutableFields:this.mutableFields});
                 NotificationService.close();
             },
             denied(){
@@ -214,6 +221,11 @@
                 }
                 else flip();
 
+            },
+            toggleMutableField(selectedField){
+                this.mutableFields.includes(selectedField)
+                    ? this.mutableFields = this.mutableFields.filter(field => field === selectedField)
+                    : this.mutableFields.push(selectedField);
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,
@@ -276,6 +288,32 @@
         .prompt-body {
             height:287px;
             overflow:hidden;
+
+            .fields-row {
+                .fields {
+                    display: inline-block;
+                }
+
+                .mutable {
+                    width:30px;
+                    height:30px;
+                    display:inline-block;
+                    padding-left:10px;
+                    border-left:1px solid rgba(0,0,0,0.05);
+                    margin-left:10px;
+
+                    input {
+                        height:20px;
+                        width:20px;
+                    }
+                }
+
+                &:not(:last-child){
+                    border-bottom:1px solid rgba(0,0,0,0.05);
+                    margin-bottom:10px;
+                }
+            }
+
 
             .key-value {
                 padding:20px;
@@ -344,13 +382,9 @@
                 }
 
                 &.red {
-                    font-size:20px;
-                    line-height:20px;
-                    padding:5px 10px 5px 5px;
-                    color:#fff;
-                    background:#ff0d0c;
-                    display:inline-block;
-                    border-radius:4px;
+                    font-size:16px;
+                    line-height:16px;
+                    color:#ff0d0c;
                 }
             }
 

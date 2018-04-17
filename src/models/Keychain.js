@@ -2,6 +2,7 @@ import Identity from './Identity';
 import Permission from './Permission';
 import KeyPair from './KeyPair';
 import IdGenerator from '../util/IdGenerator';
+import ObjectHelpers from '../util/ObjectHelpers';
 import AES from 'aes-oop';
 
 export default class Keychain {
@@ -21,33 +22,28 @@ export default class Keychain {
         return p;
     }
 
-    /***
-     * Returns a KeyPair object or null
-     * @param publicKey
-     * @returns {KeyPair | null}
-     */
-    findKeyPair(publicKey){
-        return this.keypairs.find(keypair => keypair.publicKey === publicKey);
+    getPermission(checksum){ return this.permissions.find(permission => permission.checksum === checksum); }
+    hasPermission(checksum, fields = []){
+        const fieldKeys = () => Array.isArray(fields) ? fields : Object.keys(fields);
+
+        const permission = this.getPermission(checksum);
+        if(!permission) return false;
+
+        // If no fields are supplied but permission exists | valid.
+        if(fields === null || !fieldKeys().length) return true;
+
+        let fieldsCloneA = Object.assign({}, fields);
+        let fieldsCloneB = Object.assign({}, permission.fields);
+        permission.mutableFields.map(field => {
+            delete fieldsCloneA[field];
+            delete fieldsCloneB[field];
+        });
+
+        return ObjectHelpers.deepEqual(fieldsCloneA, fieldsCloneB);
+
     }
 
-    /***
-     * Finds an Identity on the keychain by a insecureHash
-     * @param identityHash
-     * @returns {*}
-     */
-    findIdentity(identityHash){
-        return this.identities.find(id => id.hash === identityHash);
-    }
-
-    /***
-     * Checks if Scatter has a specific permission
-     * @param checksum
-     */
-    hasContractPermission(checksum){
-        if(!checksum) return false;
-        return !!this.permissions.find(permission => permission.checksum === checksum);
-    }
-
+    findIdentity(identityHash){ return this.identities.find(id => id.hash === identityHash); }
     updateOrPushIdentity(identity){
         this.identities.find(id => id.hash === identity.hash)
             ? this.identities = this.identities.map(id => id.hash === identity.hash ? identity : id)

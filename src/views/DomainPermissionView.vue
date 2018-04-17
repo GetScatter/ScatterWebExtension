@@ -29,6 +29,11 @@
                         <section class="item" v-for="action in actions">
                             <span><u><b>{{action.action}}</b></u> <i>( {{action.timestamp/1000 | moment('from', 'now')}} )</i></span>
                             <span class="revoke-text" v-on:click="revoke({type:'action', perm:action})">revoke action</span>
+
+                            <section class="item" v-for="field in action.mutableFields">
+                                <span>Mutable Field</span>
+                                <span><b>{{field}}</b></span>
+                            </section>
                         </section>
                     </section>
                 </section>
@@ -224,9 +229,9 @@
             cursor: pointer;
             transition:all 0.2s ease;
             transition-property: color;
+            text-decoration: underline;
 
             &:hover {
-                text-decoration: underline;
                 color:#ff0d0c;
             }
         }

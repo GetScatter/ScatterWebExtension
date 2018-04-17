@@ -1,14 +1,11 @@
 import AES from 'aes-oop';
 
-export const KeyPairFormats = {
-    EOS:'EOS',
-    ETH:'ETH'
-};
+import {Blockchains} from './Blockchains';
 
 export default class KeyPair {
 
     constructor(){
-        this.format = KeyPairFormats.EOS;
+        this.format = Blockchains.EOS;
         this.privateKey = '';
         this.publicKey = '';
     }
@@ -22,9 +19,9 @@ export default class KeyPair {
      */
     isEncrypted(){ switch(this.format) {
         // EOS private keys are 51 chars long
-        case KeyPairFormats.EOS: return this.privateKey.length > 51;
+        case Blockchains.EOS: return this.privateKey.length > 51;
         // ETH private keys are 64 chars long
-        case KeyPairFormats.ETH: return this.privateKey.length > 64;
+        case Blockchains.ETH: return this.privateKey.length > 64;
     }}
 
     /***

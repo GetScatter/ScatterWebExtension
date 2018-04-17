@@ -38,4 +38,12 @@ export default class Error {
         return new Error(ErrorTypes.UPGRADE_REQUIRED, "The required version is newer than the User's Scatter", ErrorCodes.UPGRADE_REQUIRED)
     }
 
+    static signatureIdentityMissing(){
+        return this.signatureError("identity_missing", "Identity no longer exists on the user's keychain");
+    }
+
+    static signatureAccountMissing(){
+        return this.signatureError("account_missing", "Missing required accounts");
+    }
+
 }

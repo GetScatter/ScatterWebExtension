@@ -225,7 +225,7 @@ export default class Background {
 
         Background.load(scatter => {
             const domain = payload.domain;
-            const permission = IdentityService.identityPermission(domain, null, scatter);
+            const permission = IdentityService.identityPermission(domain, scatter);
             if(!permission){
                 sendResponse(null);
                 return false;
@@ -386,9 +386,10 @@ export default class Background {
      */
     static addPermissions(permissions){
         this.load(scatter => {
-            permissions
-                .filter(permission => permission.isIdentityOnly() || !scatter.keychain.hasContractPermission(permission.checksum))
-                .map(permission => scatter.keychain.permissions.unshift(permission));
+            permissions.map(permission => {
+                if(!scatter.keychain.hasPermission(permission.checksum, permission.fields))
+                    scatter.keychain.permissions.unshift(permission);
+            });
             this.update(() => {}, scatter);
         })
     }
