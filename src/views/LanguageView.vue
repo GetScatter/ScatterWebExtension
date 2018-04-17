@@ -3,16 +3,16 @@
 
         <!-- Verified -->
         <section class="panel">
-            <figure class="header">Auto Lock Timer</figure>
+            <figure class="header">Select your language</figure>
             <figure class="sub-header">
                 Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter
                 when you step away.
             </figure>
-            <sel v-if="selectedTimeout" :options="options"
-                 :selected="selectedTimeout"
-                 :parser="(obj) => obj.name"
-                 v-on:changed="changed => bind(changed, 'selectedTimeout')"></sel>
-            <btn v-on:clicked="changeTimeout" text="Change Timeout" :margined="true"></btn>
+            <sel v-if="selectedLanguage" :options="options"
+                 :selected="options[selectedLanguage]"
+                 :parser="(obj) => obj"
+                 v-on:changed="changed => bind(changed, 'selectedLanguage')"></sel>
+            <btn v-on:clicked="changeLanguage" text="Change Language" :margined="true"></btn>
         </section>
 
     </section>
@@ -22,47 +22,39 @@
     import { mapActions, mapGetters, mapState } from 'vuex'
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing';
-    import TimingHelpers from '../util/TimingHelpers';
-
-    const timeoutOptions = [
-        {minutes: 1, name:'1 Minute'},
-        {minutes: 3, name:'3 Minutes'},
-        {minutes: 5, name:'5 Minutes'},
-        {minutes: 10, name:'10 Minutes'},
-        {minutes: 15, name:'15 Minutes'},
-        {minutes: 30, name:'30 Minutes'},
-        {minutes: 60, name:'1 Hour'},
-        {minutes: 120, name:'2 Hours'},
-        {minutes: 240, name:'4 Hours'},
-    ];
+    import {LANG, getLangKey} from '../localization/locales';
 
     export default {
         data(){ return {
-            options: timeoutOptions,
-            selectedTimeout: null,
+            options: LANG,
+            selectedLanguage: null,
         }},
         computed: {
             ...mapState([
                 'scatter'
             ]),
             ...mapGetters([
-                'autoLockInterval'
+                'language'
             ])
         },
         mounted(){
-            this.selectedTimeout = timeoutOptions.find(option => option.minutes ===
-                TimingHelpers.minutesFromMillis(this.autoLockInterval))
+            this.selectedLanguage = this.language;
         },
         methods: {
             bind(changed, original) { this[original] = changed },
-            changeTimeout(){
-                this[Actions.SET_AUTO_LOCK](this.selectedTimeout.minutes).then(() => {
+            changeLanguage(){
+                const scatter = this.scatter.clone();
+                scatter.settings.language = getLangKey(this.selectedLanguage);
+                this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => {
                     this.$router.back();
                 });
+//                this[Actions.SET_AUTO_LOCK](this.selectedTimeout.minutes).then(() => {
+//                    this.$router.back();
+//                });
             },
             ...mapActions([
                 Actions.PUSH_ALERT,
-                Actions.SET_AUTO_LOCK
+                Actions.UPDATE_STORED_SCATTER,
             ])
         }
     }

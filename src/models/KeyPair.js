@@ -1,8 +1,14 @@
 import AES from 'aes-oop';
 
+export const KeyPairFormats = {
+    EOS:'EOS',
+    ETH:'ETH'
+};
+
 export default class KeyPair {
 
     constructor(){
+        this.format = KeyPairFormats.EOS;
         this.privateKey = '';
         this.publicKey = '';
     }
@@ -14,11 +20,12 @@ export default class KeyPair {
      * Checks whether a private key is encrypted
      * @returns {boolean}
      */
-    isEncrypted(){
-        // EOS private keys are 51 characters long
-        // AES encrypted EOS private keys are 108 characters long
-        return this.privateKey.length > 70
-    }
+    isEncrypted(){ switch(this.format) {
+        // EOS private keys are 51 chars long
+        case KeyPairFormats.EOS: return this.privateKey.length > 51;
+        // ETH private keys are 64 chars long
+        case KeyPairFormats.ETH: return this.privateKey.length > 64;
+    }}
 
     /***
      * Encrypts this KeyPair's Private Key

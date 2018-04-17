@@ -2,94 +2,83 @@
     <section class="identity scroller" v-if="identity">
 
         <nav-actions :actions="[
-            {event:'submit', icon:'check-square-o'}
+            {event:'submit', text:locale(langKeys.GENERIC_Save)}
         ]" v-on:submit="saveIdentity"></nav-actions>
 
         <!-- Disabling -->
         <section class="panel" style="background:#fff;" v-if="!isNew">
-            <figure class="header">What does Disabling do?</figure>
-            <figure class="sub-header" style="margin-bottom:0;">
-                Disabling this Identity will stop it from being used in applications that have a reference to it.
-                This can be used instead of permanently deleting this Identity or it's Permissions on an application,
-                which would be harder to recover.
-            </figure>
+            <figure class="header">{{locale(langKeys.IDENTITY_DisablingHeader)}}</figure>
+            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_DisablingDescription)}}</figure>
         </section>
 
         <!-- Identity Name -->
         <section class="panel">
-            <figure class="header">Identity Name *</figure>
-            <figure class="sub-header">
-                This is the name that applications will refer to you by. Think of it like your username.
-                <b>It is unique, and unless you register with RIDL you will be given a randomized name.</b>
-            </figure>
-            <cin placeholder="Name" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
+            <figure class="header">{{locale(langKeys.IDENTITY_NameHeader)}}</figure>
+            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_NameDescription)}}</figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
         </section>
 
         <!-- Account -->
         <section class="panel">
-            <figure class="header">Account</figure>
-            <figure class="sub-header">
-                Accounts are what hold your funds and allow you to interact with contracts
-                on the Blockchain. In relation to Identities think of them like the bank
-                accounts connected to your passport, they can be changed at any time.
-            </figure>
+            <figure class="header">{{locale(langKeys.IDENTITY_AccountHeader)}}</figure>
+            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_AccountDescription)}}</figure>
 
             <sel :disabled="importing" :selected="networks[0]" :options="networks" :parser="(network) => network.unique()" v-on:changed="selectNetwork"></sel>
 
             <cin :disabled="importing"
-                 :placeholder="'private key'"
+                 :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)"
                  :tag="identity.hasAccount(selectedNetwork) ? `${identity.networkedAccount(selectedNetwork).name}@${identity.networkedAccount(selectedNetwork).authority}` : null"
                  :text="identity.hasAccount(selectedNetwork) ? `${identity.networkedAccount(selectedNetwork).name}@${identity.networkedAccount(selectedNetwork).authority}` : ''"
                  v-on:untagged="removeAccount"
                  v-on:changed="changed => bind(changed, 'accountNameOrPrivateKey')"></cin>
 
-            <btn :disabled="importing" text="Import Account" v-on:clicked="importAccount" margined="true"></btn>
+            <btn :disabled="importing" :text="locale(langKeys.BUTTON_ImportAccount)" v-on:clicked="importAccount" margined="true"></btn>
 
         </section>
 
         <!-- Personal Information -->
         <section class="panel">
-            <figure class="header">Personal Information</figure>
-            <figure class="sub-header">
-                Personal information can be added to an account for applications that
-                require it. For instance a shopping website might need your full name
-                in order to know who to send your purchased goods to.
-            </figure>
+            <figure class="header">{{locale(langKeys.IDENTITY_PersonalHeader)}}</figure>
+            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_PersonalDescription)}}</figure>
 
-            <cin placeholder="First Name" :text="identity.personal.firstname" v-on:changed="changed => bind(changed, 'identity.personal.firstname')"></cin>
-            <cin placeholder="Last Name" :text="identity.personal.lastname" v-on:changed="changed => bind(changed, 'identity.personal.lastname')"></cin>
-            <cin placeholder="Email" :text="identity.personal.email" v-on:changed="changed => bind(changed, 'identity.personal.email')"></cin>
-            <cin placeholder="Birth Date" type="date" :text="identity.personal.birthdate" v-on:changed="changed => bind(changed, 'identity.personal.birthdate')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_FirstName)" :text="identity.personal.firstname" v-on:changed="changed => bind(changed, 'identity.personal.firstname')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_LastName)" :text="identity.personal.lastname" v-on:changed="changed => bind(changed, 'identity.personal.lastname')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Email)" :text="identity.personal.email" v-on:changed="changed => bind(changed, 'identity.personal.email')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_BirthDate)" type="date" :text="identity.personal.birthdate" v-on:changed="changed => bind(changed, 'identity.personal.birthdate')"></cin>
         </section>
 
         <!-- Location Information -->
         <section class="panel">
-            <figure class="header">Location Information</figure>
-            <figure class="sub-header">
-                Location information can be added to an account for applications that
-                require it. For instance a shopping website might need your shipping address
-                in order to know where to send your purchased goods to.
-            </figure>
+            <figure class="header">{{locale(langKeys.IDENTITY_LocationHeader)}}</figure>
+            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_LocationDescription)}}</figure>
 
-            <btn text="Add New Location" v-on:clicked="addNewLocation"></btn>
-            <sel :selected="selectedLocation" :options="identity.locations" :parser="(location) => location.name.length ? location.name : 'Unnamed Location'" v-on:changed="changed => bind(changed, 'selectedLocation')"></sel>
-
-
-
-
+            <btn :text="locale(langKeys.BUTTON_AddNewLocation)" v-on:clicked="addNewLocation"></btn>
+            <sel :selected="selectedLocation" :options="identity.locations" :parser="(location) => location.name.length ? location.name : langKeys.PLACEHOLDER_DefaultLocationName"
+                 v-on:changed="changed => bind(changed, 'selectedLocation')"></sel>
         </section>
 
         <section class="panel" v-if="selectedLocation">
-            <btn v-if="!selectedLocation.isDefault" is-blue="true" text="Set as Default" v-on:clicked="setAsDefaultLocation" :key="locationKey(1)"></btn>
-            <cin placeholder="Location Name" :text="selectedLocation.name" v-on:changed="changed => bind(changed, 'selectedLocation.name')" :key="locationKey(2)"></cin>
-            <cin placeholder="Phone" :text="selectedLocation.phone" v-on:changed="changed => bind(changed, 'selectedLocation.phone')" :key="locationKey(3)"></cin>
-            <cin placeholder="Address" :text="selectedLocation.address" v-on:changed="changed => bind(changed, 'selectedLocation.address')" :key="locationKey(4)"></cin>
-            <cin placeholder="City" half="true" :text="selectedLocation.city" v-on:changed="changed => bind(changed, 'selectedLocation.city')" :key="locationKey(5)"></cin>
-            <cin placeholder="Postal" second-half="true" :text="selectedLocation.zipcode" v-on:changed="changed => bind(changed, 'selectedLocation.zipcode')" :key="locationKey(6)"></cin>
-            <sel placeholder="Country" :seventy="selectedLocation.country.code === 'US'" :options="countries" :selected="selectedLocation.country" :parser="(obj) => obj.name" v-on:changed="changed => bind(changed, 'selectedLocation.country')" :key="locationKey(7)"></sel>
-            <cin placeholder="State" v-if="selectedLocation.country.code === 'US'" thirty="true" :text="selectedLocation.state" v-on:changed="changed => bind(changed, 'selectedLocation.state')" :key="locationKey(8)"></cin>
+            <btn v-if="!selectedLocation.isDefault" is-blue="true" :text="locale(langKeys.BUTTON_SetAsDefaultLocation)"
+                 v-on:clicked="setAsDefaultLocation" :key="locationKey(1)"></btn>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_LocationName)" :text="selectedLocation.name"
+                 v-on:changed="changed => bind(changed, 'selectedLocation.name')" :key="locationKey(2)"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Phone)" :text="selectedLocation.phone"
+                 v-on:changed="changed => bind(changed, 'selectedLocation.phone')" :key="locationKey(3)"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Address)" :text="selectedLocation.address"
+                 v-on:changed="changed => bind(changed, 'selectedLocation.address')" :key="locationKey(4)"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_City)" half="true" :text="selectedLocation.city"
+                 v-on:changed="changed => bind(changed, 'selectedLocation.city')" :key="locationKey(5)"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Postal)" second-half="true" :text="selectedLocation.zipcode"
+                 v-on:changed="changed => bind(changed, 'selectedLocation.zipcode')" :key="locationKey(6)"></cin>
+            <sel :placeholder="locale(langKeys.PLACEHOLDER_Country)" :seventy="selectedLocation.country.code === 'US'" :options="countries"
+                 :selected="selectedLocation.country" :parser="(obj) => obj.name"
+                 v-on:changed="changed => bind(changed, 'selectedLocation.country')" :key="locationKey(7)"></sel>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_State)" v-if="selectedLocation.country.code === 'US'"
+                 thirty="true" :text="selectedLocation.state" v-on:changed="changed => bind(changed, 'selectedLocation.state')"
+                 :key="locationKey(8)"></cin>
 
-            <btn v-if="identity.locations.length > 1" margined="true" is-red="true" text="Remove This Location" v-on:clicked="removeSelectedLocation"></btn>
+            <btn v-if="identity.locations.length > 1" margined="true" is-red="true"
+                 :text="locale(langKeys.BUTTON_RemoveLocation)" v-on:clicked="removeSelectedLocation"></btn>
         </section>
 
     </section>
@@ -113,7 +102,7 @@
     export default {
         data(){ return {
             identity:null,
-            keypair:null,
+            keypairs:[],
             accountNameOrPrivateKey:'',
             isNew:false,
             countries: Countries,
@@ -127,7 +116,8 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'networks'
+                'networks',
+                'langKeys'
             ])
         },
         mounted(){
@@ -175,11 +165,9 @@
             },
             importAccount(){
                 this.importing = true;
-                console.log(this.accountNameOrPrivateKey, this.selectedNetwork)
                 AccountService.importFromKey(this.accountNameOrPrivateKey, this.selectedNetwork, this).then(imported => {
                     this.identity.setAccount(this.selectedNetwork, imported.account);
-//                    this.identity.account = imported.account;
-                    this.keypair = imported.keypair;
+                    this.keypairs.push(imported.keypair);
                     this.importing = false;
                 }).catch(() => this.importing = false);
             },
@@ -216,16 +204,15 @@
 
 
                 const scatter = this.scatter.clone();
-                scatter.keychain.identities = scatter.keychain.identities.filter(x => x.hash !== this.identity.hash);
-                scatter.keychain.identities.push(this.identity);
 
-                // Adding possibly new keypair
-                if(this.keypair && (this.identity.account && this.identity.account.publicKey === this.keypair.publicKey)){
-                    scatter.keychain.keypairs = scatter.keychain.keypairs.filter(x => x.publicKey !== this.keypair.publicKey);
-                    scatter.keychain.keypairs.push(this.keypair);
-                }
+                this.keypairs.map(keypair => {
+                    if(!scatter.keychain.keypairs.find(existingKeyPair => existingKeyPair.publicKey === keypair.publicKey))
+                        scatter.keychain.keypairs.push(keypair);
+                });
 
-                console.log(this.identity);
+                scatter.keychain.updateOrPushIdentity(this.identity);
+
+
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
 
             },

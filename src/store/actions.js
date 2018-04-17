@@ -22,9 +22,9 @@ export const actions = {
         })
     },
 
-    [Actions.SET_TIMEOUT]:({commit}, timeoutMinutes) => {
+    [Actions.SET_AUTO_LOCK]:({commit}, timeoutMinutes) => {
         return new Promise((resolve, reject) => {
-            commit(Actions.SET_TIMEOUT, timeoutMinutes);
+            commit(Actions.SET_AUTO_LOCK, timeoutMinutes);
             InternalMessage.payload(InternalMessageTypes.SET_TIMEOUT, timeoutMinutes).send().then(() => {
                 resolve(timeoutMinutes)
             })

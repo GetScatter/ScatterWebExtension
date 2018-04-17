@@ -13,4 +13,8 @@ export default class Account {
     static nameIsValid(name){
         return /(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/g.test(name)
     }
+
+    formatEOS(){
+        return `${this.name}@${this.authority}`
+    }
 }

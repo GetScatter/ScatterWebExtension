@@ -13,13 +13,8 @@
         </section>
 
         <section class="nothing-here" v-else>
-            <figure class="header">
-                You don't have any permissions to display.
-            </figure>
-            <figure class="sub-header">
-                Permissions are set when you either provide an Identity for an application to use,
-                or when you whitelist a contract action to be signed without authorization prompts.
-            </figure>
+            <figure class="header">{{locale(langKeys.PERMISSIONS_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.PERMISSIONS_Description)}}</figure>
         </section>
     </section>
 </template>
@@ -45,7 +40,8 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'permissions'
+                'permissions',
+                'langKeys'
             ]),
         },
         methods: {

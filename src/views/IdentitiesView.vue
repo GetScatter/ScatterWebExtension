@@ -2,7 +2,7 @@
     <section class="identities">
 
         <nav-actions :actions="[
-            {event:'create', icon:'plus-square-o'}
+            {event:'create', text:locale(langKeys.GENERIC_New)}
         ]" v-on:create="createIdentity"></nav-actions>
 
         <search v-on:changed="changed => bind(changed, 'searchText')"></search>
@@ -10,15 +10,14 @@
         <section v-if="!identities.length" class="nothing-here">
 
             <figure class="header">
-                You don't have any Identities yet.
+                {{locale(langKeys.IDENTITIES_Header)}}
             </figure>
             <figure class="sub-header">
-                Click the <i style="font-size:20px; color:#83baff;" class="fa fa-plus-square-o"></i> button on the top right of this screen to
-                get started.
+                <b>{{locale(langKeys.IDENTITIES_MandatoryFields)}}</b>.
                 <br><br>
-                <b>None of the fields are mandatory</b>.
+                {{locale(langKeys.IDENTITIES_FieldRequirements)}}
                 <br><br>
-                Some websites might require some specific fields though, such as an <b>email</b> or <b>EOS account</b>
+                <btn :text="locale(langKeys.BUTTON_CreateIdentity)" v-on:clicked="createIdentity" margined="true"></btn>
             </figure>
 
         </section>
@@ -28,7 +27,6 @@
                 <!-- Header -->
                 <section class="panel">
                     <figure class="header big">{{identity.name}}</figure>
-                    <!--<figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>-->
                 </section>
 
                 <!-- Account information -->
@@ -72,7 +70,6 @@
                 <section class="panel">
                     <section class="actions">
                         <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil-square-o"></i></figure>
-                        <figure class="action"><i class="fa fa-clone"></i></figure>
                         <figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>
                         <figure class="action toggle-switch right" v-on:click="toggleIdentity(identity)">
                             <figure class="switch" :class="{'enabled':!identity.disabled}">{{(identity.disabled) ? 'Disabled' : 'Enabled'}}</figure>
@@ -99,14 +96,15 @@
     export default {
         data(){ return {
             searchText:'',
-            balances:{},
+            balances:{}
         }},
         computed: {
             ...mapState([
                 'scatter'
             ]),
             ...mapGetters([
-                'identities'
+                'identities',
+                'langKeys'
             ])
         },
         mounted(){

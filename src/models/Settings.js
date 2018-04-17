@@ -1,5 +1,6 @@
 import Network from './Network';
 import TimingHelpers from '../util/TimingHelpers';
+import {LANG} from '../localization/locales';
 
 export default class Settings {
 
@@ -7,7 +8,8 @@ export default class Settings {
         this.networks = [];
         this.backupToBlockchain = false;
         this.hasEncryptionKey = false;
-        this.inactivityInterval = TimingHelpers.minutes(120)
+        this.inactivityInterval = TimingHelpers.minutes(120);
+        this.language = 'ENGLISH';
     }
 
     static placeholder(){ return new Settings(); }

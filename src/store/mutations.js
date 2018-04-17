@@ -9,6 +9,6 @@ export const mutations = {
     [Mutations.PUSH_ALERT_RESULT]:(state, alertResult) => state.alertResult = alertResult,
     [Mutations.CLEAR_ALERT_RESULT]:(state) => state.alertResult = null,
     [Mutations.PUSH_PROMPT]:(state, prompt) => state.prompt = prompt,
-    [Mutations.SET_TIMEOUT]:(state, inactivityInterval) =>
+    [Mutations.SET_AUTO_LOCK]:(state, inactivityInterval) =>
         state.scatter.settings.inactivityInterval = TimingHelpers.minutes(inactivityInterval),
 };

@@ -72,20 +72,13 @@
         </section>
 
         <section class="nothing-here" v-else>
-            <figure class="header">
-                You don't have any historic events to display.
-            </figure>
+            <figure class="header">{{locale(langKeys.HISTORIES_Header)}}</figure>
             <figure class="sub-header">
-                Once you have them, you will be able to see a list of all of the events that pass
-                through your Scatter. What you will <u>not</u> see is events that occurred on your
-                accounts outside of scatter.
+                {{locale(langKeys.HISTORIES_Description)}}
                 <br><br>
                 <figure class="line"></figure>
                 <section style="margin-top:10px; font-size:9px;">
-                    <b>Note:</b> Exporting your keychain as JSON data from the backup option in the settings panel
-                    does not save these events. When you import that Scatter
-                    instance again your histories will be empty. If you would like to export your histories
-                    in the future you can do so using the action buttons on the navbar.
+                    {{locale(langKeys.HISTORIES_Note)}}
                 </section>
             </figure>
         </section>
@@ -111,7 +104,8 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'histories'
+                'histories',
+                'langKeys'
             ]),
         },
         methods: {

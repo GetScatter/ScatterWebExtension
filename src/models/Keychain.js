@@ -7,7 +7,6 @@ import AES from 'aes-oop';
 export default class Keychain {
 
     constructor(){
-        this.id = IdGenerator.text(256);
         this.keypairs = [];
         this.identities = [];
         this.permissions = [];
@@ -47,5 +46,11 @@ export default class Keychain {
     hasContractPermission(checksum){
         if(!checksum) return false;
         return !!this.permissions.find(permission => permission.checksum === checksum);
+    }
+
+    updateOrPushIdentity(identity){
+        this.identities.find(id => id.hash === identity.hash)
+            ? this.identities = this.identities.map(id => id.hash === identity.hash ? identity : id)
+            : this.identities.unshift(identity);
     }
 }

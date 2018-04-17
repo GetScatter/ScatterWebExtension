@@ -5,26 +5,9 @@ import NotificationService from '../services/NotificationService'
 
 export default class IdentityService {
 
-    /***
-     * Checks if an identity exists, and if not it registers it.
-     * @param name
-     * @param scatter
-     * @returns {Promise}
-     */
-    static existsOrRegister(name, scatter){
-        return new Promise((resolve, reject) => {
-            IdentityService.nameExists(name).then(exists => {
-                if(exists) resolve();
-                else IdentityService.register(name, scatter).then(res => resolve());
-            });
-        })
-    }
-
     //TODO Mock
     static register(name, scatter){
         return new Promise((resolve, reject) => {
-            // Register name with scatter.keychain.id
-            // We might need to do this with keypairs so that they can be provably owned
             resolve(true)
         })
     }
@@ -61,7 +44,7 @@ export default class IdentityService {
                 return false;
             }
 
-            callback(id.asOnlyRequiredFields(fields), !!identityFromPermission);
+            callback(id.asOnlyRequiredFields(fields, network), !!identityFromPermission);
         };
 
         if(identity){

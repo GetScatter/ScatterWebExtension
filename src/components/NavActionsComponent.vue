@@ -1,7 +1,8 @@
 <template>
     <section class="nav-actions">
         <figure class="action blue" v-on:click="emit(action)" v-for="action in actions">
-            <i class="fa" :class="'fa-'+action.icon"></i>
+            <i v-if="action.icon" class="fa" :class="'fa-'+action.icon"></i>
+            <b v-else>{{action.text}}</b>
         </figure>
     </section>
 </template>
@@ -33,17 +34,35 @@
             line-height:60px;
             text-align:center;
             font-size:24px;
-            color:#eaeaea;
+            color: #c0c0c0;
             float:right;
             margin-left:10px;
             transition: color 0.2s ease;
 
+            b {
+                font-size: 11px;
+                border: 1px solid rgba(0,0,0,0.1);
+                padding: 5px 8px;
+                border-radius: 4px;
+                display: inline-block;
+                line-height: 12px;
+                vertical-align: super;
+                margin-top: 18px;
+                transition: border 0.2s ease;
+            }
+
             &.red { &:hover {
                 color:#ff0d0c;
+                b {
+                    border: 1px solid #ff0d0c;
+                }
             }}
 
             &.blue { &:hover {
                 color:#83baff;
+                b {
+                    border: 1px solid #83baff;
+                }
             }}
         }
     }

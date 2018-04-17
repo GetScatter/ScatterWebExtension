@@ -3,10 +3,10 @@ import AES from 'aes-oop';
 import * as InternalMessageTypes from './messages/InternalMessageTypes';
 import InternalMessage from './messages/InternalMessage';
 import StorageService from './services/StorageService'
+import SignatureService from './services/SignatureService'
 import Scatter from './models/Scatter'
 import Network from './models/Network'
 import Identity from './models/Identity'
-import {LocationFields} from './models/Identity'
 import IdentityService from './services/IdentityService'
 import NotificationService from './services/NotificationService'
 import HistoricEvent from './models/histories/HistoricEvent'
@@ -24,7 +24,6 @@ const ecc = require('eosjs-ecc');
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
 let seed = '';
-// let seed = 'ea6b0ceab4c31d19f5338519049d84ad0c9d6db807bc5bc95a83a86ec2237598fcd93c7a8af05e42c9de4719ea7c717baf8a10d948db3fb6f4e7340f911ecc7a';
 
 let inactivityInterval = 0;
 let timeoutLocker = null;
@@ -34,16 +33,6 @@ export default class Background {
 
     constructor(){
         this.setupInternalMessaging();
-        setTimeout(() => {
-            this.dispenseMessage(() => {
-                this.dispenseMessage(x => {
-                    console.log('isUnlocked', x)
-                }, {"type":"isUnlocked","payload":""})
-
-                // this.dispenseMessage(() => {}, {"type":"requestSignature","payload":{"transaction":{"ref_block_num":209,"ref_block_prefix":2822977177,"expiration":"2018-03-28T20:04:59","scope":["ebghaib345","inita"],"read_scope":[],"messages":[{"code":"eos","type":"transfer","authorization":[{"account":"ebghaib345","permission":"active"}],"data":{"from":"ebghaib345","to":"inita","amount":"10","memo":""}}]},"buf":{"type":"Buffer","data":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,209,0,153,54,67,168,107,245,187,90,2,0,64,33,227,56,211,216,81,0,0,0,0,0,147,221,116,0,1,0,0,0,0,0,0,48,85,0,0,0,87,45,60,205,205,1,0,64,33,227,56,211,216,81,0,0,0,0,168,237,50,50,25,0,64,33,227,56,211,216,81,0,0,0,0,0,147,221,116,10,0,0,0,0,0,0,0,0]},"domain":"scatter-demos.devx","network":{"host":"159.65.161.242","port":"8888"},"identityHash":"13e9f35e0204581e35e343161e123fb4880dd088f96d67dda4c7b56cbc26f940","requiredFields":["account","firstname","lastname","country","address","city"]}})
-            }, {"type":"setSeed","payload":"ea6b0ceab4c31d19f5338519049d84ad0c9d6db807bc5bc95a83a86ec2237598fcd93c7a8af05e42c9de4719ea7c717baf8a10d948db3fb6f4e7340f911ecc7a"})
-        }, 250)
-
     }
 
 
@@ -67,7 +56,6 @@ export default class Background {
      */
     dispenseMessage(sendResponse, message){
         Background.checkAutoLock();
-        console.log(message)
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                     Background.setSeed(sendResponse, message.payload); break;
             case InternalMessageTypes.SET_TIMEOUT:                  Background.setTimeout(sendResponse, message.payload); break;
@@ -139,7 +127,6 @@ export default class Background {
             inactivityInterval = scatter.settings.inactivityInterval;
 
             if(seed.length) scatter.decrypt(seed);
-            console.log('scatter', scatter);
             sendResponse(scatter)
         })
     }
@@ -243,7 +230,10 @@ export default class Background {
                 return false;
             }
             const identity = permission.identity(scatter.keychain);
-            sendResponse(identity.asOnlyRequiredFields(permission.fields));
+            console.log('identity', identity);
+            console.log('payload', payload);
+            console.log('permission', permission);
+            sendResponse(identity.asOnlyRequiredFields(permission.fields, permission.network));
         });
     }
 
@@ -296,111 +286,7 @@ export default class Background {
     static requestSignature(sendResponse, payload){
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
-
-                //TODO: This is too much code here, it should be put into a separate file with
-                //TODO: a clear intent and single concern.
-
-                // Checking if identity still exists
-                console.log('scatter', scatter)
-                const identity = scatter.keychain.findIdentity(payload.identityHash);
-                if(!identity){
-                    sendResponse(Error.signatureError("identity_missing", "Identity no longer exists on the user's keychain"));
-                    return false;
-                }
-
-                // Checking if the identity is on the same network
-                // if(identity.network.unique() !== Network.fromJson(payload.network).unique()){
-                //     sendResponse(Error.signatureError("wrong_network", "Identity is not on the same network"));
-                //     return false;
-                // }
-
-                // Checking if Identity still has all the necessary accounts
-                const requiredAccounts = ObjectHelpers.flatten(
-                    payload.transaction.messages
-                        .map(message => message.authorization
-                            .map(auth => `${auth.account}@${auth.permission}`)));
-
-                const identityAccountAuth = `${identity.account.name}@${identity.account.authority}`;
-
-                if(!requiredAccounts.some(accountAuth => accountAuth === identityAccountAuth)) {
-                    sendResponse(Error.signatureError("account_missing", "Missing required accounts"));
-                    return false;
-                }
-
-
-                const sign = (returnedFields) => {
-
-
-                    // Pre loading the buffer so that it doesn't waste time before the key is released.
-                    const buf = Buffer.from(payload.buf.data, 'utf8');
-
-                    this.publicToPrivate(privateKey => {
-                        if(!privateKey){
-                            sendResponse(Error.maliciousEvent());
-                            return false;
-                        }
-
-                        // Signing the transaction
-                        let signed = ecc.sign(buf, privateKey);
-
-                        // Overwriting memory pointer
-                        privateKey = 'RELEASED';
-
-                        // Adding historic event
-                        this.addHistory(HistoricEventTypes.SIGNED_TRANSACTION, {
-                            domain:payload.domain,
-                            network:payload.network,
-                            identityName:identity.name,
-                            identityHash:identity.hash,
-                            account:identity.account,
-                            transaction:payload.transaction,
-                            hash:'' // <-- hmmm, what to do with this? There is no insecureHash here to track yet. :(
-                        });
-
-                        sendResponse({
-                            signatures:[signed],
-                            returnedFields:returnedFields
-                        });
-                    }, identity.account.publicKey);
-                };
-
-                const needsLocationAndIdentityHasMultiple = identity.locations.length > 1 &&
-                    payload.requiredFields.some(field => Object.keys(LocationFields).includes(field));
-
-                const hasTransactionPermissions = payload.transaction.messages.every(message => {
-                    const checksum = ContractHelpers.messageChecksum(message, identity.account.name, payload.domain, payload.network, payload.requiredFields);
-                    return scatter.keychain.hasContractPermission(checksum)
-                });
-
-                if(!needsLocationAndIdentityHasMultiple && hasTransactionPermissions) {
-                    const identityClone = identity.clone();
-                    const returnedFields = Identity.asReturnedFields(payload.requiredFields, identityClone, identityClone.locations[0]);
-                    sign(returnedFields);
-                }
-                else NotificationService.open(new Prompt(PromptTypes.REQUEST_SIGNATURE, payload.domain, payload.network, payload, approval => {
-                    if(!approval || !approval.hasOwnProperty('accepted')){
-                        sendResponse(Error.signatureError("signature_rejected", "User rejected the signature request"));
-                        return false;
-                    }
-
-                    if(approval.whitelisted){
-                        this.addPermissions(payload.transaction.messages.map(message => {
-                            const checksum = ContractHelpers.messageChecksum(message, identity.account.name, payload.domain, payload.network, payload.requiredFields);
-                            return Permission.fromJson({
-                                domain:payload.domain,
-                                network:payload.network,
-                                identityHash:identity.hash,
-                                contract:message.code,
-                                action:message.type,
-                                checksum,
-                                timestamp:+ new Date()
-                            });
-                        }));
-                    }
-
-                    sign(approval.returnedFields);
-                }));
-
+                SignatureService.requestSignature(payload, scatter, this, sendResponse);
             })
         })
     }

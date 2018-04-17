@@ -18,6 +18,7 @@
     import { mapActions, mapGetters, mapState } from 'vuex'
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
+    import * as LANG_KEYS from '../localization/keys';
 
 
     import Network from '../models/Network'
@@ -27,10 +28,10 @@
     export default {
         data(){ return {
             links:[
-                {route:RouteNames.IDENTITIES, name:'Identities', icon:'address-book'},
-                {route:RouteNames.PERMISSIONS, name:'Permissions', icon:'shield'},
-                {route:RouteNames.HISTORY, name:'History', icon:'history'},
-                {name:'Lock', icon:'lock'},
+                {route:RouteNames.IDENTITIES, name:this.locale(LANG_KEYS.MAINMENU_Identities), icon:'address-book'},
+                {route:RouteNames.PERMISSIONS, name:this.locale(LANG_KEYS.MAINMENU_Permissions), icon:'shield'},
+                {route:RouteNames.HISTORY, name:this.locale(LANG_KEYS.MAINMENU_History), icon:'history'},
+                {name:this.locale(LANG_KEYS.MAINMENU_Lock), icon:'lock'},
             ]
         }},
         computed: {

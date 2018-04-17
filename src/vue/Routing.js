@@ -13,6 +13,7 @@ import BackupView from '../views/BackupView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import DestroyView from '../views/DestroyView.vue'
 import AutoLockView from '../views/AutoLockView.vue'
+import LanguageView from '../views/LanguageView.vue'
 import ExportJsonView from '../views/ExportJsonView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import KeyPairView from '../views/KeyPairView.vue'
@@ -47,6 +48,7 @@ export const RouteNames = {
     EXPORT_JSON:'exportJson',
     DESTROY:'destroy',
     AUTO_LOCK:'autoLock',
+    LANGUAGE:'language',
     KEYPAIRS:'keypairs',
 
     PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
@@ -77,6 +79,7 @@ const RouteViews = {
     [RouteNames.EXPORT_JSON]:ExportJsonView,
     [RouteNames.DESTROY]:DestroyView,
     [RouteNames.AUTO_LOCK]:AutoLockView,
+    [RouteNames.LANGUAGE]:LanguageView,
     [RouteNames.KEYPAIRS]:KeyPairView,
 
     [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
@@ -104,6 +107,7 @@ export const RouteDepth = {
     [RouteNames.NETWORK]:102,
     [RouteNames.CHANGE_PASSWORD]:101,
     [RouteNames.AUTO_LOCK]:101,
+    [RouteNames.LANGUAGE]:101,
     [RouteNames.BACKUP]:101,
     [RouteNames.EXPORT_JSON]:102,
     [RouteNames.DESTROY]:101,

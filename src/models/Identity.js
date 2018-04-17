@@ -86,7 +86,6 @@ export default class Identity {
 
         //TODO: Change to map of (network -> account)
         this.accounts = {};
-        this.account = null;
         this.network = null;
 
         this.personal = PersonalInformation.placeholder();
@@ -109,7 +108,10 @@ export default class Identity {
     static placeholder(){ return new Identity(); }
     static fromJson(json){
         let p = Object.assign(this.placeholder(), json);
-        if(json.hasOwnProperty('account') && json.account) p.account = Account.fromJson(json.account);
+        if(json.hasOwnProperty('accounts')) p.accounts = Object.keys(json.accounts).reduce((acc, network) => {
+            acc[network] = Account.fromJson(json.accounts[network]);
+            return acc;
+        }, {});
         if(json.hasOwnProperty('network') && json.network) p.network = Network.fromJson(json.network);
         p.personal = PersonalInformation.fromJson(json.personal);
         if(json.hasOwnProperty('locations')) p.locations = json.locations.map(location => LocationInformation.fromJson(location));
@@ -153,7 +155,6 @@ export default class Identity {
      * @returns {T|*}
      */
     defaultLocation(){ return this.locations.find(location => location.isDefault) || this.locations[0]; }
-
 
     setAccount(network, account){ this.accounts[network.unique()] = account; }
 
@@ -203,18 +204,21 @@ export default class Identity {
     /***
      * Returns an object with only the required fields from this Identity
      * @param fields
+     * @param network
      */
-    asOnlyRequiredFields(fields){
+    asOnlyRequiredFields(fields, network){
         // Adding mandatory fields and converting to lowercase
         fields = ObjectHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'publicKey', 'name']));
 
         const clone = {personal:{},location:{}};
         fields.map(field => {
-           if(Object.keys(this).includes(field)) clone[field] = this[field];
-           if(Object.keys(PersonalFields).includes(field))
+            if(Object.keys(this).includes(field)) clone[field] = this[field];
+            if(Object.keys(PersonalFields).includes(field))
                clone.personal[PersonalFields[field]] = this.personal[PersonalFields[field]];
-           if(Object.keys(LocationFields).includes(field))
+            if(Object.keys(LocationFields).includes(field))
                clone.location[LocationFields[field]] = this.defaultLocation()[LocationFields[field]];
+            if(field === IdentityFields.account)
+                clone[IdentityFields.account] = this.networkedAccount(network);
         });
 
         if(!Object.keys(clone.personal).length) delete clone.personal;

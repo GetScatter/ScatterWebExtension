@@ -3,7 +3,8 @@
 
         <section class="floating-header">
             <figure class="identity-name">{{identity().name}}</figure>
-            <figure class="account-authority">{{`${identity().account.name}@${identity().account.authority}`}}</figure>
+            <!-- TODO: Replace with selected account from account map -->
+            <!--<figure class="account-authority">{{`${identity().account.name}@${identity().account.authority}`}}</figure>-->
             <figure class="switches">
                 <figure class="switch"
                         v-for="displayType in displayTypes"
@@ -97,6 +98,7 @@
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
     import AlertMsg from '../models/alerts/AlertMsg'
+    import Network from '../models/Network'
     import IdentityService from '../services/IdentityService'
     import NotificationService from '../services/NotificationService'
     import Identity from '../models/Identity'
@@ -131,7 +133,7 @@
             ])
         },
         mounted(){
-            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields, this.prompt.network);
+            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields, Network.fromJson(this.prompt.network));
 
             if(!hasAllRequiredFields){
                 this[Actions.PUSH_ALERT](AlertMsg.NoIdentityWithProperties(this.requiredFields)).then(closed => {

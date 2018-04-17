@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import {mutations} from './mutations';
 import {actions} from './actions';
+import * as LANG_KEYS from '../localization/keys';
 
 Vue.use(Vuex);
 
@@ -23,6 +24,8 @@ const getters = {
     backupToBlockchain:state => state.scatter.settings.backupToBlockchain,
     histories:state => state.scatter.histories,
     autoLockInterval:state => state.scatter.settings.inactivityInterval,
+    language:state => state.scatter.settings.language,
+    langKeys:state => LANG_KEYS,
 
     // FOR PROMPTS ONLY
     identityFields:state => state.prompt.data || [],

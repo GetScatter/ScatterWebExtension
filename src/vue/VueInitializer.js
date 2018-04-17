@@ -5,6 +5,7 @@ import VueMoment from 'vue-moment';
 import {Routing} from './Routing';
 import {store} from '../store/store'
 import * as Actions from '../store/constants'
+import {localized} from '../localization/locales'
 
 /***
  * Sets up an instance of Vue.
@@ -22,6 +23,17 @@ export default class VueInitializer {
 
         store.dispatch(Actions.LOAD_SCATTER).then(() => {
             this.setupVue(router);
+
+            Vue.mixin({
+                methods: {
+                    locale:(key) => localized(key, store.getters.language)
+                    // var myOption = this.$options.myOption
+                    // if (myOption) {
+                    //     console.log(myOption)
+                    // }
+                }
+            });
+
             routerCallback(router, store);
         });
 
