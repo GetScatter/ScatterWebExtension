@@ -1,27 +1,22 @@
 <template>
     <section class="network scroller">
         <section class="panel">
-            <figure class="header">Generate a new Key Pair</figure>
-            <figure class="sub-header">
-                You can use this panel to generate EOS key pairs. These key pairs are generated locally on
-                your machine and are never sent anywhere. You can also paste in a keypair and check that the
-                private key matches the public key.
-                <b>Note that these keys are generated using entropy gathered from your computer and not from any specific seed.</b>
-            </figure>
-            <cin placeholder="Public Key" :text="publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
-            <cin placeholder="Private Key" :text="privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
-            <btn text="Generate Key Pair" @click.native="generateKeyPair()" margined="true"></btn>
-            <btn text="Validate" half="true" @click.native="checkKeyPair()" margined="true"></btn>
-            <btn text="Copy" half="true" @click.native="copyKeyPair()" margined="true"></btn>
+            <figure class="header">{{locale(langKeys.KEYPAIR_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.KEYPAIR_Description)}}</figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :text="publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" :text="privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
+            <btn :text="locale(langKeys.BUTTON_GenerateKeyPair)" @click.native="generateKeyPair()" margined="true"></btn>
+            <btn :text="locale(langKeys.BUTTON_Validate)" half="true" @click.native="checkKeyPair()" margined="true"></btn>
+            <btn :text="locale(langKeys.BUTTON_Copy)" half="true" @click.native="copyKeyPair()" margined="true"></btn>
         </section>
 
         <section class="panel" v-if="matches !== null">
-            <figure class="header">Key Pair Validation</figure>
+            <figure class="header">{{locale(langKeys.KEYPAIR_Validation_Header)}}</figure>
             <figure class="sub-header blue" v-if="matches">
-                The private key is valid and the public key generated from it matches the public key provided.
+                {{locale(langKeys.KEYPAIR_Validation_Valid)}}
             </figure>
             <figure class="sub-header red" v-else>
-                The public key generated from the private key did <b>not</b> match the public key provided!
+                {{locale(langKeys.KEYPAIR_Validation_Invalid)}}
             </figure>
         </section>
 

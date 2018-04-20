@@ -49,14 +49,6 @@ export const actions = {
         })
     },
 
-
-    [Actions.BACKUP_SCATTER_ON_BLOCKCHAIN]:({state, commit, dispatch}, scatter) => {
-        return new Promise((resolve, reject) => {
-            // Do this from the Background script
-            resolve(true);
-        })
-    },
-
     [Actions.CREATE_NEW_SCATTER]:({state, commit, dispatch}, password) => {
         return new Promise((resolve, reject) => {
             const scatter = Scatter.fromJson(state.scatter);

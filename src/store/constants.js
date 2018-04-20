@@ -3,7 +3,6 @@ export const LOAD_SCATTER = 'loadScatter';
 export const SET_SCATTER = 'setScatter';
 export const IS_UNLOCKED = 'isUnlocked';
 export const UPDATE_STORED_SCATTER = 'updateStoredScatter';
-export const BACKUP_SCATTER_ON_BLOCKCHAIN = 'backupScatterOnBlockchain';
 export const CREATE_NEW_SCATTER = 'createNewScatter';
 export const SET_MNEMONIC = 'setMnemonic';
 export const SET_SEED = 'setSeed';

@@ -3,6 +3,7 @@ import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import * as PairingTags from './messages/PairingTags'
 import Error from './models/errors/Error'
 import IdGenerator from './util/IdGenerator';
+const ecc = require('eosjs-ecc');
 
 
 const throws = (msg) => {
@@ -27,10 +28,16 @@ let provider = new WeakMap();
 let stream = new WeakMap();
 let resolvers = new WeakMap();
 let network = new WeakMap();
-let identityHash = new WeakMap();
+let publicKey = new WeakMap();
 let currentVersion = new WeakMap();
 let requiredVersion = new WeakMap();
 
+const throwIfNoIdentity = () => {
+    if(!publicKey) throws(`
+        You must select an Identity to use before requesting transaction signatures.
+        'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {publicKey}.
+    `);
+};
 
 
 /***
@@ -77,9 +84,10 @@ const _bindNetwork = (_network) => {
  * can be used.
  * @param _reject
  * @param _runIfNetworkBound
+ * @param bypassNetwork
  */
-const _networkGuard = (_reject, _runIfNetworkBound) => {
-    if(!network) {
+const _networkGuard = (_reject, _runIfNetworkBound, bypassNetwork) => {
+    if(!bypassNetwork && !network) {
         throws(`It seems that a network was not set. 
                 Did you create your eosjs instance using scatter.eos() ?`);
         _reject(null);
@@ -92,8 +100,9 @@ const _networkGuard = (_reject, _runIfNetworkBound) => {
  * and the content script into async promises
  * @param _type
  * @param _payload
+ * @param bypassNetwork
  */
-const _send = (_type, _payload) => {
+const _send = (_type, _payload, bypassNetwork = false) => {
     return new Promise((resolve, reject) => {
 
         // Version requirements
@@ -110,7 +119,7 @@ const _send = (_type, _payload) => {
             let message = new NetworkMessage(_type, _payload, id, network, location.host);
             resolvers.push(new DanglingResolver(id, resolve, reject));
             stream.send(message, PairingTags.SCATTER);
-        });
+        }, bypassNetwork);
     });
 };
 
@@ -123,14 +132,14 @@ export default class Scatterdapp {
 
     constructor(_stream, _options){
         currentVersion = parseFloat(_options.version);
-        identityHash = _options.identity ? _options.identity.hash : null;
+        publicKey = _options.identity ? _options.identity.publicKey : null;
         this.identity = _options.identity;
         stream = _stream;
         network = null;
         resolvers = [];
         _subscribe();
 
-        if(this.identity) this.useIdentity(identityHash);
+        if(this.identity) this.useIdentity(publicKey);
     }
 
 
@@ -168,18 +177,38 @@ export default class Scatterdapp {
 
                     // The signature provider which gets elevated into the user's Scatter
                     const signProvider = async signargs => {
+                        console.log('signargs', args, method, signargs);
+
+                        // Grabbing the ABI to parse the transaction parameters
+
+                        throwIfNoIdentity();
+
+                        // Friendly formatting
+                        signargs.messages = await Promise.all(signargs.transaction.actions.map(async action => {
+                            let data = null;
+
+                            const eos = _eos({httpEndpoint});
+                            if(action.account === 'eosio') data = eos.fc.fromBuffer(action.name, action.data);
+                            else {
+                                const abi = await eos.contract(args[0]);
+                                data = abi.fc.fromBuffer(action.name, action.data);
+                            }
+
+                            console.log('data', data);
+
+                            return {
+                                data,
+                                code:action.account,
+                                type:action.name,
+                                authorization:action.authorization
+                            };
+                        }));
+
+                        console.log('messages', signargs.messages);
 
 
-                        // TODO: We might not need this now that we can pass things into the transaction
-                        // TODO: itself. We should check to see if it's a better workflow to just pass
-                        // TODO: the identity hash here instead.
-                        if(!identityHash) {
-                            throws('You must select an Identity to use before requesting transaction signatures. ' +
-                                'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {identityHash:anIdentityHash}.');
-                            return null;
-                        }
 
-                        const payload = Object.assign(signargs, { domain:location.host, network, identityHash, requiredFields });
+                        const payload = Object.assign(signargs, { domain:location.host, network, publicKey, requiredFields });
 
                         const result = await _send(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
 
@@ -202,7 +231,7 @@ export default class Scatterdapp {
                                 result.signatures = result.signatures.concat(localMutiSig);
                             }
 
-                            console.log(result)
+                            console.log('result', result)
 
                             // Returning only the signatures to eosjs
                             return result.signatures;
@@ -243,12 +272,12 @@ export default class Scatterdapp {
 
     /***
      * Sets which Identity to use for transaction signing
-     * @param _identityObjectOrHash - The hash of the identity, or an Identity object
+     * @param _identityObjectOrPublicKey - The publicKey of the identity, or an Identity object
      */
-    useIdentity(_identityObjectOrHash){
-        if(typeof _identityObjectOrHash === 'object') this.identity = _identityObjectOrHash;
-        identityHash = typeof _identityObjectOrHash === 'string' ? _identityObjectOrHash :
-            _identityObjectOrHash.hasOwnProperty('hash') ? _identityObjectOrHash.hash : '';
+    useIdentity(_identityObjectOrPublicKey){
+        if(typeof _identityObjectOrPublicKey === 'object') this.identity = _identityObjectOrPublicKey;
+        publicKey = typeof _identityObjectOrPublicKey === 'string' ? _identityObjectOrPublicKey :
+            _identityObjectOrPublicKey.hasOwnProperty('hash') ? _identityObjectOrPublicKey.publicKey : '';
     }
 
     /***
@@ -260,6 +289,29 @@ export default class Scatterdapp {
             domain:location.host,
             network:network
         });
+    }
+
+    async authenticate(){
+        throwIfNoIdentity();
+
+        // TODO: Verify identity matches RIDL registration
+
+        const signature = await _send(NetworkMessageTypes.AUTHENTICATE, {
+            domain:location.host,
+            publicKey
+        }, true).catch(err => err);
+
+        // Returning errors.
+        if(typeof signature === 'object') return signature;
+
+        try {
+            if(ecc.verify(signature, location.host, this.identity.publicKey))
+                return signature;
+        } catch (e) {
+            this.identity = null;
+            publicKey = '';
+            throws('Could not authenticate identity');
+        }
     }
 
     /***

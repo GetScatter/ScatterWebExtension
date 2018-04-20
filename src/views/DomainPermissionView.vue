@@ -9,7 +9,9 @@
                 <!-- Account Information -->
                 <section class="panel">
                     <figure class="header big identity-header">{{domainPermissions.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).name}}</figure>
-                    <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:domainPermissions.find(perm => perm.isIdentityOnly())})">Revoke Identity</figure>
+                    <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:domainPermissions.find(perm => perm.isIdentityOnly())})">
+                        {{locale(langKeys.PERMISSION_RevokeIdentity)}}
+                    </figure>
                     <figure class="header small margin" style="overflow:hidden;">
                         <figure style="float:left;">
                             <i class="fa fa-globe"></i>
@@ -24,14 +26,18 @@
                 <!-- Contract Permissions -->
                 <section class="panel" v-for="(actions, contract) in groupByContract(domainPermissions)">
                     <figure class="header contract-header">{{actions[0].contract}}</figure>
-                    <figure class="revoke-contract-actions" v-on:click="revoke({type:'contract', contract, network:actions[0].network})">revoke contract</figure>
+                    <figure class="revoke-contract-actions" v-on:click="revoke({type:'contract', contract, network:actions[0].network})">
+                        {{locale(langKeys.PERMISSION_RevokeContract)}}
+                    </figure>
                     <section class="items">
                         <section class="item" v-for="action in actions">
                             <span><u><b>{{action.action}}</b></u> <i>( {{action.timestamp/1000 | moment('from', 'now')}} )</i></span>
-                            <span class="revoke-text" v-on:click="revoke({type:'action', perm:action})">revoke action</span>
+                            <span class="revoke-text" v-on:click="revoke({type:'action', perm:action})">
+                                {{locale(langKeys.PERMISSION_RevokeAction)}}
+                            </span>
 
                             <section class="item" v-for="field in action.mutableFields">
-                                <span>Mutable Field</span>
+                                <span>{{locale(langKeys.GENERIC_Ignored)}}</span>
                                 <span><b>{{field}}</b></span>
                             </section>
                         </section>
@@ -70,7 +76,7 @@
         },
         methods: {
             bind(changed, original) { this[original] = changed },
-            groupByIdentity(permissions){ return ObjectHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'identityHash'); },
+            groupByIdentity(permissions){ return ObjectHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'publicKey'); },
             groupByContract(permissions){ return ObjectHelpers.groupBy(permissions.filter(perm => perm.isContractAction()), 'contract'); },
             breadcrumbs(){ return ['Permissions', 'Revoke']; },
 
@@ -111,7 +117,7 @@
                     scatter.keychain.permissions = scatter.keychain.permissions.filter(perm =>
                         perm.network.unique() !== permission.network.unique() ||
                         perm.domain !== permission.domain ||
-                        perm.identityHash !== permission.identityHash);
+                        perm.publicKey !== permission.publicKey);
                     this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.goBackIfEmpty());
                 });
             },

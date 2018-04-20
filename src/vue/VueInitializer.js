@@ -6,6 +6,7 @@ import {Routing} from './Routing';
 import {store} from '../store/store'
 import * as Actions from '../store/constants'
 import {localized} from '../localization/locales'
+import * as LANG_KEYS from '../localization/keys'
 
 /***
  * Sets up an instance of Vue.
@@ -22,17 +23,17 @@ export default class VueInitializer {
         const router = this.setupRouting(routes, middleware);
 
         store.dispatch(Actions.LOAD_SCATTER).then(() => {
-            this.setupVue(router);
 
             Vue.mixin({
+                data(){ return {
+                    langKeys:LANG_KEYS
+                }},
                 methods: {
-                    locale:(key) => localized(key, store.getters.language)
-                    // var myOption = this.$options.myOption
-                    // if (myOption) {
-                    //     console.log(myOption)
-                    // }
+                    locale:(key) => localized(key, store.getters.language),
                 }
-            });
+            })
+
+            this.setupVue(router);
 
             routerCallback(router, store);
         });

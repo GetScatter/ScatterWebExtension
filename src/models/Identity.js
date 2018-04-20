@@ -72,7 +72,7 @@ export const IdentityFields = {
     account:'account'
 };
 
-let {PrivateKey, PublicKey, Signature, Aes, key_utils, config} = require('eosjs-ecc')
+let {PrivateKey} = require('eosjs-ecc');
 
 export default class Identity {
 
@@ -80,11 +80,9 @@ export default class Identity {
         this.hash = '';
         this.privateKey = '';
         this.publicKey = '';
-        // this.hash = IdGenerator.text(128);
 
         this.name = '';
 
-        //TODO: Change to map of (network -> account)
         this.accounts = {};
         this.network = null;
 
@@ -217,8 +215,10 @@ export default class Identity {
                clone.personal[PersonalFields[field]] = this.personal[PersonalFields[field]];
             if(Object.keys(LocationFields).includes(field))
                clone.location[LocationFields[field]] = this.defaultLocation()[LocationFields[field]];
-            if(field === IdentityFields.account)
+            if(field === IdentityFields.account) {
+                console.log('this.networkedAccount(network)', this.networkedAccount(network), network);
                 clone[IdentityFields.account] = this.networkedAccount(network);
+            }
         });
 
         if(!Object.keys(clone.personal).length) delete clone.personal;

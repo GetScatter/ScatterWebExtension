@@ -3,11 +3,8 @@
 
         <!-- Verified -->
         <section class="panel">
-            <figure class="header">Auto Lock Timer</figure>
-            <figure class="sub-header">
-                Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter
-                when you step away.
-            </figure>
+            <figure class="header">{{locale(langKeys.LOCK_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.LOCK_Description)}}</figure>
             <sel v-if="selectedTimeout" :options="options"
                  :selected="selectedTimeout"
                  :parser="(obj) => obj.name"
@@ -24,22 +21,11 @@
     import {RouteNames} from '../vue/Routing';
     import TimingHelpers from '../util/TimingHelpers';
 
-    const timeoutOptions = [
-        {minutes: 0, name:'Never Lock'},
-        {minutes: 1, name:'1 Minute'},
-        {minutes: 3, name:'3 Minutes'},
-        {minutes: 5, name:'5 Minutes'},
-        {minutes: 10, name:'10 Minutes'},
-        {minutes: 15, name:'15 Minutes'},
-        {minutes: 30, name:'30 Minutes'},
-        {minutes: 60, name:'1 Hour'},
-        {minutes: 120, name:'2 Hours'},
-        {minutes: 240, name:'4 Hours'},
-    ];
+    const minutesArr = [ 0,1,3,5,10,15,30,60,120,240 ];
 
     export default {
         data(){ return {
-            options: timeoutOptions,
+            options: [],
             selectedTimeout: null,
         }},
         computed: {
@@ -51,14 +37,27 @@
             ])
         },
         mounted(){
-            this.selectedTimeout = timeoutOptions.find(option => option.minutes ===
+            this.selectedTimeout = this.timeoutOptions().find(option => option.minutes ===
                 TimingHelpers.minutesFromMillis(this.autoLockInterval))
+
+            this.options = this.timeoutOptions();
         },
         methods: {
             bind(changed, original) { this[original] = changed },
             changeTimeout(){
                 this[Actions.SET_AUTO_LOCK](this.selectedTimeout.minutes).then(() => {
                     this.$router.back();
+                });
+            },
+            timeoutOptions(){
+                return minutesArr.map(minutes => {
+                    let name = null;
+                    if(minutes === 0) name = this.locale(this.langKeys.LOCK_NeverLock);
+                    else if(minutes === 1) name = `1 ${this.locale(this.langKeys.LOCK_Minute)}`;
+                    else if(minutes > 1 && minutes < 60) name = `${minutes} ${this.locale(this.langKeys.LOCK_Minutes)}`;
+                    else if (minutes === 60) name = `${minutes} ${this.locale(this.langKeys.LOCK_Hour)}`;
+                    else name = `${minutes} ${this.locale(this.langKeys.LOCK_Hours)}`;
+                    return {minutes, name};
                 });
             },
             ...mapActions([

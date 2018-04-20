@@ -3,22 +3,22 @@
         <section v-if="!scatter.settings.hasEncryptionKey">
             <section class="p20">
                 <form v-on:submit.prevent="create">
-                  <cin icon="fa-lock" placeholder="password" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
-                  <cin icon="fa-lock" placeholder="confirm password" type="password" v-on:changed="changed => bind(changed, 'passwordConfirmation')"></cin>
-                  <btn text="Create New Scatter" type="submit" margined="true"></btn>
+                  <cin icon="fa-lock" :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
+                  <cin icon="fa-lock" :placeholder="locale(langKeys.PLACEHOLDER_ConfirmPassword)" type="password" v-on:changed="changed => bind(changed, 'passwordConfirmation')"></cin>
+                  <btn :text="locale(langKeys.BUTTON_CreateNewScatter)" type="submit" margined="true"></btn>
                 </form>
             </section>
             <figure class="line"></figure>
             <section class="p20">
-                <btn text="Load From Backup" v-on:clicked="create"></btn>
+                <btn :text="locale(langKeys.BUTTON_LoadFromBackup)" v-on:clicked="create"></btn>
             </section>
         </section>
         <section v-else>
             <section class="p20" style="overflow:hidden;">
                 <section class="unlocker" :class="{'hiding':hiding}">
                     <form v-on:submit.prevent="unlock">
-                      <cin icon="fa-lock" placeholder="password" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
-                      <btn text="Unlock" type="submit" margined="true"></btn>
+                      <cin icon="fa-lock" :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
+                      <btn :text="locale(langKeys.BUTTON_Unlock)" type="submit" margined="true"></btn>
                     </form>
                 </section>
             </section>

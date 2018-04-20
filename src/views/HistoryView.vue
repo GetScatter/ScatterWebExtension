@@ -28,14 +28,14 @@
 
                 <!-- Provided Identity -->
                 <section class="panel" v-if="hist.type === historyTypes.PROVIDED_IDENTITY">
-                    <figure class="header small reverse-margin">identity</figure>
+                    <figure class="header small reverse-margin">{{locale(langKeys.GENERIC_Identity)}}</figure>
                     <section class="items">
                         <section class="item">
-                            <span>name</span>
+                            <span>{{locale(langKeys.GENERIC_Name)}}</span>
                             <span>
-                                <router-link :class="{'link':findIdentity(hist.data.identityHash)}" :to="(findIdentity(hist.data.identityHash)) ?
-                                    {name:routeNames.IDENTITY, query:{hash:findIdentity(hist.data.identityHash).hash}} : {}">
-                                    {{hist.data.identityName}} <i v-if="!findIdentity(hist.data.identityHash)">( removed )</i>
+                                <router-link :class="{'link':findIdentity(hist.data.publicKey)}" :to="(findIdentity(hist.data.publicKey)) ?
+                                    {name:routeNames.IDENTITY, query:{hash:findIdentity(hist.data.publicKey).publicKey}} : {}">
+                                    {{hist.data.identityName}} <i v-if="!findIdentity(hist.data.publicKey)">( removed )</i>
                                 </router-link>
                             </span>
                         </section>
@@ -49,19 +49,19 @@
                         <section class="item">
                             <span>name</span>
                             <span>
-                                <router-link :class="{'link':findIdentity(hist.data.identityHash)}" :to="(findIdentity(hist.data.identityHash)) ?
-                                    {name:routeNames.IDENTITY, query:{hash:findIdentity(hist.data.identityHash).hash}} : {}">
-                                    {{hist.data.identityName}} <i v-if="!findIdentity(hist.data.identityHash)">( removed )</i>
+                                <router-link :class="{'link':findIdentity(hist.data.publicKey)}" :to="(findIdentity(hist.data.publicKey)) ?
+                                    {name:routeNames.IDENTITY, query:{hash:findIdentity(hist.data.publicKey).publicKey}} : {}">
+                                    {{hist.data.identityName}} <i v-if="!findIdentity(hist.data.publicKey)">( {{locale(langKeys.GENERIC_Removed)}} )</i>
                                 </router-link>
                             </span>
                         </section>
-                        <section v-for="message in hist.data.transaction.messages">
+                        <section v-for="message in hist.data.messages">
                             <section class="item">
-                                <span>contract</span>
+                                <span>{{locale(langKeys.GENERIC_Contract)}}</span>
                                 <span>{{message.code}}</span>
                             </section>
                             <section class="item">
-                                <span>action</span>
+                                <span>{{locale(langKeys.GENERIC_Action)}}</span>
                                 <span>{{message.type}}</span>
                             </section>
                         </section>
@@ -104,8 +104,7 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'histories',
-                'langKeys'
+                'histories'
             ]),
         },
         methods: {

@@ -1,31 +1,21 @@
 <template>
     <section class="backup scroller">
 
-        <!-- Blockchain Backup -->
-        <!-- TODO: Remove blockchain backup, no need now with import only structure -->
-        <!--<section class="panel">-->
-            <!--<figure class="header">Blockchain Backup</figure>-->
+        <!-- Unverified -->
+        <section class="panel" v-if="!verified">
+            <figure class="header">{{locale(langKeys.GENERIC_VerifyPassword_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.GENERIC_VerifyPassword_Description)}}</figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'password')" :key="1"></cin>
+            <btn v-on:clicked="verifyCurrentPassword" :text="locale(langKeys.PLACEHOLDER_ConfirmPassword)" :margined="true"></btn>
+        </section>
 
-            <!--<figure class="sub-header">-->
-                <!--<section class="checkbox">-->
-                    <!--<cin :tag="(backupToBlockchain) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleBackup"></cin>-->
-                <!--</section>-->
-                <!--By enabling this option your Scatter’s identities will be backed-->
-                <!--up on the EOS blockchain. You will still need your password in-->
-                <!--order to decrypt your data.-->
-            <!--</figure>-->
-        <!--</section>-->
-
-        <!-- Export JSON -->
-        <section class="panel">
-            <figure class="header">Export JSON Data Backup</figure>
-            <figure class="sub-header">
-                Exporting your data in JSON will provide you with an unencrypted JSON
-                document which allows you to view your private keys and transfer your
-                Scatter from computer to computer. You will not need your password to
-                import this data, which allows you to change passwords.
-            </figure>
-            <btn v-on:clicked="goToExportJson" text="Export JSON Data"></btn>
+        <!-- Verified -->
+        <section class="panel" v-else>
+            <figure class="header">{{locale(langKeys.BACKUP_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.BACKUP_Description)}}</figure>
+            <a id="PRIVATE_KEY_DOWNLOAD">
+                <btn v-on:clicked="exportBackup" :text="locale(langKeys.BUTTON_ExportScatter)" is-red="true" :margined="true"></btn>
+            </a>
         </section>
 
     </section>
@@ -36,45 +26,49 @@
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
     import AlertMsg from '../models/alerts/AlertMsg'
-    import IdentityService from '../services/IdentityService'
+    import IdentityService from '../services/IdentityService';
+    import Mnemonic from '../util/Mnemonic'
+    import EOSKeygen from '../util/EOSKeygen'
+    import StorageService from '../services/StorageService'
+    import AuthenticationService from '../services/AuthenticationService'
 
     export default {
         data(){ return {
-
+            password:'',
+            verified:false,
         }},
         computed: {
             ...mapState([
                 'scatter'
             ]),
             ...mapGetters([
-                'backupToBlockchain'
+
             ])
         },
         methods: {
-            toggleBackup(_backupToBlockchain){
-                const commit = () => {
-                    const scatter = this.scatter.clone();
-                    scatter.settings.backupToBlockchain = _backupToBlockchain;
-                    this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => {
-                        if(_backupToBlockchain)
-                            this[Actions.BACKUP_SCATTER_ON_BLOCKCHAIN](scatter)
-                    })
-                };
-
-                if(_backupToBlockchain) this[Actions.PUSH_ALERT](AlertMsg.AreYouSure('Enabling Blockchain Backups', ['Settings', 'Backup'],
-                    'Enabling blockchain backups means you\'re going to be saving an encrypted version of your keychain on the blockchain under ' +
-                    'a Scatter contract. This is safe as long as your password is strong, but not very safe if your password is not.')).then(res => {
-                    if(!res || !res.hasOwnProperty('accepted')) return false;
-                    else commit();
-                }); else commit();
+            bind(changed, original) { this[original] = changed },
+            verifyCurrentPassword(){
+                AuthenticationService.verifyPassword(this.password, this).then(() => {
+                    this.verified = true;
+                });
             },
-            goToExportJson(){
-                this.$router.push({name:RouteNames.EXPORT_JSON});
+            exportBackup(){
+                alert("not supported yet")
+//                const scatter = this.scatter.clone();
+//                const [mnemonic, seed] = Mnemonic.generateMnemonic(this.password);
+//                scatter.keychain.keypairs.map(keypair => keypair.decrypt(seed));
+//
+//                const filename = `scatter_${scatter.keychain.id}.json`;
+//                const filetext = JSON.stringify(scatter.keychain);
+//                const filelink = document.getElementById('PRIVATE_KEY_DOWNLOAD');
+//                if(!filelink) return false;
+//                filelink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(filetext));
+//                filelink.setAttribute('download', filename);
             },
             ...mapActions([
-                Actions.UPDATE_STORED_SCATTER,
                 Actions.PUSH_ALERT,
-                Actions.BACKUP_SCATTER_ON_BLOCKCHAIN
+                Actions.SET_SEED,
+                Actions.IS_UNLOCKED,
             ])
         }
     }

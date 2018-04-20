@@ -8,8 +8,7 @@ export default class AuthenticationService {
     /***
      * Verifies if the password provided matches the decryption seed
      * @param password
-     * @param router
-     * @param pushAlert
+     * @param context
      */
     static verifyPassword(password, context){
         return new Promise((resolve, reject) => {
@@ -25,7 +24,7 @@ export default class AuthenticationService {
                 context[Actions.IS_UNLOCKED]().then(unlocked => {
                     if(!unlocked) { sendToEntry(); return false; }
                     resolve();
-                })
+                }).catch(() => sendToEntry())
             }).catch(() => sendToEntry());
         })
     }
@@ -52,10 +51,7 @@ export default class AuthenticationService {
             scatter.keychain.keypairs.map(keypair => keypair.decrypt(oldSeed));
 
             context[Actions.UPDATE_STORED_SCATTER](scatter).then(() => {
-                if(scatter.settings.backupToBlockchain)
-                    context[Actions.BACKUP_SCATTER_ON_BLOCKCHAIN](scatter)
-                        .then(() => context.$router.push({name:RouteNames.SHOW_MNEMONIC}));
-                else context.$router.push({name:RouteNames.SHOW_MNEMONIC});
+                context.$router.push({name:RouteNames.SHOW_MNEMONIC});
             })
         });
     }

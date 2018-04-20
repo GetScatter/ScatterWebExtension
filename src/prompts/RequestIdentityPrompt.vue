@@ -66,7 +66,7 @@
                         <figure class="header big identity-header">{{identity.name}}</figure>
                         <figure v-if="!identity.disabled" class="select-identity"
                                 v-on:click="selectIdentity(identity)"
-                                :class="{'selected':selectedIdentity && selectedIdentity.hash === identity.hash}">
+                                :class="{'selected':selectedIdentity && selectedIdentity.publicKey === identity.publicKey}">
                             Select Identity
                         </figure>
                         <!--<figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>-->
@@ -156,7 +156,7 @@
                     this[Actions.PUSH_ALERT](AlertMsg.YouMustSelectAnIdentity());
                     return false;
                 }
-                const identity = this.identities.find(id => id.hash === this.selectedIdentity.hash);
+                const identity = this.identities.find(id => id.publicKey === this.selectedIdentity.publicKey);
                 this.prompt.responder(identity);
                 NotificationService.close();
             },

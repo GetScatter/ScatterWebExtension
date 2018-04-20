@@ -55,6 +55,7 @@ export default class Background {
      * @param message - The message to be dispensed
      */
     dispenseMessage(sendResponse, message){
+        console.log(message);
         Background.checkAutoLock();
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                     Background.setSeed(sendResponse, message.payload); break;
@@ -70,6 +71,7 @@ export default class Background {
             case InternalMessageTypes.REQUEST_ADD_NETWORK:          Background.requestAddNetwork(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_GET_VERSION:          Background.requestGetVersion(sendResponse); break;
             case InternalMessageTypes.REQUEST_VERSION_UPDATE:       Background.requestVersionUpdate(sendResponse, message.payload); break;
+            case InternalMessageTypes.AUTHENTICATE:                 Background.authenticate(sendResponse, message.payload); break;
         }
     }
 
@@ -261,13 +263,13 @@ export default class Background {
                             network,
                             provided:!!identity,
                             identityName:identity ? identity.name : false,
-                            identityHash:(identity) ? identity.hash : false
+                            publicKey:(identity) ? identity.publicKey : false
                         });
 
                         this.addPermissions([Permission.fromJson({
                             domain,
                             network,
-                            identityHash:identity.hash,
+                            publicKey:identity.publicKey,
                             timestamp:+ new Date(),
                             fields
                         })])
@@ -276,6 +278,32 @@ export default class Background {
                     sendResponse(identity);
                 });
             });
+        })
+    }
+
+    /***
+     * Authenticates the Identity by returning a signed passphrase using the
+     * private key associated with the Identity
+     * @param sendResponse
+     * @param payload
+     */
+    static authenticate(sendResponse, payload){
+        this.lockGuard(sendResponse, () => {
+            Background.load(scatter => {
+                const identity = scatter.keychain.findIdentity(payload.publicKey);
+                if(!identity){
+                    sendResponse(Error.identityMissing());
+                    return;
+                }
+
+                identity.decrypt(seed);
+                if(!ecc.isValidPrivate(identity.privateKey)){
+                    sendResponse(Error.maliciousEvent());
+                    return;
+                }
+
+                sendResponse(ecc.sign(payload.domain, identity.privateKey));
+            })
         })
     }
 

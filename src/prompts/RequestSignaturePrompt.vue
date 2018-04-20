@@ -192,7 +192,7 @@
                     }, {})
             },
             identity(){
-                return this.scatter.keychain.findIdentity(this.prompt.data.identityHash);
+                return this.scatter.keychain.findIdentity(this.prompt.data.publicKey);
             },
             accepted(){
 
@@ -229,8 +229,7 @@
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,
-                Actions.PUSH_ALERT,
-                Actions.BACKUP_SCATTER_ON_BLOCKCHAIN
+                Actions.PUSH_ALERT
             ])
         }
     }

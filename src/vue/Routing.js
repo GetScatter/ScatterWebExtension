@@ -14,7 +14,6 @@ import ChangePasswordView from '../views/ChangePasswordView.vue'
 import DestroyView from '../views/DestroyView.vue'
 import AutoLockView from '../views/AutoLockView.vue'
 import LanguageView from '../views/LanguageView.vue'
-import ExportJsonView from '../views/ExportJsonView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import KeyPairView from '../views/KeyPairView.vue'
 
@@ -45,7 +44,6 @@ export const RouteNames = {
     NETWORK:'network',
     CHANGE_PASSWORD:'changePassword',
     BACKUP:'backup',
-    EXPORT_JSON:'exportJson',
     DESTROY:'destroy',
     AUTO_LOCK:'autoLock',
     LANGUAGE:'language',
@@ -76,7 +74,6 @@ const RouteViews = {
     [RouteNames.NETWORK]:NetworkView,
     [RouteNames.CHANGE_PASSWORD]:ChangePasswordView,
     [RouteNames.BACKUP]:BackupView,
-    [RouteNames.EXPORT_JSON]:ExportJsonView,
     [RouteNames.DESTROY]:DestroyView,
     [RouteNames.AUTO_LOCK]:AutoLockView,
     [RouteNames.LANGUAGE]:LanguageView,

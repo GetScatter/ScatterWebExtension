@@ -102,7 +102,6 @@
             ]),
             ...mapGetters([
                 'identities',
-                'langKeys'
             ])
         },
         mounted(){
@@ -147,7 +146,7 @@
             filterBySearch(){ return this.identities.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
             toggleIdentity(identity){
                 const scatter = this.scatter.clone();
-                scatter.keychain.identities.find(x => x.hash === identity.hash).disabled = !identity.disabled;
+                scatter.keychain.identities.find(x => x.publicKey === identity.publicKey).disabled = !identity.disabled;
                 this[Actions.UPDATE_STORED_SCATTER](scatter);
             },
             removeIdentity(identity){
@@ -162,17 +161,17 @@
                 )).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();
-                    scatter.keychain.identities = scatter.keychain.identities.filter(id => id.hash !== identity.hash);
-                    scatter.keychain.permissions = scatter.keychain.permissions.filter(perm => perm.identityHash !== identity.hash);
+                    scatter.keychain.identities = scatter.keychain.identities.filter(id => id.publicKey !== identity.publicKey);
+                    scatter.keychain.permissions = scatter.keychain.permissions.filter(perm => perm.publicKey !== identity.publicKey);
                     this[Actions.UPDATE_STORED_SCATTER](scatter);
                 });
 
             },
             goToIdentity(identity){
-                this.$router.push({ name:RouteNames.IDENTITY, query: { hash: identity.hash } })
+                this.$router.push({ name:RouteNames.IDENTITY, query: { publicKey: identity.publicKey } })
             },
             createIdentity(){
-                this.$router.push({ name:RouteNames.IDENTITY, query: { hash: 'create' } })
+                this.$router.push({ name:RouteNames.IDENTITY, query: { publicKey: 'create' } })
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,

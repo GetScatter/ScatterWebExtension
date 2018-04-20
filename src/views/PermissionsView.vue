@@ -41,8 +41,7 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'permissions',
-                'langKeys'
+                'permissions'
             ]),
         },
         methods: {

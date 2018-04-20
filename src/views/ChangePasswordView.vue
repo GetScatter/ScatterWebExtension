@@ -3,26 +3,19 @@
 
         <!-- Unverified -->
         <section class="panel" v-if="!verified">
-            <figure class="header">Verify Your Current Password</figure>
-            <figure class="sub-header">
-                Before resetting your password we need to verify your current password.
-                Once it's verified you will be able to set a new password.
-            </figure>
-            <cin placeholder="your current password" type="password" v-on:changed="changed => bind(changed, 'currentPassword')" :key="1"></cin>
-            <btn v-on:clicked="verifyCurrentPassword" text="Verify Password" :margined="true"></btn>
+            <figure class="header">{{locale(langKeys.GENERIC_VerifyPassword_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.GENERIC_VerifyPassword_Description)}}</figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'currentPassword')" :key="1"></cin>
+            <btn v-on:clicked="verifyCurrentPassword" :text="locale(langKeys.PLACEHOLDER_ConfirmPassword)" :margined="true"></btn>
         </section>
 
         <!-- Verified -->
         <section class="panel" v-else>
-            <figure class="header">Enter a new password</figure>
-            <figure class="sub-header">
-                By changing your password you will be decrypting all of the saved information which is usually always
-                encrypted, and then re-encrypting it with a seed from the new password. If you are using Blockchain backups, you will
-                also be propagating those changes to the Blockchain.
-            </figure>
-            <cin placeholder="new password" type="password" v-on:changed="changed => bind(changed, 'newPassword')" :key="2"></cin>
-            <cin placeholder="confirm new password" type="password" v-on:changed="changed => bind(changed, 'newPasswordConfirmation')" :key="3"></cin>
-            <btn v-on:clicked="changePassword" text="Change Password" :margined="true"></btn>
+            <figure class="header">{{locale(langKeys.PASS_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.PASS_Description)}}</figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_NewPassword)" type="password" v-on:changed="changed => bind(changed, 'newPassword')" :key="2"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_ConfirmNewPassword)" type="password" v-on:changed="changed => bind(changed, 'newPasswordConfirmation')" :key="3"></cin>
+            <btn v-on:clicked="changePassword" :text="locale(langKeys.BUTTON_ChangePassword)" :margined="true"></btn>
         </section>
 
     </section>
@@ -51,7 +44,7 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'backupToBlockchain'
+
             ])
         },
         methods: {
@@ -70,8 +63,7 @@
                 Actions.PUSH_ALERT,
                 Actions.SET_SEED,
                 Actions.SET_MNEMONIC,
-                Actions.IS_UNLOCKED,
-                Actions.BACKUP_SCATTER_ON_BLOCKCHAIN
+                Actions.IS_UNLOCKED
             ])
         }
     }

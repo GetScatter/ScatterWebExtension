@@ -43,10 +43,10 @@ export default class Keychain {
 
     }
 
-    findIdentity(identityHash){ return this.identities.find(id => id.hash === identityHash); }
+    findIdentity(publicKey){ return this.identities.find(id => id.publicKey === publicKey); }
     updateOrPushIdentity(identity){
-        this.identities.find(id => id.hash === identity.hash)
-            ? this.identities = this.identities.map(id => id.hash === identity.hash ? identity : id)
+        this.identities.find(id => id.publicKey === identity.publicKey)
+            ? this.identities = this.identities.map(id => id.publicKey === identity.publicKey ? identity : id)
             : this.identities.unshift(identity);
     }
 }

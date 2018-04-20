@@ -8,7 +8,7 @@ export default class NotificationService {
      * Opens a prompt window outside of the extension
      * @param notification
      */
-    static open(notification){
+    static async open(notification){
         if(openWindow){
             // For now we're just going to close the window to get rid of the error
             // that is caused by already open windows swallowing all further requests
@@ -29,7 +29,35 @@ export default class NotificationService {
         const width = 700;
         let middleX = window.screen.availWidth/2 - (width/2);
         let middleY = window.screen.availHeight/2 - (height/2);
-        let popup = window.open(chrome.runtime.getURL('prompt.html'), 'ScatterPrompt', `width=${width},height=${height},resizable=0,dependent=true,top=${middleY},left=${middleX},titlebar=0`);
+
+        const getPopup = async () => {
+            const url = chrome.runtime.getURL('/prompt.html');
+            return window.open(url, 'ScatterPrompt', `width=${width},height=${height},resizable=0,top=${middleY},left=${middleX},titlebar=0`);
+            // if(typeof browser !== 'undefined') {
+            //     const created = await browser.windows.create({
+            //         url,
+            //         height,
+            //         width,
+            //         type:'panel'
+            //     });
+            //
+            //     console.log(await browser.windows.getCurrent());
+            //     return created;
+            //     // return await browser.windows.get(created.id);
+            //
+            // }
+            // else return window.open(url, 'ScatterPrompt', `width=${width},height=${height},resizable=0,top=${middleY},left=${middleX},titlebar=0`);
+        }
+
+        let popup = await getPopup();
+
+        // Binding the notification to the popup
+        popup.data = notification;
+
+        console.log('popup', popup, window)
+
+        // let popup = window.open(url, 'ScatterPrompt', `width=${width},height=${height},resizable=0,top=${middleY},left=${middleX},titlebar=0`);
+
         openWindow = popup;
 
         // Handles the user closing the popup without taking any action
@@ -41,8 +69,6 @@ export default class NotificationService {
             return undefined;
         };
 
-        // Binding the notification to the popup
-        popup.data = notification;
     }
 
     /***

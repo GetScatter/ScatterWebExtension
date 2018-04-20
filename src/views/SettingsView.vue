@@ -18,13 +18,13 @@
     export default {
         data(){ return {
             links:[
-                {route:RouteNames.NETWORKS, name:'Networks', icon:'globe'},
-                {route:RouteNames.KEYPAIRS, name:'Key Pairs', icon:'key'},
-//                {route:RouteNames.BACKUP, name:'Backup', icon:'save'},
-                {route:RouteNames.LANGUAGE, name:'Language', icon:'language'},
-                {route:RouteNames.AUTO_LOCK, name:'Auto Lock', icon:'clock-o'},
-                {route:RouteNames.CHANGE_PASSWORD, name:'Password', icon:'asterisk'},
-                {route:RouteNames.DESTROY, name:'Destroy', icon:'trash-o'},
+                {route:RouteNames.NETWORKS, name:this.locale(this.langKeys.SETTINGSMENU_Networks), icon:'globe'},
+                {route:RouteNames.KEYPAIRS, name:this.locale(this.langKeys.SETTINGSMENU_Keypairs), icon:'key'},
+                {route:RouteNames.LANGUAGE, name:this.locale(this.langKeys.SETTINGSMENU_Language), icon:'language'},
+                {route:RouteNames.AUTO_LOCK, name:this.locale(this.langKeys.SETTINGSMENU_AutoLock), icon:'clock-o'},
+                {route:RouteNames.CHANGE_PASSWORD, name:this.locale(this.langKeys.SETTINGSMENU_Password), icon:'asterisk'},
+                {route:RouteNames.BACKUP, name:this.locale(this.langKeys.SETTINGSMENU_Backup), icon:'save'},
+                {route:RouteNames.DESTROY, name:this.locale(this.langKeys.SETTINGSMENU_Destroy), icon:'trash-o'},
             ]
         }}
     }

@@ -6,15 +6,10 @@
         ]" v-on:submit="saveNetwork"></nav-actions>
 
         <section class="panel">
-            <figure class="header">Network Host *</figure>
-            <figure class="sub-header">
-                Applications usually run on a specific network, but they might not all run on
-                the same network. For instance an application can have a testing network
-                that has new features which are not yet released. In order to interact with
-                that network you will need to have an account there as well.
-            </figure>
-            <cin placeholder="domain or ip" :text="network.host" v-on:changed="changed => bind(changed, 'host')" :disabled="!isNew"></cin>
-            <cin placeholder="port" :text="network.port" v-on:changed="changed => bind(changed, 'port')" :disabled="!isNew"></cin>
+            <figure class="header">{{locale(langkeys.NETWORK_Header)}}</figure>
+            <figure class="sub-header">{{locale(langkeys.NETWORK_Description)}} </figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bind(changed, 'host')" :disabled="!isNew"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')" :disabled="!isNew"></cin>
         </section>
 
     </section>
@@ -39,8 +34,7 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'networks',
-                'langKeys'
+                'networks'
             ])
         },
         mounted(){

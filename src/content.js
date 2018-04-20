@@ -84,13 +84,13 @@ class Content {
         }
 
         let nonSyncMessage = NetworkMessage.fromJson(msg);
-
         switch(msg.type){
             case 'sync': this.sync(msg); break;
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_VERSION_UPDATE:            this.requestVersionUpdate(nonSyncMessage); break;
+            case NetworkMessageTypes.AUTHENTICATE:                      this.authenticate(nonSyncMessage); break;
             default:                                                    stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED)
         }
     }
@@ -130,6 +130,12 @@ class Content {
     requestVersionUpdate(message){
         if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.REQUEST_VERSION_UPDATE, message.payload)
+            .send().then(res => this.respond(message, res))
+    }
+
+    authenticate(message){
+        if(!isReady) return;
+        InternalMessage.payload(InternalMessageTypes.AUTHENTICATE, message.payload)
             .send().then(res => this.respond(message, res))
     }
 

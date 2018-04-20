@@ -15,9 +15,10 @@
     "aes-oop": "^1.0.4",
     "bip39": "^2.5.0",
     "dotenv-webpack": "^1.5.5",
-    "eosjs": "^6.1.9",
+    "eosjs": "^6.1.11",
     "eosjs-ecc": "^2.0.1",
-    "extension-streams": "^1.0.6",
+    "fcbuffer": "^2.1.5",
+    "extension-streams": "^1.0.7",
     "scrypt-async": "^2.0.0",
     "vue": "^2.5.16",
     "vue-moment": "^3.2.0",
@@ -35,9 +36,9 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.11",
     "ignore-emit-webpack-plugin": "^0.2.1",
-    "jsdom": "^11.6.2",
+    "jsdom": "^11.8.0",
     "jsdom-global": "^3.0.2",
-    "mocha": "^5.0.4",
+    "mocha": "^5.1.0",
     "mocha-webpack": "^1.1.0",
     "node-sass": "^4.8.3",
     "sass-loader": "^6.0.7",
@@ -45,7 +46,7 @@
     "vue-loader": "^13.7.1",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^3.11.0",
-    "webpack-node-externals": "^1.6.0",
+    "webpack-node-externals": "^1.7.2",
     "zip-webpack-plugin": "^2.1.0"
   }
 }

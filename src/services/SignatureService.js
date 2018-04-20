@@ -29,9 +29,9 @@ export default class SignatureService {
         // TODO: consolidate functionality and switch based on blockchain type ( EOS, ETH, etc )
 
         // Checking if identity still exists
-        const identity = scatter.keychain.findIdentity(payload.identityHash);
+        const identity = scatter.keychain.findIdentity(payload.publicKey);
         if(!identity){
-            sendResponse(Error.signatureIdentityMissing());
+            sendResponse(Error.identityMissing());
             return false;
         }
 
@@ -39,11 +39,11 @@ export default class SignatureService {
         const account = identity.networkedAccount(Network.fromJson(network));
 
         // Checking if Identity still has all the necessary accounts
-        const requiredAccounts = ContractHelpers.actionParticipants(payload, blockchain);
-        if(!requiredAccounts.includes(account['format'+blockchain]())){
-            sendResponse(Error.signatureAccountMissing());
-            return false;
-        }
+        // const requiredAccounts = ContractHelpers.actionParticipants(payload, blockchain);
+        // if(!requiredAccounts.includes(account['format'+blockchain]())){
+        //     sendResponse(Error.signatureAccountMissing());
+        //     return false;
+        // }
 
 
         const sign = (returnedFields) => {
@@ -58,7 +58,7 @@ export default class SignatureService {
                     domain,
                     network,
                     identityName:identity.name,
-                    identityHash:identity.hash,
+                    publicKey:identity.publicKey,
                     account:account,
                     transaction:payload.transaction, // TODO: EOS Specific
                     hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
@@ -73,7 +73,7 @@ export default class SignatureService {
 
 
 
-        const hasTransactionPermissions = payload.transaction.messages.every(message => {
+        const hasTransactionPermissions = payload.messages.every(message => {
             const {contract, action} = ContractHelpers.getContractAndActionNames(message);
             const checksum = ContractHelpers.contractActionChecksum(contract, action, domain, network);
             const fields = ContractHelpers.getActionFields(message);
@@ -96,7 +96,7 @@ export default class SignatureService {
             }
 
             if(approval.whitelisted){
-                context.addPermissions(payload.transaction.messages.map(message => {
+                context.addPermissions(payload.messages.map(message => {
                     const fields = ContractHelpers.getActionFields(message);
                     const {contract, action} = ContractHelpers.getContractAndActionNames(message);
                     const checksum = ContractHelpers.contractActionChecksum(contract, action, domain, network);
@@ -105,7 +105,7 @@ export default class SignatureService {
                         network,
                         contract,
                         action,
-                        identityHash:identity.hash,
+                        publicKey:identity.publicKey,
                         checksum,
                         timestamp:+ new Date(),
                         mutableFields:approval.mutableFields,

@@ -6,7 +6,6 @@ export default class Settings {
 
     constructor(){
         this.networks = [];
-        this.backupToBlockchain = false;
         this.hasEncryptionKey = false;
         this.inactivityInterval = 0;
         this.language = 'ENGLISH';

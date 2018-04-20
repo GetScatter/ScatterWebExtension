@@ -3,24 +3,17 @@
 
         <!-- Unverified -->
         <section class="panel" v-if="!verified">
-            <figure class="header">Verify Your Password</figure>
-            <figure class="sub-header">
-                Before destroying your Scatter keychain we need to verify your
-                password since this is such a volatile action.
-            </figure>
-            <cin placeholder="your current password" type="password" v-on:changed="changed => bind(changed, 'currentPassword')"></cin>
-            <btn v-on:clicked="verifyCurrentPassword" text="Verify Password" :margined="true"></btn>
+            <figure class="header">{{locale(langKeys.GENERIC_VerifyPassword_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.GENERIC_VerifyPassword_Description)}}</figure>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'currentPassword')" :key="1"></cin>
+            <btn v-on:clicked="verifyCurrentPassword" :text="locale(langKeys.PLACEHOLDER_ConfirmPassword)" :margined="true"></btn>
         </section>
 
         <!-- Verified -->
         <section class="panel" v-else>
-            <figure class="header">Destroying Scatter</figure>
-            <figure class="sub-header">
-                You are about to destroy your entire Scatter keychain. The only way to get this exact Scatter back
-                is by importing an exported Scatter JSON. You will not be able to claim your identities otherwise.
-                Make sure you have done so before hand.
-            </figure>
-            <btn v-on:clicked="destroy" text="Destroy Scatter" is-red="true" :margined="true"></btn>
+            <figure class="header">{{locale(langKeys.DESTROY_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.DESTROY_Description)}}</figure>
+            <btn v-on:clicked="destroy" :text="locale(langKeys.BUTTON_DestroyScatter)" is-red="true" :margined="true"></btn>
         </section>
 
     </section>
@@ -49,7 +42,7 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'backupToBlockchain'
+
             ])
         },
         methods: {

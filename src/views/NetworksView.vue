@@ -45,8 +45,7 @@
                 'scatter'
             ]),
             ...mapGetters([
-                'networks',
-                'langKeys'
+                'networks'
             ])
         },
         methods: {

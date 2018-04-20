@@ -3,17 +3,13 @@
 
         <section>
             <section class="white-bg">
-                <figure class="title">Mnemonic</figure>
+                <figure class="title">{{locale(langKeys.MNEMONIC_Header)}}</figure>
                 <figure class="breaker"></figure>
                 <figure class="description">
-                    Mnemonics are a set of words that
-                    translate into a cryptographic seed.
+                    {{locale(langKeys.MNEMONIC_Description)}}
                     <br>
                     <br>
-
-                    Be sure to save yours somewhere safe.
-                    It can be used to regain access to your
-                    Scatter and decrypt your private information.
+                    {{locale(langKeys.MNEMONIC_Note)}}
                 </figure>
             </section>
             <section class="p20">

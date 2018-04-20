@@ -7,7 +7,7 @@ export default class Permission {
         // Mandatory
         this.domain = '';
         this.network = '';
-        this.identityHash = '';
+        this.publicKey = '';
 
         // Optional
         this.contract = null;
@@ -28,7 +28,7 @@ export default class Permission {
     }
 
     identity(keychain){
-        return keychain.findIdentity(this.identityHash);
+        return keychain.findIdentity(this.publicKey);
     }
 
     isIdentityOnly(){

@@ -3,16 +3,13 @@
 
         <!-- Verified -->
         <section class="panel">
-            <figure class="header">Select your language</figure>
-            <figure class="sub-header">
-                Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter
-                when you step away.
-            </figure>
+            <figure class="header">{{locale(langKeys.LANGUAGE_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.LANGUAGE_Description)}}</figure>
             <sel v-if="selectedLanguage" :options="options"
                  :selected="options[selectedLanguage]"
                  :parser="(obj) => obj"
                  v-on:changed="changed => bind(changed, 'selectedLanguage')"></sel>
-            <btn v-on:clicked="changeLanguage" text="Change Language" :margined="true"></btn>
+            <btn v-on:clicked="changeLanguage" :text="locale(langKeys.BUTTON_ChangeLanguage)" :margined="true"></btn>
         </section>
 
     </section>

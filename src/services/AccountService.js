@@ -2,8 +2,10 @@ import Account from '../models/Account'
 import KeyPair from '../models/KeyPair'
 import AlertMsg from '../models/alerts/AlertMsg'
 import EOSKeygen from '../util/EOSKeygen'
-import * as Eos from 'eosjs';
 import * as Actions from '../store/constants';
+
+// TODO: Only dependence on eosjs
+import * as Eos from 'eosjs';
 
 export default class AccountService {
 
