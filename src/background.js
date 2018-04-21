@@ -19,6 +19,7 @@ import TimingHelpers from './util/TimingHelpers';
 import Error from './models/errors/Error'
 import ContractHelpers from './util/ContractHelpers'
 const ecc = require('eosjs-ecc');
+import {apis} from './util/BrowserApis';
 
 // Gets bound when a user logs into scatter
 // and unbound when they log out
@@ -55,7 +56,6 @@ export default class Background {
      * @param message - The message to be dispensed
      */
     dispenseMessage(sendResponse, message){
-        console.log(message);
         Background.checkAutoLock();
         switch(message.type){
             case InternalMessageTypes.SET_SEED:                     Background.setSeed(sendResponse, message.payload); break;
@@ -183,7 +183,7 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             console.log("Destroying");
             seed = '';
-            chrome.storage.local.clear();
+            apis.storage.local.clear();
             sendResponse(true);
         })
     }
@@ -233,9 +233,6 @@ export default class Background {
                 return false;
             }
             const identity = permission.identity(scatter.keychain);
-            console.log('identity', identity);
-            console.log('payload', payload);
-            console.log('permission', permission);
             sendResponse(identity.asOnlyRequiredFields(permission.fields, permission.network));
         });
     }
@@ -352,7 +349,7 @@ export default class Background {
      * @param sendResponse
      */
     static requestGetVersion(sendResponse){
-        sendResponse(chrome.app.getDetails().version)
+        sendResponse(apis.app.getDetails().version)
     }
 
     /***

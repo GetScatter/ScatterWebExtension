@@ -1,7 +1,9 @@
+import {apis} from '../util/BrowserApis';
+
 export default class Meta {
 
     constructor(){
-        const extension = (chrome && chrome.app) ? chrome.app.getDetails() : {};
+        const extension = (apis && apis.app && typeof apis.app.getDetails === 'function') ? apis.app.getDetails() : {};
         this.version = extension.version || '';
         this.extensionId = extension.id || '';
     }

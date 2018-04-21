@@ -98,6 +98,7 @@
     import EOSKeygen from '../util/EOSKeygen'
     import {Countries} from '../data/Countries'
     import RIDLService from '../services/RIDLService'
+    import PluginRepository from '../plugins/PluginRepository'
 
     export default {
         data(){ return {
@@ -150,7 +151,9 @@
                 this.selectedNetwork = network;
             },
             removeAccount(){
-                const formattedAccount = this.identity.accounts[this.selectedNetwork.unique()].formatEOS();
+                const account = this.identity.accounts[this.selectedNetwork.unique()];
+                // TODO: EOS Hardcode
+                const formattedAccount = PluginRepository.findPlugin('eos').accountFormatter(account);
 
                 this[Actions.PUSH_ALERT](AlertMsg.RemovingAccount(formattedAccount)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;

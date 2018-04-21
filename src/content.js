@@ -6,9 +6,7 @@ import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import InternalMessage from './messages/InternalMessage';
 import * as InternalMessageTypes from './messages/InternalMessageTypes'
 import Error from './models/errors/Error'
-
-import Identity from './models/Identity'
-import Scatterdapp from './scatterdapp'
+import {apis} from './util/BrowserApis';
 
 // The stream that connects between the content script
 // and the website
@@ -70,7 +68,7 @@ class Content {
      */
     injectInteractionScript(){
         let script = document.createElement('script');
-        script.src = chrome.extension.getURL(INJECTION_SCRIPT_FILENAME);
+        script.src = apis.extension.getURL(INJECTION_SCRIPT_FILENAME);
         (document.head||document.documentElement).appendChild(script);
         script.onload = () => script.remove();
     }

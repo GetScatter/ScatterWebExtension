@@ -3,7 +3,7 @@ import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import * as PairingTags from './messages/PairingTags'
 import Error from './models/errors/Error'
 import IdGenerator from './util/IdGenerator';
-import BlockchainPlugins from './services/BlockchainPlugins';
+import PluginRepository from './plugins/PluginRepository';
 const ecc = require('eosjs-ecc');
 
 
@@ -123,6 +123,12 @@ const _send = (_type, _payload, bypassNetwork = false) => {
     });
 };
 
+const setupSigProviders = context => {
+    PluginRepository.signatureProviders().map(sigProvider => {
+        context[sigProvider.name] = sigProvider.signatureProvider(_bindNetwork, _send, throwIfNoIdentity);
+    })
+};
+
 /***
  * Scatterdapp is the object injected into the web application that
  * allows it to interact with Scatter. Without using this the web application
@@ -138,8 +144,9 @@ export default class Scatterdapp {
         network = null;
         resolvers = [];
 
-        const proxies = new BlockchainPlugins(_bindNetwork, _send, throwIfNoIdentity, publicKey, network)
-        this['eos'] = proxies.eos;
+        setupSigProviders(this);
+        // const proxies = new BlockchainPlugins(_bindNetwork, _send, throwIfNoIdentity, publicKey, network)
+        // this['eos'] = proxies.eos;
 
         _subscribe();
 

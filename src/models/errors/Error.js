@@ -43,7 +43,15 @@ export default class Error {
     }
 
     static signatureAccountMissing(){
-        return this.signatureError("account_missing", "Missing required accounts");
+        return this.signatureError("account_missing", "Missing required accounts, repull the identity");
+    }
+
+    static usedKeyProvider(){
+        return new Error(
+            ErrorTypes.MALICIOUS,
+            "Do not use a `keyProvider` with a Scatter. Use a `signProvider` and return only signatures to this object. A malicious person could retrieve your keys otherwise.",
+            ErrorCodes.NO_SIGNATURE
+        )
     }
 
 }

@@ -3,7 +3,7 @@
 
         <section class="floating-header">
             <figure class="identity-name">{{identity().name}}</figure>
-            <figure class="account-authority" v-if="network !== null">{{identity().networkedAccount(network).formatEOS()}}</figure>
+            <figure class="account-authority" v-if="network !== null">{{formattedAccount()}}</figure>
             <figure class="switches">
                 <figure class="switch"
                         v-for="displayType in displayTypes"
@@ -106,6 +106,7 @@
     import Identity from '../models/Identity'
     import {LocationFields, PersonalFields} from '../models/Identity'
     import ObjectHelpers from '../util/ObjectHelpers'
+    import PluginRepository from '../plugins/PluginRepository'
 
     const displayTypes = {
         JSON:'json',
@@ -157,6 +158,12 @@
         },
         methods: {
             setDisplayType(type){ this.selectedDisplayType = type; },
+            formattedAccount(){
+                const account = this.identity().networkedAccount(this.network);
+
+                // TODO: EOS Hardcode
+                return PluginRepository.findPlugin('eos').accountFormatter(account)
+            },
 
             bind(changed, dotNotation) {
                 let props = dotNotation.split(".");
@@ -189,10 +196,9 @@
                     }, {})
             },
             identity(){
-                return this.scatter.keychain.findIdentity(this.prompt.data.publicKey);
+                return this.scatter.keychain.findIdentityFromDomain(this.prompt.data.domain);
             },
             accepted(){
-
                 const returnedFields = Identity.asReturnedFields(this.requiredFields, this.returnedFields, this.selectedLocation);
 
                 this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields, mutableFields:this.mutableFields});

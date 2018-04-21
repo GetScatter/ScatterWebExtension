@@ -44,6 +44,11 @@ export default class Keychain {
     }
 
     findIdentity(publicKey){ return this.identities.find(id => id.publicKey === publicKey); }
+    findIdentityFromDomain(domain){
+        const idFromPermissions =  this.permissions.find(permission => permission.isIdentityOnly() && permission.domain === domain);
+        if(idFromPermissions) return this.findIdentity(idFromPermissions.publicKey);
+        else return null;
+    }
     updateOrPushIdentity(identity){
         this.identities.find(id => id.publicKey === identity.publicKey)
             ? this.identities = this.identities.map(id => id.publicKey === identity.publicKey ? identity : id)

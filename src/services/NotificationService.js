@@ -1,4 +1,5 @@
 import Error from '../models/errors/Error'
+import {apis} from '../util/BrowserApis';
 
 let openWindow = null;
 
@@ -31,7 +32,7 @@ export default class NotificationService {
         let middleY = window.screen.availHeight/2 - (height/2);
 
         const getPopup = async () => {
-            const url = chrome.runtime.getURL('/prompt.html');
+            const url = apis.runtime.getURL('/prompt.html');
             return window.open(url, 'ScatterPrompt', `width=${width},height=${height},resizable=0,top=${middleY},left=${middleX},titlebar=0`);
             // if(typeof browser !== 'undefined') {
             //     const created = await browser.windows.create({
@@ -54,7 +55,7 @@ export default class NotificationService {
         // Binding the notification to the popup
         popup.data = notification;
 
-        console.log('popup', popup, window)
+        // console.log('popup', popup, window)
 
         // let popup = window.open(url, 'ScatterPrompt', `width=${width},height=${height},resizable=0,top=${middleY},left=${middleX},titlebar=0`);
 

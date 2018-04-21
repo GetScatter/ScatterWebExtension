@@ -1,4 +1,5 @@
 import Scatter from '../models/Scatter'
+import {apis} from '../util/BrowserApis';
 
 export default class StorageService {
 
@@ -12,7 +13,7 @@ export default class StorageService {
      */
     static save(scatter){
         return new Promise((resolve, reject) => {
-            chrome.storage.local.set({scatter}, () => {
+            apis.storage.local.set({scatter}, () => {
                 resolve(scatter);
             });
         })
@@ -25,7 +26,7 @@ export default class StorageService {
      */
     static get() {
         return new Promise((resolve, reject) => {
-            chrome.storage.local.get('scatter', (possible) => {
+            apis.storage.local.get('scatter', (possible) => {
                 (possible && Object.keys(possible).length && possible.hasOwnProperty('scatter'))
                     ? resolve(Scatter.fromJson(possible.scatter))
                     : resolve(Scatter.placeholder());
@@ -40,7 +41,7 @@ export default class StorageService {
      */
     static remove(){
         return new Promise((resolve, reject) => {
-            chrome.storage.local.remove('scatter', () => {
+            apis.storage.local.remove('scatter', () => {
                 resolve();
             });
         })

@@ -9,7 +9,7 @@ class EOSContractHelpers {
         return ObjectHelpers.flatten(
             payload.messages
                 .map(message => message.authorization
-                    .map(auth => `${auth.account}@${auth.permission}`))
+                    .map(auth => `${auth.actor}@${auth.permission}`))
         );
     }
 

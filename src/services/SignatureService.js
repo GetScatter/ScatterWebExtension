@@ -10,16 +10,7 @@ import ContractHelpers from '../util/ContractHelpers'
 import NotificationService from './NotificationService'
 import Permission from '../models/Permission'
 import {Blockchains} from '../models/Blockchains';
-const ecc = require('eosjs-ecc');
-
-class TransactionSigner {
-    static eos(context, payload, publicKey, callback){
-        const buf = Buffer.from(payload.buf.data, 'utf8');
-        context.publicToPrivate(privateKey => {
-            callback(privateKey ? ecc.sign(buf, privateKey) : null);
-        }, publicKey);
-    }
-}
+import PluginRepository from '../plugins/PluginRepository'
 
 export default class SignatureService {
 
@@ -29,8 +20,8 @@ export default class SignatureService {
         // TODO: consolidate functionality and switch based on blockchain type ( EOS, ETH, etc )
 
         // Checking if identity still exists
-        const identity = scatter.keychain.findIdentity(payload.publicKey);
-        if(!identity){
+        const identity = scatter.keychain.findIdentityFromDomain(payload.domain);
+        if(!identity || identity.isDisabled){
             sendResponse(Error.identityMissing());
             return false;
         }
@@ -38,16 +29,19 @@ export default class SignatureService {
         // Getting the account from the identity based on the network
         const account = identity.networkedAccount(Network.fromJson(network));
 
+
+
         // Checking if Identity still has all the necessary accounts
-        // const requiredAccounts = ContractHelpers.actionParticipants(payload, blockchain);
-        // if(!requiredAccounts.includes(account['format'+blockchain]())){
-        //     sendResponse(Error.signatureAccountMissing());
-        //     return false;
-        // }
+        const requiredAccounts = ContractHelpers.actionParticipants(payload, blockchain);
+        const formattedName = PluginRepository.findPlugin(blockchain).accountFormatter(account);
+        if(!requiredAccounts.includes(formattedName)){
+            sendResponse(Error.signatureAccountMissing());
+            return false;
+        }
 
 
         const sign = (returnedFields) => {
-            TransactionSigner.eos(context, payload, account.publicKey, signature => {
+            PluginRepository.findPlugin(blockchain).signer(context, payload, account.publicKey, signature => {
                 if(!signature){
                     sendResponse(Error.maliciousEvent());
                     return false;
@@ -64,13 +58,11 @@ export default class SignatureService {
                     hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
                 });
 
-                console.log('sending back fields', returnedFields);
-
                 sendResponse({
                     signatures:[signature],
                     returnedFields:returnedFields
                 });
-            });
+            })
         };
 
 

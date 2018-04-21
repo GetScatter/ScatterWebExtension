@@ -1,10 +1,14 @@
 import Scatter from '../../src/models/Scatter'
+import Scatterdapp from '../../src/scatterdapp'
 import KeyPair from '../../src/models/KeyPair'
 import Account from '../../src/models/Account'
 import Identity from '../../src/models/Identity'
 import {PersonalInformation, LocationInformation} from '../../src/models/Identity'
 import Network from '../../src/models/Network'
 import chrome from '../helpers/chrome';
+import PluginRepository from '../../src/plugins/PluginRepository'
+import {EncryptedStream} from 'extension-streams';
+import {Blockchains} from '../../src/models/Blockchains'
 
 import Eos from 'eosjs';
 
@@ -85,15 +89,16 @@ describe('Signature Request', async testDone => {
         sign: true
     });
 
-    it('should initialize deferred mock vars', done => {
-        identity.initialize().then(done());
-    });
+    // it('should initialize deferred mock vars', done => {
+    //     identity.initialize().then(done());
+    // });
 
     it('should be able to set up a transaction to be signed', done => {
 
-        console.log('identity', identity);
+        const signProvider = PluginRepository.findPlugin(Blockchains.EOS).signatureProvider();
+        eos.transfer('inita', 'initb', '10.000 EOS', '', {signProvider}).then(done => {
 
-
+        });
 
         done();
     });
