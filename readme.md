@@ -53,7 +53,7 @@ document.addEventListener('scatterLoaded', scatterExtension => {
     const scatter = window.scatter;
      
     // If you want to require a specific version of Scatter
-    scatter.requireVersion(2.1);
+    scatter.requireVersion(2.2);
     
     //...
 })
@@ -71,19 +71,20 @@ window.scatter = null;
 const network = { host:"192.168.56.101", port:8888 };
 const eosOptions = {};
  
-// Tell Scatter to prepare and instance of eosjs with a 
+// Tell Scatter to prepare a proxy instance of eosjs with a 
 // Scatter Signature Provider pre-configured. There is no way for
-// you to use a custom built eosjs with a Scatter provider. This is also a
+// you to use a custom built eosjs with a Scatter provider. This is a
 // proxy, and does not return the actual pre-configured eosjs instance but rather 
 // a catchable reference. For all intents and purposes it functions the exact same
-// as a normal eosjs instance on the application's side.
+// as a normal eosjs instance on the application's side, but provides security for the user.
 const eos = scatter.eos( Eos.Localnet, network, eosOptions );
 ```
 
 
 #### Requesting an Identity
 
-Once an Identity is provided it will not need to be re-approved every time. 
+In order to do anything with a user's Scatter you will need to request an Identity.
+Once an Identity is provided it will not need to be re-approved every time unless the user removes the permission.
 
 ```js
 // You can require certain fields
@@ -99,23 +100,23 @@ scatter.getIdentity(requirements).then(identity => {
     scatter.useIdentity(identity);
     
     // If you are holding it yourself you can pass in 
-    // only the hash as well.
-    scatter.useIdentity(identity.hash);
+    // only the publicKey as well.
+    scatter.useIdentity(identity.publicKey);
     
 }).catch(error => {
     //...
 });
 ```
 
-Identities that have permissions already will be fed into the scatter instance when it is loaded.
-If a user's Scatter is locked, the `identity` property will be null regardless, and no prompt will be 
+Identities that have permissions already will be fed into the scatter instance when it is loaded and include their 
+approved properties. If a user's Scatter is locked, the `identity` property will be null regardless, and no prompt will be 
 issued to the user as this would create a bad user experience.
 
 ```js
 const identity = scatter.identity;
 ```
 
-If the `identity` property is not null it will also be pre-fed into the scatter object.
+If the `identity` property is not null it will also be fed into the `useIdentity()` method.
 That way you do not have to do `scatter.useIdentity()` again. 
 
 
@@ -131,6 +132,33 @@ That way you do not have to do `scatter.useIdentity()` again.
 - state
 - country
 - zipcode
+
+##### Fields that always return
+- name
+- publicKey
+
+
+#### Authenticating an Identity
+
+Identities can be authenticated using asymmetric encryption.
+If the `authenticate` method does not throw an error then the identity has been authenticated.
+```js
+
+// Authenticate takes no parameters. 
+// It will fail if there is no identity bound to Scatter.
+scatter.authenticate()
+    .then(sig => {
+        // This will return your `location.host` 
+        // encrypted with their Identity's private key.
+        // It has already been validated, but you can validate it yourself as well using eosjs-ecc.
+        
+        ecc.verify(sig, location.host, scatter.identity.publicKey);
+        
+        // Note that you can not change location.host in a browser, therefor this authentication is bound 
+        // to your domain.
+    })
+    .catch(err => console.log('auth err', err))
+```
 
 
 #### Requesting a Signature
@@ -165,6 +193,12 @@ This allows you to request all information needed for a physical sale with one c
 _For instance in this case we could be a shopping website that needs shipping details along with 
 the transfer of digital currency._
 
+When using the `contract()` method from eosjs you need to put the requirements into the `contract` method and not the 
+action as requirements should fulfill any action within including multiple atomic transactions and not just per action.
+```js
+eos.contract('eosio.token', {requiredFields}).then(contract => ...)
+```
+
 
 #### Multi-part signatures involving the application AND the identity
 
@@ -172,14 +206,24 @@ You may now also double-sign signatures using a private key from the application
 the user.
 
 ```js
-eos.contract('yourcontract', { keyProvider:'SOME_PRIVATE_KEY' }).then(contract => {
+const signProvider = (buf, sign) => {
+    // Use the provided eosjs signer
+    return sign(buf, 'SOME_PRIVATE_KEY');
+    
+    // or use eosjs-ecc
+    return ecc.sign(buf, 'SOME_PRIVATE_KEY')
+};
+ 
+eos.contract('yourcontract', { signProvider }).then(contract => {
     contract.someAction('hello', 'world');
 });
 ```
 
 For a real example of this check out our [Space Invaders' demo code](https://github.com/EOSEssentials/Scatter-Demos/blob/master/src/views/SpaceInvaders.vue#L162)
 
-
+**Note:** An error will be thrown if you try to pass a `keyProvider` instead of a `signProvider`. The reason for this is that since 
+you are using a proxied version of `eosjs` a malicious actor could mimic Scatter and get your keys. `signProvider` **only** returns signatures, 
+never keys. Signing with your own keys happens on your side, not Scatter's.
 
 #### Transactions at the Identity
 

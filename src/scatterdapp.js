@@ -197,7 +197,7 @@ export default class Scatterdapp {
         if(typeof signature === 'object') return signature;
 
         try {
-            if(ecc.verify(signature, location.host, this.identity.publicKey))
+            if(ecc.verify(signature, location.host, publicKey))
                 return signature;
         } catch (e) {
             this.identity = null;
