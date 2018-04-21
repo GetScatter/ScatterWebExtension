@@ -69,9 +69,9 @@
                     <section class="actions">
                         <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil-square-o"></i></figure>
                         <figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>
-                        <figure class="action toggle-switch right" v-on:click="toggleIdentity(identity)">
-                            <figure class="switch" :class="{'enabled':!identity.disabled}">{{(identity.disabled) ? 'Disabled' : 'Enabled'}}</figure>
-                        </figure>
+                        <!--<figure class="action toggle-switch right" v-on:click="toggleIdentity(identity)">-->
+                            <!--<figure class="switch" :class="{'enabled':!identity.disabled}">{{(identity.disabled) ? 'Disabled' : 'Enabled'}}</figure>-->
+                        <!--</figure>-->
                     </section>
                 </section>
 

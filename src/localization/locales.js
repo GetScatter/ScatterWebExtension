@@ -1,20 +1,14 @@
 import * as KEYS from './keys';
 
 import english from './languages/english'
-import chinese from './languages/chinese'
-import hebrew from './languages/hebrew'
 
 
 export const LANG = {
     ENGLISH:'English',
-    CHINESE:'中文 ( Chinese )',
-    HEBREW:'( Hebrew ) עִברִית',
 };
 
 const languages = {
     [LANG.ENGLISH]:english,
-    [LANG.CHINESE]:chinese,
-    [LANG.HEBREW]:hebrew,
 };
 
 export const locales = () => {
