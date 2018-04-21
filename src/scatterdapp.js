@@ -3,6 +3,7 @@ import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import * as PairingTags from './messages/PairingTags'
 import Error from './models/errors/Error'
 import IdGenerator from './util/IdGenerator';
+import BlockchainPlugins from './services/BlockchainPlugins';
 const ecc = require('eosjs-ecc');
 
 
@@ -33,10 +34,9 @@ let currentVersion = new WeakMap();
 let requiredVersion = new WeakMap();
 
 const throwIfNoIdentity = () => {
-    if(!publicKey) throws(`
-        You must select an Identity to use before requesting transaction signatures.
-        'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {publicKey}.
-    `);
+    if(!publicKey) throws(
+        'You must select an Identity to use before requesting transaction signatures. ' +
+        'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {publicKey}.');
 };
 
 
@@ -137,122 +137,14 @@ export default class Scatterdapp {
         stream = _stream;
         network = null;
         resolvers = [];
+
+        const proxies = new BlockchainPlugins(_bindNetwork, _send, throwIfNoIdentity, publicKey, network)
+        this['eos'] = proxies.eos;
+
         _subscribe();
 
         if(this.identity) this.useIdentity(publicKey);
-    }
 
-
-    /***
-     * Returns an instance of eosjs with a signature provider and endpoint bound
-     * to it. Adds a level of security over signature provider manipulation.
-     * No matter what options are provided, httpEndpoint and signProvider are always overwritten.
-     * @param _eos - An instance of Eos.Localnet or Eos.Testnet
-     * @param _network - The network you are binding to {host:string, port:number}
-     * @param _options - Passable object of eosjs options
-     * @returns {*}
-     */
-    eos(_eos, _network, _options = {}){
-        //TODO: Clean up and extrapolate
-
-        _bindNetwork(_network);
-        const httpEndpoint = `http://${_network.host}:${_network.port}`;
-
-        // The proxy stands between the eosjs object and scatter.
-        // This is used to add special functionality like adding `requiredFields` arrays to transactions
-        return new Proxy(_eos(), {
-            get(eosInstance, method) {
-
-                // We're holding a reference to the returned fields
-                // in the case of a requirement during transactions
-                let returnedFields = null;
-
-                return (...args) => {
-
-                    // It is possible to pass requiredFields to the eosjs options parameter
-                    // which will be sent along with the signature request to scatter and return
-                    // with the signature.
-                    let requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields'));
-                    requiredFields = requiredFields ? requiredFields.requiredFields : [];
-
-                    // The signature provider which gets elevated into the user's Scatter
-                    const signProvider = async signargs => {
-                        console.log('signargs', args, method, signargs);
-
-                        // Grabbing the ABI to parse the transaction parameters
-
-                        throwIfNoIdentity();
-
-                        // Friendly formatting
-                        signargs.messages = await Promise.all(signargs.transaction.actions.map(async action => {
-                            let data = null;
-
-                            const eos = _eos({httpEndpoint});
-                            if(action.account === 'eosio') data = eos.fc.fromBuffer(action.name, action.data);
-                            else {
-                                const abi = await eos.contract(args[0]);
-                                data = abi.fc.fromBuffer(action.name, action.data);
-                            }
-
-                            console.log('data', data);
-
-                            return {
-                                data,
-                                code:action.account,
-                                type:action.name,
-                                authorization:action.authorization
-                            };
-                        }));
-
-                        console.log('messages', signargs.messages);
-
-
-
-                        const payload = Object.assign(signargs, { domain:location.host, network, publicKey, requiredFields });
-
-                        const result = await _send(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
-
-
-                        //TODO: This will need to be returned as an error message in the future
-                        if(!result) return null;
-
-                        // Scatter has some special logic for signature requests
-                        if(result.hasOwnProperty('signatures')){
-                            // Holding onto the returned fields for the result to the application.
-                            returnedFields = result.returnedFields;
-
-                            // Local Multi Sig Support
-                            // Dapps can pass a keyProvider either in instantation or per-request which will
-                            // sign things locally outside of the scope of scatter
-                            let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('keyProvider'));
-                            if(!multiSigKeyProvider) multiSigKeyProvider = _options.length ? _options.find(arg => arg.hasOwnProperty('keyProvider')) : null;
-                            if(multiSigKeyProvider) {
-                                const localMutiSig = signargs.sign(signargs.buf, multiSigKeyProvider.keyProvider);
-                                result.signatures = result.signatures.concat(localMutiSig);
-                            }
-
-                            console.log('result', result)
-
-                            // Returning only the signatures to eosjs
-                            return result.signatures;
-                        }
-
-                        return result;
-                    };
-
-                    // TODO: We need to check about the implications of multiple eosjs instances
-                    return new Promise((resolve, reject) => {
-                        _eos(Object.assign(JSON.stringify(_options), {httpEndpoint, signProvider}))[method](...args)
-                            .then(result => {
-                                // We are binding back the required fields that were stored earlier
-                                if(requiredFields.length) result = Object.assign(result, {returnedFields});
-                                resolve(result)
-                            })
-                            .catch(error => reject(error))
-                    })
-                }
-            }
-        });
     }
 
     /***
@@ -301,7 +193,7 @@ export default class Scatterdapp {
             publicKey
         }, true).catch(err => err);
 
-        // Returning errors.
+        // If the `signature` is an object, it's an error message
         if(typeof signature === 'object') return signature;
 
         try {

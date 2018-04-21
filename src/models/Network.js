@@ -1,5 +1,6 @@
 export default class Network {
     constructor(_host = '', _port = 0){
+        this.chainId = '';
         this.host = _host;
         this.port = _port;
     }

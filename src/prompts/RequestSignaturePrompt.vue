@@ -86,8 +86,8 @@
             </section>
 
             <section class="actions">
-                <btn :text="locale(langKeys.BUTTON_Accept)" v-on:clicked="denied"></btn>
-                <btn :text="locale(langKeys.BUTTON_Deny)" margined="true" is-blue="true" v-on:clicked="accepted"></btn>
+                <btn :text="locale(langKeys.BUTTON_Deny)" v-on:clicked="denied"></btn>
+                <btn :text="locale(langKeys.BUTTON_Accept)" margined="true" is-blue="true" v-on:clicked="accepted"></btn>
             </section>
 
         </section>
@@ -142,7 +142,6 @@
 
             if(!hasAllRequiredFields){
                 this[Actions.PUSH_ALERT](AlertMsg.NoIdentityWithProperties(this.requiredFields)).then(closed => {
-                    //TODO: Better error handling
                     this.prompt.responder(null);
                     NotificationService.close();
                 });

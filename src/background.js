@@ -390,12 +390,6 @@ export default class Background {
 
 
 
-    // TODO: ---------------------------------------
-    // TODO: There's a possibility of race conditions here.
-    // TODO: Perhaps the keychain should be stored in multiple stores
-    // TODO: and only merged when retrieving.
-    // TODO: ---------------------------------------
-
     /***
      * Adds a historic event to the keychain
      * @param type

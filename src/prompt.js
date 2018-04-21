@@ -13,7 +13,6 @@ import SearchComponent from './components/SearchComponent.vue'
 import InputComponent from './components/InputComponent.vue'
 import SelectComponent from './components/SelectComponent.vue'
 
-// TODO: Find naming scheme that doesnt overwrite models
 class PromptWindow {
 
     constructor(){

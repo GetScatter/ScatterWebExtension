@@ -64,6 +64,8 @@ export default class SignatureService {
                     hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
                 });
 
+                console.log('sending back fields', returnedFields);
+
                 sendResponse({
                     signatures:[signature],
                     returnedFields:returnedFields

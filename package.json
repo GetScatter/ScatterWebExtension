@@ -1,6 +1,6 @@
 {
   "name": "scatter",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,10 +15,10 @@
     "aes-oop": "^1.0.4",
     "bip39": "^2.5.0",
     "dotenv-webpack": "^1.5.5",
-    "eosjs": "^6.1.11",
+    "eosjs": "^8.0.0",
     "eosjs-ecc": "^2.0.1",
-    "fcbuffer": "^2.1.5",
     "extension-streams": "^1.0.7",
+    "fcbuffer": "^2.1.5",
     "scrypt-async": "^2.0.0",
     "vue": "^2.5.16",
     "vue-moment": "^3.2.0",

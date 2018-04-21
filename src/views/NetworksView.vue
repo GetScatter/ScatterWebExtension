@@ -64,7 +64,7 @@
                     const scatter = this.scatter.clone();
                     scatter.settings.networks = scatter.settings.networks.filter(x => x.unique() !== network.unique());
 
-                    //TODO: Remove network -> account from identities
+                    //TODO: Remove network -> account from identities when CHAIN_ID is implemented
 
                     this[Actions.UPDATE_STORED_SCATTER](scatter);
                 })
