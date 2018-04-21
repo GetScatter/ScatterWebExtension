@@ -3,7 +3,7 @@
         <figure class="icon">
             <i class="fa fa-search"></i>
         </figure>
-        <input :placeholder="placeholder || 'Search'" v-model="input" />
+        <input :placeholder="placeholder || locale(langKeys.GENERIC_Search)" v-model="input" />
     </section>
 </template>
 

@@ -14,6 +14,11 @@ export const GENERIC_Name = 'gen_name';
 export const GENERIC_VerifyPassword_Header = 'gen_vp_head';
 export const GENERIC_VerifyPassword_Description = 'gen_vp_desc';
 export const GENERIC_Ignored = 'gen_ignored';
+export const GENERIC_Search = 'gen_search';
+export const GENERIC_Host = 'gen_host';
+export const GENERIC_Port = 'gen_port';
+export const GENERIC_Requires = 'gen_requires';
+export const GENERIC_RequiredProperties = 'gen_required_props';
 
 export const PLACEHOLDER_Name = 'plc_name';
 export const PLACEHOLDER_PublicKey = 'plc_pubk';
@@ -35,7 +40,6 @@ export const PLACEHOLDER_ConfirmPassword = 'plc_conf_pass';
 export const PLACEHOLDER_NewPassword = 'plc_new_pass';
 export const PLACEHOLDER_ConfirmNewPassword = 'plc_conf_new_pass';
 export const PLACEHOLDER_DomainOrIP = 'plc_dom_or_ip';
-export const PLACEHOLDER_Port = 'plc_port';
 
 export const BUTTON_CreateIdentity = 'btn_new_id';
 export const BUTTON_ImportAccount = 'btn_import_acc';
@@ -52,6 +56,13 @@ export const BUTTON_GenerateKeyPair = 'btn_gen_kp';
 export const BUTTON_Validate = 'btn_validate';
 export const BUTTON_Copy = 'btn_copy';
 export const BUTTON_ChangeLanguage = 'btn_cng_lang';
+export const BUTTON_Cancel = 'btn_cancel';
+export const BUTTON_Accept = 'btn_accept';
+export const BUTTON_Deny = 'btn_deny';
+export const BUTTON_Yes = 'btn_yes';
+export const BUTTON_No = 'btn_no';
+export const BUTTON_UseSelectedAccount = 'btn_use_sel_acc';
+export const BUTTON_SelectIdentity = 'btn_sel_id';
 
 export const IDENTITIES_Header = 'ids_head';
 export const IDENTITIES_Description = 'ids_fields';
@@ -123,3 +134,53 @@ export const BACKUP_Description = 'backup_desc';
 
 export const DESTROY_Header = 'destr_head';
 export const DESTROY_Description = 'destr_desc';
+
+
+
+export const ERROR_MustSelectItem = 'err_mst_sel_item';
+
+export const ALERT_Type = 'alert_type';
+export const ALERT_BadIdentityName = 'alert_bad_id_name';
+export const ALERT_IdentityNameExists = 'alert_id_name_exists';
+export const ALERT_InvalidPrivateKey = 'alert_inv_priv_key';
+export const ALERT_NoAccountsFound = 'alert_no_acc_fnd';
+export const ALERT_PasswordsDoNotMatch = 'alert_pass_no_mtch';
+export const ALERT_BadPassword = 'alert_bad_pass';
+export const ALERT_WrongPassword = 'alert_wrong_pass';
+export const ALERT_NetworkHostInvalid = 'alert_net_host_invalid';
+export const ALERT_NetworkExists = 'alert_net_exists';
+export const ALERT_RemovingEndorsedNetwork = 'alert_rm_end_net';
+export const ALERT_NoIdentityWithProperties = 'alert_no_id_w_prop';
+export const ALERT_YouMustSelectAnIdentity = 'alert_mst_sel_id';
+
+export const PROMPT_DestroyingScatter = 'prompt_destr_scat';
+export const PROMPT_RevokingIdentity = 'prompt_revk_id';
+export const PROMPT_RevokingContract = 'prompt_revk_contr';
+export const PROMPT_RevokingContractAction = 'prompt_revk_contr_act';
+export const PROMPT_RemovingIdentity = 'prompt_rm_id';
+export const PROMPT_RemovingAccount = 'prompt_rm_acc';
+export const PROMPT_RemovingNetwork = 'prompt_rm_net';
+export const PROMPT_WhitelistingContractAction = 'prompt_white_act';
+export const PROMPT_SelectAccount = 'prompt_sel_acc';
+
+
+
+export const REQUEST_AddNetwork = 'req_add_net';
+export const REQUEST_Identity = 'req_id';
+export const REQUEST_IdentityNoIdentities = 'req_id_no_ids';
+export const REQUEST_SignatureWhitelist = 'req_sig_white';
+export const REQUEST_ScatterIsLocked = 'req_scat_locked';
+export const REQUEST_UpdateVersion = 'req_updt_vers';
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -59,12 +59,7 @@
                     return false;
                 }
 
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure('Deleting Network', ['Scatter', 'Networks'],
-                    'You are about to delete a Network. You will not be able ' +
-                    'to create new accounts on this Network once you delete it, ' +
-                    'but nothing is stopping you from re-adding it. Any accounts ' +
-                    'already using this Network will not be modified or removed.')
-                ).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.RemovingNetwork()).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();
                     scatter.settings.networks = scatter.settings.networks.filter(x => x.unique() !== network.unique());

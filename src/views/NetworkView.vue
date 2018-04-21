@@ -6,10 +6,10 @@
         ]" v-on:submit="saveNetwork"></nav-actions>
 
         <section class="panel">
-            <figure class="header">{{locale(langkeys.NETWORK_Header)}}</figure>
-            <figure class="sub-header">{{locale(langkeys.NETWORK_Description)}} </figure>
+            <figure class="header">{{locale(langKeys.NETWORK_Header)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.NETWORK_Description)}} </figure>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bind(changed, 'host')" :disabled="!isNew"></cin>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')" :disabled="!isNew"></cin>
+            <cin :placeholder="locale(langKeys.GENERIC_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')" :disabled="!isNew"></cin>
         </section>
 
     </section>

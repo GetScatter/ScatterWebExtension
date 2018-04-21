@@ -3,8 +3,9 @@
         <section class="box" v-if="alerts.length">
             <section class="head">
                 <figure class="header">{{alerts[0].header}}</figure>
-                <figure class="sub-header">{{alerts[0].subHeader}}</figure>
-                <figure class="sub-header">{{alerts[0].breadcrumbs.join(" / ")}}</figure>
+                <figure class="sub-header">
+                    {{locale(langKeys.ALERT_Type)(alerts[0].type)}}
+                </figure>
             </section>
             <section class="body">
                 <section class="description">{{alerts[0].description}}</section>
@@ -15,17 +16,17 @@
 
             <!-- Error -->
             <section class="actions" v-if="alerts[0].type === alertTypes.Error">
-                <btn text="Okay" is-blue="true" v-on:clicked="accept"></btn>
+                <btn :text="locale(langKeys.BUTTON_Yes)" is-blue="true" v-on:clicked="accept"></btn>
             </section>
 
             <!-- Prompt -->
             <section class="actions" v-if="alerts[0].type === alertTypes.Prompt">
-                <btn text="Cancel" v-on:clicked="cancel"></btn>
-                <btn text="Yes" is-red="true" v-on:clicked="accept"></btn>
+                <btn :text="locale(langKeys.BUTTON_Cancel)" v-on:clicked="cancel"></btn>
+                <btn :text="locale(langKeys.BUTTON_Yes)" is-red="true" v-on:clicked="accept"></btn>
             </section>
 
             <figure v-if="selectionError" class="selection-error">
-                You must select an item before continuing.
+                {{locale(langKeys.ERROR_MustSelectItem)}}
             </figure>
 
             <!-- Select Account -->
@@ -37,8 +38,8 @@
                 </figure>
             </section>
             <section class="actions" v-if="alerts[0].type === alertTypes.SelectAccount">
-                <btn text="Cancel" v-on:clicked="cancel"></btn>
-                <btn text="Use Selected Account" is-blue="true" v-on:clicked="returnSelectedItem"></btn>
+                <btn :text="locale(langKeys.BUTTON_Cancel)" v-on:clicked="cancel"></btn>
+                <btn :text="locale(langKeys.BUTTON_UseSelectedAccount)" is-blue="true" v-on:clicked="returnSelectedItem"></btn>
             </section>
 
         </section>

@@ -150,14 +150,9 @@
                 this.selectedNetwork = network;
             },
             removeAccount(){
-                const msg = [
-                    'Removing Account',
-                    ['Identity', 'Remove Account'],
-                    `You are about to remove the ${this.identity.accounts[this.selectedNetwork.unique()].name}@${this.identity.accounts[this.selectedNetwork.unique()].authority} account
-                    from this Identity.`
-                ];
+                const formattedAccount = this.identity.accounts[this.selectedNetwork.unique()].formatEOS();
 
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure(...msg)).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.RemovingAccount(formattedAccount)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     this.identity.removeAccount(this.selectedNetwork);
                 })

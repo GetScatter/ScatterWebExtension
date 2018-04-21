@@ -13,6 +13,7 @@ export default class AuthenticationService {
     static verifyPassword(password, context){
         return new Promise((resolve, reject) => {
             const sendToEntry = () => {
+                // context[Actions.PUSH_ALERT](AlertMsg.WrongPassword());
                 context[Actions.PUSH_ALERT](AlertMsg.WrongPassword());
                 context.$router.push({name:RouteNames.ENTRY});
                 reject();

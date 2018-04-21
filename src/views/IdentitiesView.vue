@@ -155,10 +155,7 @@
 //                    return false;
 //                }
 
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure('Removing Identity', ['Scatter', 'Identities', 'Remove'],
-                    `You are about to remove an Identity with the name '${identity.name}'. Removing Identities is not reversible and
-                    all permissions will be . If the Identity is being used on applications perhaps you should just disable it instead.`
-                )).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.RemovingIdentity(identity.name)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();
                     scatter.keychain.identities = scatter.keychain.identities.filter(id => id.publicKey !== identity.publicKey);

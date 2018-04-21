@@ -3,9 +3,6 @@
 
         <section class="head">
             <figure class="type">{{flipWords(camelToTitle(prompt.type))}}</figure>
-            <!--<figure class="description">-->
-                <!--An application is <b>requesting an Identity.</b>-->
-            <!--</figure>-->
             <section class="split-tag">
                 <figure class="tag">{{prompt.domain}}</figure>
                 <figure class="tag">{{prompt.network.host}}</figure>

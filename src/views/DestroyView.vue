@@ -53,8 +53,7 @@
                 });
             },
             destroy(){
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure('Destroying Scatter', ['Settings', 'Destroy'],
-                    'This is your last chance to double check your backups.')).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.DestroyingScatter()).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     this[Actions.DESTROY]().then(() => this.$router.push({name:RouteNames.ENTRY}));
                 });

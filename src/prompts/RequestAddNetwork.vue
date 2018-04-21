@@ -2,8 +2,8 @@
     <section class="prompt-body">
 
         <section class="prompt-actions">
-            <btn text="Deny" half="true" v-on:clicked="denied"></btn>
-            <btn text="Accept" half="true" is-blue="true" v-on:clicked="accepted"></btn>
+            <btn :text="locale(langKeys.BUTTON_Deny)" half="true" v-on:clicked="denied"></btn>
+            <btn :text="locale(langKeys.BUTTON_Accept)" half="true" is-blue="true" v-on:clicked="accepted"></btn>
         </section>
 
         <section class="partitioned">
@@ -11,16 +11,16 @@
             <section class="partition">
 
                 <section class="description">
-                    <b>{{prompt.domain}}</b> wants to add their network to your Scatter.
+                    <b>{{prompt.domain}}</b> {{locale(langKeys.REQUEST_AddNetwork)[0]}}
                 </section>
 
                 <section class="key-value">
-                    <figure class="key">Host</figure>
+                    <figure class="key">{{locale(langKeys.GENERIC_Host)}}</figure>
                     <figure class="value">{{prompt.network.host}}</figure>
                 </section>
 
                 <section class="key-value">
-                    <figure class="key">Port</figure>
+                    <figure class="key">{{locale(langKeys.GENERIC_Port)}}</figure>
                     <figure class="value">{{prompt.network.port}}</figure>
                 </section>
 
@@ -28,13 +28,8 @@
 
             <section class="partition">
                 <section class="nothing-here">
-                    <figure class="header">
-                        Some applications use their own Networks.
-                    </figure>
-                    <figure class="sub-header">
-                        This in no way gives the application any access to your Scatter. Adding a network through this interface simply saves you
-                        the effort of manually adding it from your Settings panel.
-                    </figure>
+                    <figure class="header">{{locale(langKeys.REQUEST_AddNetwork)[1]}}</figure>
+                    <figure class="sub-header">{{locale(langKeys.REQUEST_AddNetwork)[2]}}</figure>
                 </section>
             </section>
 

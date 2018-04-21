@@ -17,7 +17,10 @@
 
     export default {
         data(){ return {
-            links:[
+            links:[]
+        }},
+        mounted(){
+            this.links = [
                 {route:RouteNames.NETWORKS, name:this.locale(this.langKeys.SETTINGSMENU_Networks), icon:'globe'},
                 {route:RouteNames.KEYPAIRS, name:this.locale(this.langKeys.SETTINGSMENU_Keypairs), icon:'key'},
                 {route:RouteNames.LANGUAGE, name:this.locale(this.langKeys.SETTINGSMENU_Language), icon:'language'},
@@ -26,7 +29,7 @@
                 {route:RouteNames.BACKUP, name:this.locale(this.langKeys.SETTINGSMENU_Backup), icon:'save'},
                 {route:RouteNames.DESTROY, name:this.locale(this.langKeys.SETTINGSMENU_Destroy), icon:'trash-o'},
             ]
-        }}
+        }
     }
 </script>
 

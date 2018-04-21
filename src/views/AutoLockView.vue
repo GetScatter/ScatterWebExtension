@@ -55,8 +55,8 @@
                     if(minutes === 0) name = this.locale(this.langKeys.LOCK_NeverLock);
                     else if(minutes === 1) name = `1 ${this.locale(this.langKeys.LOCK_Minute)}`;
                     else if(minutes > 1 && minutes < 60) name = `${minutes} ${this.locale(this.langKeys.LOCK_Minutes)}`;
-                    else if (minutes === 60) name = `${minutes} ${this.locale(this.langKeys.LOCK_Hour)}`;
-                    else name = `${minutes} ${this.locale(this.langKeys.LOCK_Hours)}`;
+                    else if (minutes === 60) name = `${minutes/60} ${this.locale(this.langKeys.LOCK_Hour)}`;
+                    else name = `${minutes/60} ${this.locale(this.langKeys.LOCK_Hours)}`;
                     return {minutes, name};
                 });
             },

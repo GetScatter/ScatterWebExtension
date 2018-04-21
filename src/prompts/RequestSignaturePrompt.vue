@@ -3,8 +3,7 @@
 
         <section class="floating-header">
             <figure class="identity-name">{{identity().name}}</figure>
-            <!-- TODO: Replace with selected account from account map -->
-            <!--<figure class="account-authority">{{`${identity().account.name}@${identity().account.authority}`}}</figure>-->
+            <figure class="account-authority" v-if="network !== null">{{identity().networkedAccount(network).formatEOS()}}</figure>
             <figure class="switches">
                 <figure class="switch"
                         v-for="displayType in displayTypes"
@@ -23,15 +22,15 @@
                 <section class="partition">
 
                     <!-- Contract Name -->
-                    <figure class="label">contract</figure>
+                    <figure class="label">{{locale(langKeys.GENERIC_Contract)}}</figure>
                     <figure class="value big">{{message.code}}</figure>
 
                     <!-- Contract Action -->
-                    <figure class="label">action</figure>
+                    <figure class="label">{{locale(langKeys.GENERIC_Action)}}</figure>
                     <figure class="value big">{{message.type}}</figure>
 
                     <section class="key-value" v-if="prompt.data.requiredFields.length">
-                        <figure class="key">requires</figure>
+                        <figure class="key">{{locale(langKeys.GENERIC_Requires)}}</figure>
                         <figure class="value">
                             {{prompt.data.requiredFields.join(', ')}}
                         </figure>
@@ -73,25 +72,22 @@
 
             <section class="whitelist">
                 <figure class="header">
-                    Do you want to whitelist this contract action?
+                    {{locale(langKeys.REQUEST_SignatureWhitelist)[0]}}
                 </figure>
                 <figure class="sub-header">
                     <section class="checkbox">
                         <cin :tag="(whitelisted) ? 'fa-check' : ''" :checkbox="true" v-on:untagged="toggleWhitelist"></cin>
                     </section>
-                    You can whitelist this action so that next time you wont have to manually authorize this.
-                    Every property that has a check next to it will become mutable, meaning that you can allow
-                    certain properties of this transaction to change and only if the other properties are changed will
-                    it fail to be whitelisted.
+                    {{locale(langKeys.REQUEST_SignatureWhitelist)[1]}}
                     <br><br>
-                    <b>This includes required personal information, and changes to your Identity do not remove permissions.</b>
-                    If you have multiple locations and a transaction requires a location you will always be prompted.
+                    <b>{{locale(langKeys.REQUEST_SignatureWhitelist)[2]}}</b>
+                    {{locale(langKeys.REQUEST_SignatureWhitelist)[3]}}
                 </figure>
             </section>
 
             <section class="actions">
-                <btn text="Deny" v-on:clicked="denied"></btn>
-                <btn text="Accept" margined="true" is-blue="true" v-on:clicked="accepted"></btn>
+                <btn :text="locale(langKeys.BUTTON_Accept)" v-on:clicked="denied"></btn>
+                <btn :text="locale(langKeys.BUTTON_Deny)" margined="true" is-blue="true" v-on:clicked="accepted"></btn>
             </section>
 
         </section>
@@ -127,6 +123,7 @@
 
             returnedFields:{},
             mutableFields:[],
+            network:null,
         }},
         computed: {
             ...mapState([
@@ -140,7 +137,8 @@
             ])
         },
         mounted(){
-            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields, Network.fromJson(this.prompt.network));
+            this.network = Network.fromJson(this.prompt.network);
+            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields, this.network);
 
             if(!hasAllRequiredFields){
                 this[Actions.PUSH_ALERT](AlertMsg.NoIdentityWithProperties(this.requiredFields)).then(closed => {
@@ -210,11 +208,8 @@
                 const flip = () => this.whitelisted = !this.whitelisted;
 
                 if(this.isCurrencyContract() && !this.whitelisted) {
-                    const alert = AlertMsg.AreYouSure('You Are About To Whitelist A Currency Contract', ['Request', 'Signature', 'Whitelist'],
-                        'Whitelisting currency based contracts is dangerous, and should never be done. There are specific cases where this is okay, ' +
-                        'but unless you are absolutely sure this is one of them, you should not be whitelisting this contract action. ' +
-                        'Are you sure you still want to whitelist this?')
-                    this[Actions.PUSH_ALERT](alert).then(res => {
+
+                    this[Actions.PUSH_ALERT](AlertMsg.WhitelistingContractAction()).then(res => {
                         if(!res || !res.hasOwnProperty('accepted')) return false;
                         flip();
                     });

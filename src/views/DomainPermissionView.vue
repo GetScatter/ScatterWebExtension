@@ -78,7 +78,6 @@
             bind(changed, original) { this[original] = changed },
             groupByIdentity(permissions){ return ObjectHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'publicKey'); },
             groupByContract(permissions){ return ObjectHelpers.groupBy(permissions.filter(perm => perm.isContractAction()), 'contract'); },
-            breadcrumbs(){ return ['Permissions', 'Revoke']; },
 
             filterBySearch(){
                 return Object.keys(this.groupByIdentity(this.permissions))
@@ -106,13 +105,8 @@
              * @param permission
              */
             removeIdentityPermissions(permission){
-                const msg = [
-                    'Revoking Identity',
-                    this.breadcrumbs(),
-                    'You are about to revoke an entire Identity from '+this.domain+'. This will remove permissions on the Identity itself and all contracts within it.'
-                ];
                 const scatter = this.scatter.clone();
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure(...msg)).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.RevokingIdentity(this.domain)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     scatter.keychain.permissions = scatter.keychain.permissions.filter(perm =>
                         perm.network.unique() !== permission.network.unique() ||
@@ -128,13 +122,8 @@
              * @param network
              */
             removeContractPermissions(contract, network){
-                const msg = [
-                    'Revoking Contract',
-                    this.breadcrumbs(),
-                    'You are about to revoke an entire contract from '+this.domain+'. This will remove permissions on all actions within it.'
-                ];
                 const scatter = this.scatter.clone();
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure(...msg)).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.RevokingContract(this.domain)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     scatter.keychain.permissions = scatter.keychain.permissions.filter(perm =>
                         perm.network.unique() !== network.unique() ||
@@ -149,13 +138,8 @@
              * @param permission
              */
             removeActionPermissions(permission){
-                const msg = [
-                    'Revoking Contract Action',
-                    this.breadcrumbs(),
-                    'You are about to revoke an action from '+this.domain+'.'
-                ];
                 const scatter = this.scatter.clone();
-                this[Actions.PUSH_ALERT](AlertMsg.AreYouSure(...msg)).then(res => {
+                this[Actions.PUSH_ALERT](AlertMsg.RevokingContractAction(this.domain)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     scatter.keychain.permissions = scatter.keychain.permissions
                         .filter(perm => JSON.stringify(perm) !== JSON.stringify(permission));

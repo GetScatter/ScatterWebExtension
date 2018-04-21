@@ -2,12 +2,12 @@
     <section class="prompt-body">
 
         <section class="prompt-actions" v-if="filteredIdentities().length">
-            <btn text="Deny" half="true" v-on:clicked="denied"></btn>
-            <btn text="Accept" half="true" is-blue="true" v-on:clicked="accepted"></btn>
+            <btn :text="locale(langKeys.BUTTON_Deny)" half="true" v-on:clicked="denied"></btn>
+            <btn :text="locale(langKeys.BUTTON_Accept)" half="true" is-blue="true" v-on:clicked="accepted"></btn>
         </section>
 
         <section class="prompt-actions" v-else>
-            <btn text="Cancel" v-on:clicked="denied"></btn>
+            <btn :text="locale(langKeys.BUTTON_Cancel)" v-on:clicked="denied"></btn>
         </section>
 
         <section class="partitioned">
@@ -16,40 +16,23 @@
 
                 <section v-if="identityFields.length">
                     <section class="description">
-                        <b>{{prompt.domain}}</b> is requesting additional information.
+                        <b>{{prompt.domain}}</b> {{locale(langKeys.REQUEST_Identity)[0]}}
                     </section>
 
                     <section class="key-value">
-                        <figure class="key">requires</figure>
+                        <figure class="key">{{locale(langKeys.GENERIC_Requires)}}</figure>
                         <figure class="value">
                             {{identityFields.join(', ')}}
                         </figure>
                     </section>
 
-                    <section class="description">
-                        Sometimes applications ask for some more information such as
-                        your email or date of birth. The Identities on the right are ones you own
-                        on the network with those specific properties available.
-                    </section>
-
-                    <section class="description">
-                        Even if you provide an Identity with properties that the
-                        application is not requesting permissions for, they will never
-                        be able to see them, or even know they exist for that Identity.
-                    </section>
-
-                    <section class="description">
-                        <b>
-                            The only properties which are always given is a hash of your Identity and it's name.
-                        </b>
-                    </section>
+                    <section class="description">{{locale(langKeys.REQUEST_Identity)[1]}}</section>
+                    <section class="description">{{locale(langKeys.REQUEST_Identity)[2]}}</section>
+                    <section class="description"><b>{{locale(langKeys.REQUEST_Identity)[3]}}</b></section>
                 </section>
 
                 <section v-else>
-                    <section class="description">
-                        <b>{{prompt.domain}}</b> is <u>not</u> requesting any additional information.
-                        The only thing that they are requiring is an Identity hash and name.
-                    </section>
+                    <section class="description"><b>{{prompt.domain}}</b> {{locale(langKeys.REQUEST_Identity)[3]}}</section>
                 </section>
 
             </section>
@@ -67,14 +50,14 @@
                         <figure v-if="!identity.disabled" class="select-identity"
                                 v-on:click="selectIdentity(identity)"
                                 :class="{'selected':selectedIdentity && selectedIdentity.publicKey === identity.publicKey}">
-                            Select Identity
+                            {{locale(langKeys.BUTTON_SelectIdentity)}}
                         </figure>
                         <!--<figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>-->
                     </section>
 
                     <!-- Matching Requirements / Properties -->
                     <section class="panel">
-                        <figure class="header small reverse-margin">required properties</figure>
+                        <figure class="header small reverse-margin">{{locale(langKeys.GENERIC_RequiredProperties)}}</figure>
                         <section class="items">
                             <section class="item" v-for="prop in identityFields">
                                 <figure>
@@ -91,13 +74,8 @@
 
             <section class="partition" v-else>
                 <section class="nothing-here">
-                    <figure class="header">
-                        You don't have any Identities that match the fields that <b>{{prompt.domain}}</b> is requiring.
-                    </figure>
-                    <figure class="sub-header">
-                        If you would like to use an Identity with this domain, you will need to update that Identity and fulfill the requirements.
-                        You can see what this domain is requiring on the left panel.
-                    </figure>
+                    <figure class="header"><b>{{locale(langKeys.REQUEST_IdentityNoIdentities)[0]}}</b></figure>
+                    <figure class="sub-header">{{locale(langKeys.REQUEST_IdentityNoIdentities)[1]}}</figure>
                 </section>
             </section>
 

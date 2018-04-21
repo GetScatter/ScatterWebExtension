@@ -76,7 +76,6 @@
                         AlertTypes.Error,
                         'Invalid Key Pair',
                         'Error',
-                        ['Settings', 'Key Pair'],
                         'Both the Public Key and Private Key must be provided'
                     ));
                     return false;
@@ -87,7 +86,6 @@
                         AlertTypes.Error,
                         'Invalid Public Key',
                         'Error',
-                        ['Settings', 'Key Pair'],
                         'The Public Key you entered is not valid!'
                     ));
                     return false;
@@ -98,7 +96,6 @@
                         AlertTypes.Error,
                         'Invalid Private Key',
                         'Error',
-                        ['Settings', 'Key Pair'],
                         'The Private Key you entered is not valid!'
                     ));
                     return false;
