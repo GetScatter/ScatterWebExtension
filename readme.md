@@ -161,6 +161,19 @@ scatter.authenticate()
 ```
 
 
+#### Forgetting an Identity ( Sign out )
+
+To sign out a user you will be removing the permission in place for your domain to use an identity.
+All sub-permissions such as contract and action whitelistings will be left in place and be available the next time the user 
+authenticates with your website.
+
+```js
+scatter.forgetIdentity().then(() => {
+    //...
+});
+```
+
+
 #### Requesting a Signature
 
 You can optionally pass in required fields to the eosjs options if you want it to give you back 
