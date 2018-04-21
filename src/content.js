@@ -85,6 +85,7 @@ class Content {
         switch(msg.type){
             case 'sync': this.sync(msg); break;
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
+            case NetworkMessageTypes.FORGET_IDENTITY:                   this.forgetIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_VERSION_UPDATE:            this.requestVersionUpdate(nonSyncMessage); break;
@@ -110,6 +111,12 @@ class Content {
     getOrRequestIdentity(message){
         if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.GET_OR_REQUEST_IDENTITY, message.payload)
+            .send().then(res => this.respond(message, res))
+    }
+
+    forgetIdentity(message){
+        if(!isReady) return;
+        InternalMessage.payload(InternalMessageTypes.FORGET_IDENTITY, message.payload)
             .send().then(res => this.respond(message, res))
     }
 

@@ -5,7 +5,7 @@
 
         <section class="permissions" v-if="permissions.length">
             <section class="item" v-for="(perms, domain) in filterBySearch()">
-                <router-link :to="{name:routeNames.DOMAIN_PERMISSIONS, query:{domain}}">
+                <router-link :to="{name:routeNames.DOMAIN_PERMISSIONS, query:{domain}}" v-if="perms.find(perm => perm.isIdentityOnly())">
                     <figure class="icon">{{perms.length}}</figure>
                     <figure class="text">{{domain}}</figure>
                 </router-link>

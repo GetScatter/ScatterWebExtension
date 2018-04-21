@@ -67,6 +67,7 @@ export default class Background {
             case InternalMessageTypes.DESTROY:                      Background.destroy(sendResponse); break;
             case InternalMessageTypes.IDENTITY_FROM_PERMISSIONS:    Background.identityFromPermissions(sendResponse, message.payload); break;
             case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:      Background.getOrRequestIdentity(sendResponse, message.payload); break;
+            case InternalMessageTypes.FORGET_IDENTITY:              Background.forgetIdentity(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_SIGNATURE:            Background.requestSignature(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_ADD_NETWORK:          Background.requestAddNetwork(sendResponse, message.payload); break;
             case InternalMessageTypes.REQUEST_GET_VERSION:          Background.requestGetVersion(sendResponse); break;
@@ -275,6 +276,25 @@ export default class Background {
                     sendResponse(identity);
                 });
             });
+        })
+    }
+
+    static forgetIdentity(sendResponse, payload){
+        this.lockGuard(sendResponse, () => {
+            Background.load(scatter => {
+                const permission = scatter.keychain.permissions.find(permission => permission.isIdentityOnly() && permission.domain === payload.domain);
+                if(!permission){
+                    sendResponse(true);
+                    return false;
+                }
+
+                const clone = scatter.clone();
+                clone.keychain.removePermission(permission);
+
+                this.update(() => {
+                    sendResponse(true);
+                }, clone);
+            })
         })
     }
 

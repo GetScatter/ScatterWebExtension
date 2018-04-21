@@ -164,6 +164,25 @@ export default class Scatterdapp {
             domain:location.host,
             network:network,
             fields
+        }).then(identity => {
+            this.useIdentity(identity);
+            return identity;
+        });
+    }
+
+    /***
+     * Signs out the identity
+     * Will remove permissions for the identity but not contract/action permissions.
+     * @returns {Promise.<TResult>}
+     */
+    forgetIdentity(){
+        throwIfNoIdentity();
+        return _send(NetworkMessageTypes.FORGET_IDENTITY, {
+            domain:location.host
+        }).then(() => {
+            this.identity = null;
+            publicKey = null;
+            return true;
         });
     }
 

@@ -224,7 +224,7 @@
             },
             toggleMutableField(selectedField){
                 this.mutableFields.includes(selectedField)
-                    ? this.mutableFields = this.mutableFields.filter(field => field === selectedField)
+                    ? this.mutableFields.splice(this.mutableFields.indexOf(selectedField),1)
                     : this.mutableFields.push(selectedField);
             },
             ...mapActions([
