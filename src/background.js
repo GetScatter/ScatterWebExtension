@@ -269,7 +269,8 @@ export default class Background {
                             network,
                             publicKey:identity.publicKey,
                             timestamp:+ new Date(),
-                            fields
+                            fields,
+                            checksum:domain
                         })])
                     }
 

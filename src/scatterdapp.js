@@ -40,6 +40,8 @@ const throwIfNoIdentity = () => {
 };
 
 
+const locationHost = () => location.host.replace('www.', '');
+
 /***
  * Messages do not come back on the same thread.
  * To accomplish a future promise structure this method
@@ -106,7 +108,7 @@ const _send = (_type, _payload, bypassNetwork = false) => {
         // Version requirements
         if(!!requiredVersion && requiredVersion > currentVersion){
             const mandatoryNetwork = network ? network : {host:'', port:0};
-            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:location.host}, -1, null, location.host);
+            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:locationHost()}, -1, null, locationHost());
             stream.send(message, PairingTags.SCATTER);
             reject(Error.requiresUpgrade());
             return false;
@@ -114,7 +116,7 @@ const _send = (_type, _payload, bypassNetwork = false) => {
 
         _networkGuard(reject, () => {
             let id = IdGenerator.numeric(6);
-            let message = new NetworkMessage(_type, _payload, id, network, location.host);
+            let message = new NetworkMessage(_type, _payload, id, network, locationHost());
             resolvers.push(new DanglingResolver(id, resolve, reject));
             stream.send(message, PairingTags.SCATTER);
         }, bypassNetwork);
@@ -126,6 +128,7 @@ const setupSigProviders = context => {
         context[sigProvider.name] = sigProvider.signatureProvider(_bindNetwork, _send, throwIfNoIdentity);
     })
 };
+
 
 /***
  * Scatterdapp is the object injected into the web application that
@@ -161,7 +164,7 @@ export default class Scatterdapp {
      */
     getIdentity(fields = []){
         return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
-            domain:location.host,
+            domain:locationHost(),
             network:network,
             fields
         }).then(async identity => {
@@ -178,7 +181,7 @@ export default class Scatterdapp {
     forgetIdentity(){
         throwIfNoIdentity();
         return _send(NetworkMessageTypes.FORGET_IDENTITY, {
-            domain:location.host
+            domain:locationHost()
         }).then(() => {
             this.identity = null;
             publicKey = null;
@@ -202,7 +205,7 @@ export default class Scatterdapp {
      */
     suggestNetwork(){
         return _send(NetworkMessageTypes.REQUEST_ADD_NETWORK, {
-            domain:location.host,
+            domain:locationHost(),
             network:network
         });
     }
@@ -213,14 +216,14 @@ export default class Scatterdapp {
         // TODO: Verify identity matches RIDL registration
 
         const signature = await _send(NetworkMessageTypes.AUTHENTICATE, {
-            domain:location.host,
+            domain:locationHost(),
             publicKey
         }, true).catch(err => err);
 
         // If the `signature` is an object, it's an error message
         if(typeof signature === 'object') return signature;
 
-        try { if(ecc.verify(signature, location.host, publicKey)) return signature; }
+        try { if(ecc.verify(signature, locationHost(), publicKey)) return signature; }
         catch (e) {
             this.identity = null;
             publicKey = '';
