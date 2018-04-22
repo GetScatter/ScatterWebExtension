@@ -91,18 +91,7 @@ Once an Identity is provided it will not need to be re-approved every time unles
 const requirements = ['account'];
  
 scatter.getIdentity(requirements).then(identity => {
- 
-    // Identities must be bound to scatter to be 
-    // able to request transaction signatures
-    
-    // If you want to hold the identity within
-    // scatter you may do so by passing the entire object
-    scatter.useIdentity(identity);
-    
-    // If you are holding it yourself you can pass in 
-    // only the publicKey as well.
-    scatter.useIdentity(identity.publicKey);
-    
+    //...    
 }).catch(error => {
     //...
 });
@@ -115,9 +104,6 @@ issued to the user as this would create a bad user experience.
 ```js
 const identity = scatter.identity;
 ```
-
-If the `identity` property is not null it will also be fed into the `useIdentity()` method.
-That way you do not have to do `scatter.useIdentity()` again. 
 
 
 ##### Fields that can be required
@@ -312,16 +298,17 @@ The content script then sends a `scatterLoaded` event to the website notifying i
   
 #### The Scatterdapp script and eosjs
 
-`eosjs` is EOS's javascript RPC API wrapper. It is what javascript applications use to interact with the blockchain. 
+`eosjs` is EOS's javascript RPC API wrapper. It is what javascript applications use to interact with the blockchain.
 
-`Scatterdapp` is the website usable script that they can use to request certain things from Scatter. This script only 
+`Scatterdapp` is the website usable script that applications can use to request certain things from Scatter. This script only 
 allows a handful of methods which can interact with the Scatter extension:
 
 - **getIdentity** - Used to request an Identity from the user's Scatter.
-- **suggestNetwork** - This is a helper method used to request the addition of the EOS network the website is usiing.
-- **useIdentity** - Used to bind the Identity the user supplied back into `Scatterdapp` which allows them to send
-    transaction signature requests for that Identity's EOS account.
+- **forgetIdentity** - Used to forget an Identity and sign out the user.
+- **authenticate** - Used to prove ownership of the identity.
+- **suggestNetwork** - This is a helper method used to request the addition of the EOS network the website is using.
 - **eos** - Used to fetch a dummy version of `eosjs` which uses Scatter as the `signProvider`.
+- **requireVersion** - Used to require a minimum specific version of scatter.
 
 Normally when you use `eosjs` you have to give it a private key to work with.
 
