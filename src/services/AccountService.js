@@ -51,7 +51,7 @@ export default class AccountService {
      */
     static getAccountsFromPublicKey(publicKey, network){
         return new Promise((resolve, reject) => {
-            const eos = Eos.Localnet({httpEndpoint:`http://${network.unique()}`});
+            const eos = Eos.Localnet({httpEndpoint:`//${network.unique()}`});
             eos.getKeyAccounts(publicKey).then(res => {
                 if(!res || !res.hasOwnProperty('account_names')){ resolve([]); return false; }
 
@@ -73,7 +73,7 @@ export default class AccountService {
 
     static getBalance(accountName, networkUnique){
         return new Promise((resolve, reject) => {
-            const eos = Eos.Localnet({httpEndpoint:`http://${networkUnique}`});
+            const eos = Eos.Localnet({httpEndpoint:`//${networkUnique}`});
             eos.getAccount(accountName).then(account => {
                 if(!account){
                     resolve(0);

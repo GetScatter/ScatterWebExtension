@@ -36,7 +36,7 @@ export default class EOS extends Plugin {
         return (_eos, network, _options = {}) => {
 
             networkBinder(network);
-            const httpEndpoint = `http://${network.host}:${network.port}`;
+            const httpEndpoint = `//${network.host}:${network.port}`;
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions

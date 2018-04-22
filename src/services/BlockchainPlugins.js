@@ -30,7 +30,7 @@ export default class BlockchainPlugins {
         //TODO: Clean up and extrapolate
 
         _bindNetwork(network);
-        const httpEndpoint = `http://${network.host}:${network.port}`;
+        const httpEndpoint = `//${network.host}:${network.port}`;
 
         // The proxy stands between the eosjs object and scatter.
         // This is used to add special functionality like adding `requiredFields` arrays to transactions
