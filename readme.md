@@ -7,6 +7,7 @@ from web applications without ever exposing your keys and provide personal infor
 
 - [Installing Scatter](https://github.com/EOSEssentials/Scatter#installation)
 - [Interacting With Scatter](https://github.com/EOSEssentials/Scatter#interacting-with-scatter)
+- [Translations and Localization](https://github.com/EOSEssentials/Scatter#translations-and-localization)
 - [Understanding Scatter's Security](https://github.com/EOSEssentials/Scatter#security)
 - [Contributing to Scatter](https://github.com/EOSEssentials/Scatter#contributing)
 
@@ -18,6 +19,8 @@ from web applications without ever exposing your keys and provide personal infor
 
 #### Getting the Chrome Extension files
 
+**From Chrome Store**
+- [Go to Chrome Store](https://chrome.google.com/webstore/detail/scatter/ammjpmhgckkpcamddpolhchgomcojkle)
 
 **From The Repository** 
 * Clone repository
@@ -26,12 +29,7 @@ from web applications without ever exposing your keys and provide personal infor
 * `npm start` to compile a `build` folder.
 
 
-**From Zip File** 
-* [Download the zip file](https://github.com/EOSEssentials/Scatter/raw/master/scatter.zip)
-* Create a folder somewhere and extract the zip file there.
-
-
-#### Installing it into Chrome
+#### Installing a dev build into Chrome
 * Open up **Chrome** and type `chrome://extensions/` into the url bar
 * Click the `Load unpacked extension...` button and point it at the folder you just created/built 
 (_the folder should have a manifest.json inside of it_).
@@ -51,32 +49,28 @@ document.addEventListener('scatterLoaded', scatterExtension => {
     // At this stage the connection to Scatter from the application is 
     // already encrypted. 
     const scatter = window.scatter;
+    
+    // It is good practice to take this off the window once you have 
+    // a reference to it.
+    window.scatter = null;
      
     // If you want to require a specific version of Scatter
-    scatter.requireVersion(2.2);
+    scatter.requireVersion(3.0);
     
     //...
 })
 ```
 
-#### Initializing the Scatter interface
+#### Using Scatter with [eosjs](https://github.com/EOSIO/eosjs)
+
+All user signature requests will flow through Scatter.
 
 ```js
-const scatter = window.scatter;
- 
-// It is good practice to take this off the window now.
-window.scatter = null;
- 
 // Set up the network and options you want to use eosjs and Scatter with. 
 const network = { host:"192.168.56.101", port:8888 };
 const eosOptions = {};
  
-// Tell Scatter to prepare a proxy instance of eosjs with a 
-// Scatter Signature Provider pre-configured. There is no way for
-// you to use a custom built eosjs with a Scatter provider. This is a
-// proxy, and does not return the actual pre-configured eosjs instance but rather 
-// a catchable reference. For all intents and purposes it functions the exact same
-// as a normal eosjs instance on the application's side, but provides security for the user.
+// Get a reference to an 'Eos.LocalNet' with a Scatter signature provider.
 const eos = scatter.eos( Eos.Localnet, network, eosOptions );
 ```
 
@@ -88,25 +82,21 @@ Once an Identity is provided it will not need to be re-approved every time unles
 
 ```js
 // You can require certain fields
-const requirements = ['account'];
- 
-scatter.getIdentity(requirements).then(identity => {
-    //...    
+scatter.getIdentity(['account']).then(identity => {
+    //...
 }).catch(error => {
     //...
 });
 ```
 
-Identities that have permissions already will be fed into the scatter instance when it is loaded and include their 
-approved properties. If a user's Scatter is locked, the `identity` property will be null regardless, and no prompt will be 
-issued to the user as this would create a bad user experience.
+The identity can also be accessed on `scatter.identity` so that you don't have to keep a reference to it.
 
-```js
-const identity = scatter.identity;
-```
+**Note:** Every time an identity is returned you should check it against your cache of their identity. Properties are subject 
+to change without notification to applications. Users have complete control over their own data. Do not rely on stale data for 
+sensitive things like shipping physical items.
 
 
-##### Fields that can be required
+##### Requireable fields
 - **account** ( needs to be required for signature requests )
 - firstname
 - lastname
@@ -139,9 +129,6 @@ scatter.authenticate()
         // It has already been validated, but you can validate it yourself as well using eosjs-ecc.
         
         ecc.verify(sig, location.host, scatter.identity.publicKey);
-        
-        // Note that you can not change location.host in a browser, therefor this authentication is bound 
-        // to your domain.
     })
     .catch(err => console.log('auth err', err))
 ```
@@ -159,16 +146,28 @@ scatter.forgetIdentity().then(() => {
 });
 ```
 
+Users can also do this without you providing a way for them to do so from their own permissions panel.
 
-#### Requesting a Signature
 
-You can optionally pass in required fields to the eosjs options if you want it to give you back 
-certain user-selected Identity properties such as address. _Do not rely on previously acquired Identity 
-properties, since users might have multiple locations such as Work and Home._
+#### Requesting a Signature using eosjs
+
+Using Scatter is no different than using `eosjs`.
+```js
+eos.transfer(scatter.identity.account.name, 'youraccount', '100.0000 EOS', '').then(transaction => {
+    //...
+});
+```
+
+However, you can optionally pass in required fields to the eosjs options if you want it to give you back 
+certain user-selected Identity properties such as an address. 
+
+**Do not rely on previously acquired Identity 
+properties, since users might have multiple locations such as Work and Home, and they might have changed other properties 
+since the last time you cached them.**
 
 ```js
 const requiredFields = ['address', 'country', 'phone'];
-eos.transfer(identity.account.name, 'inita', 10, '', {requiredFields}).then(transaction => {
+eos.transfer(scatter.identity.account.name, 'youraccount', '100.0000 EOS', '', {requiredFields}).then(transaction => {
     //...
 }).catch(error => { 
     //.. 
@@ -178,9 +177,9 @@ eos.transfer(identity.account.name, 'inita', 10, '', {requiredFields}).then(tran
 The resulting json will include the required fields along with the normal eosjs json if the signing was successful. 
 
 ```js
+// transaction result
 {
-    transaction: {...},
-    transaction_id: '...',
+    ...
     returnedFields: {
         address: '420 Paper St. Wilmington DE 19886',
         country: { code:'US', name:'United States' },
@@ -189,27 +188,31 @@ The resulting json will include the required fields along with the normal eosjs 
 }
 ```
 This allows you to request all information needed for a physical sale with one click.
+
 _For instance in this case we could be a shopping website that needs shipping details along with 
 the transfer of digital currency._
 
 When using the `contract()` method from eosjs you need to put the requirements into the `contract` method and not the 
-action as requirements should fulfill any action within including multiple atomic transactions and not just per action.
+action as requirements should fulfill any and all actions within; including multiple atomic transactions and not just per action.
 ```js
-eos.contract('eosio.token', {requiredFields}).then(contract => ...)
+eos.contract('eosio.token', {requiredFields}).then(contract => contract.action...)
 ```
 
 
 #### Multi-part signatures involving the application AND the identity
 
-You may now also double-sign signatures using a private key from the application as well as one supplied by 
+You may also double-sign signatures using a private key from the application as well as one supplied by 
 the user.
 
 ```js
 const signProvider = (buf, sign) => {
-    // Use the provided eosjs signer
+    // You should validate the `buf` before signing it.
+    // If you do not you could be signing anything from a malicious Scatter mimic
+    
+    // Use the provided eosjs signer ( less secure, could be a mimic ) 
     return sign(buf, 'SOME_PRIVATE_KEY');
     
-    // or use eosjs-ecc
+    // or use eosjs-ecc instead ( more secure as you own the reference )
     return ecc.sign(buf, 'SOME_PRIVATE_KEY')
 };
  
@@ -218,30 +221,33 @@ eos.contract('yourcontract', { signProvider }).then(contract => {
 });
 ```
 
-For a real example of this check out our [Space Invaders' demo code](https://github.com/EOSEssentials/Scatter-Demos/blob/master/src/views/SpaceInvaders.vue#L162)
-
 **Note:** An error will be thrown if you try to pass a `keyProvider` instead of a `signProvider`. The reason for this is that since 
 you are using a proxied version of `eosjs` a malicious actor could mimic Scatter and get your keys. `signProvider` **only** returns signatures, 
 never keys. Signing with your own keys happens on your side, not Scatter's.
 
+
 #### Transactions at the Identity
 
-All transactions **at** an identity are using solely eosjs. They should not be passed through to Scatter.
+All transactions **at** an identity/account are using solely eosjs. They should not be passed through to Scatter using the 
+`Eos.LocalNet` reference you got before.
 
 ```js
-// Standard inita key from EOS docs
-const keyProvider = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
- 
 // Create your own instance of eosjs with your keyProvider and network
-const eosjs = Eos.Localnet({httpEndpoint:`http://${network.host}:${network.port}`, keyProvider});
- 
-// The same process as before but now you own the keys.
-eosjs.transfer('inita', identity.account.name, 100000, '').then(transaction => {
+const eosjs = Eos.Localnet(...);
+eosjs.transfer('youraccount', scatter.identity.account.name, '100.0000 EOS', '').then(transaction => {
     //...
-}).catch(error => { 
-    //... 
 });
 ```
+
+
+## Translations and localization
+Please refer to the [Localization README.md](https://github.com/EOSEssentials/Scatter/tree/master/src/localization) 
+for more information about how to get involved with translations.
+
+### Translators
+- <Your Name Here> for being the first to translate a new language!
+
+
 
 ## Security
 

@@ -164,7 +164,7 @@ export default class Scatterdapp {
             domain:location.host,
             network:network,
             fields
-        }).then(identity => {
+        }).then(async identity => {
             this.useIdentity(identity);
             return identity;
         });
@@ -220,10 +220,8 @@ export default class Scatterdapp {
         // If the `signature` is an object, it's an error message
         if(typeof signature === 'object') return signature;
 
-        try {
-            if(ecc.verify(signature, location.host, publicKey))
-                return signature;
-        } catch (e) {
+        try { if(ecc.verify(signature, location.host, publicKey)) return signature; }
+        catch (e) {
             this.identity = null;
             publicKey = '';
             throws('Could not authenticate identity');
