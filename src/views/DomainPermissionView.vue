@@ -71,9 +71,6 @@
                 'permissions'
             ])
         },
-        mounted(){
-            console.log(this.permissions);
-        },
         methods: {
             bind(changed, original) { this[original] = changed },
             groupByIdentity(permissions){ return ObjectHelpers.groupBy(permissions.filter(x => x.domain.toLowerCase() === this.domain), 'publicKey'); },

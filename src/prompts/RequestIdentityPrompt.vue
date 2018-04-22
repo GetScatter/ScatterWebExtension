@@ -118,7 +118,6 @@
                     .sort((a,b) => !a.disabled || !b.disabled ? 1 : -1)
             },
             formatPropValue(prop, propValue){
-                console.log(prop, propValue)
                 switch(prop){
 //                    case 'account': return `${propValue.name}@${propValue.authority}`;
                     case 'country': return propValue.name;

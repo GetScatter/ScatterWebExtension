@@ -57,7 +57,7 @@ class Content {
     }
 
     identityFromPermissions(){
-        return InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:location.host})
+        return InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:location.host.replace('www.', '')})
             .send()
     }
 

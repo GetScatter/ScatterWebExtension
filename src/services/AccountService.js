@@ -64,7 +64,7 @@ export default class AccountService {
                     });
                     resolve(accounts)
                 }).catch(e => {
-                    console.log(e);
+                    console.error(e);
                     resolve([])
                 });
             });

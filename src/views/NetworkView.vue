@@ -52,8 +52,6 @@
             saveNetwork(){
                 const scatter = this.scatter.clone();
 
-                console.log(this.network);
-
                 if(!Network.hostIsValid(this.network.host)){
                     this[Actions.PUSH_ALERT](AlertMsg.NetworkHostInvalid());
                     return false;

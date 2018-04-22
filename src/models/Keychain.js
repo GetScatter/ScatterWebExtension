@@ -22,7 +22,7 @@ export default class Keychain {
         return p;
     }
 
-    removePermission(permission){ this.permissions.splice(this.permissions.indexOf(permission),1); }
+    removePermission(permission){ this.permissions = this.permissions.filter(perm => perm.checksum !== permission.checksum); }
     getPermission(checksum){ return this.permissions.find(permission => permission.checksum === checksum); }
     hasPermission(checksum, fields = []){
         const fieldKeys = () => Array.isArray(fields) ? fields : Object.keys(fields);

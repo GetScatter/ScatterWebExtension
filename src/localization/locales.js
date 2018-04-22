@@ -22,7 +22,4 @@ export const locales = () => {
 };
 
 export const getLangKey = lang => Object.keys(LANG).find(key => LANG[key] === lang);
-export const localized = (key, language) => {
-    console.log(key, language)
-    return locales()[language][key] || locales()[LANG.ENGLISH][key];
-}
+export const localized = (key, language) => locales()[language][key] || locales()[LANG.ENGLISH][key]

@@ -122,7 +122,6 @@
         },
         mounted(){
             this.selectedNetwork = this.networks[0];
-            console.log(this.networks);
             const existing = this.scatter.keychain.identities.find(x => x.publicKey === this.$route.query.publicKey);
             if(existing) this.identity = existing.clone();
             else {

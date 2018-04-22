@@ -5,7 +5,6 @@ import {Blockchains} from '../models/Blockchains';
 class EOSContractHelpers {
 
     static actionParticipants(payload){
-        console.log(payload);
         return ObjectHelpers.flatten(
             payload.messages
                 .map(message => message.authorization

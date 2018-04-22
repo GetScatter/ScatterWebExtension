@@ -21,10 +21,7 @@ export default class IdentityService {
     }
 
     static identityPermission(domain, scatter){
-        return scatter.keychain.permissions.find(perm =>
-            perm.isIdentityFor(domain) &&
-            perm.identityIsNotDisabled(scatter.keychain)
-        );
+        return scatter.keychain.permissions.find(perm => perm.isIdentityFor(domain));
     }
 
     static identityFromPermissionsOrNull(domain, scatter){

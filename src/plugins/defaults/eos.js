@@ -59,7 +59,7 @@ export default class EOS extends Plugin {
                             // Friendly formatting
                             signargs.messages = await messagesBuilder(_eos, signargs, httpEndpoint, args[0]);
 
-                            const payload = Object.assign(signargs, { domain:location.host, network, requiredFields });
+                            const payload = Object.assign(signargs, { domain:location.host.replace('www.',''), network, requiredFields });
                             const result = await internalMessageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
 
                             // No signature
@@ -121,7 +121,6 @@ export default class EOS extends Plugin {
 
 
 const messagesBuilder = async (_eos, signargs, httpEndpoint, contractName) => await Promise.all(signargs.transaction.actions.map(async action => {
-    console.log('message builder');
     let data = null;
 
     const eos = _eos({httpEndpoint});

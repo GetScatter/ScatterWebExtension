@@ -215,10 +215,7 @@ export default class Identity {
                clone.personal[PersonalFields[field]] = this.personal[PersonalFields[field]];
             if(Object.keys(LocationFields).includes(field))
                clone.location[LocationFields[field]] = this.defaultLocation()[LocationFields[field]];
-            if(field === IdentityFields.account) {
-                console.log('this.networkedAccount(network)', this.networkedAccount(network), network);
-                clone[IdentityFields.account] = this.networkedAccount(network);
-            }
+            if(field === IdentityFields.account) clone[IdentityFields.account] = this.networkedAccount(network)
         });
 
         if(!Object.keys(clone.personal).length) delete clone.personal;

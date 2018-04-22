@@ -34,7 +34,6 @@
         }},
         mounted(){
             this.domains = ObjectHelpers.groupBy(this.permissions, 'domain');
-            console.log(this.permissions);
         },
         computed: {
             ...mapState([
