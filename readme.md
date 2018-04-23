@@ -125,7 +125,7 @@ If the `authenticate` method does not throw an error then the identity has been 
 scatter.authenticate()
     .then(sig => {
         // This will return your `location.host` 
-        // encrypted with their Identity's private key.
+        // signed with their Identity's private key.
         // It has already been validated, but you can validate it yourself as well using eosjs-ecc.
         
         ecc.verify(sig, location.host, scatter.identity.publicKey);
