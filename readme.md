@@ -70,7 +70,7 @@ All user signature requests will flow through Scatter.
 const network = { host:"192.168.56.101", port:8888 };
 const eosOptions = {};
  
-// Get a reference to an 'Eos.LocalNet' with a Scatter signature provider.
+// Get a reference to an 'Eos.Localnet' with a Scatter signature provider.
 const eos = scatter.eos( Eos.Localnet, network, eosOptions );
 ```
 
@@ -125,7 +125,7 @@ If the `authenticate` method does not throw an error then the identity has been 
 scatter.authenticate()
     .then(sig => {
         // This will return your `location.host` 
-        // encrypted with their Identity's private key.
+        // signed with their Identity's private key.
         // It has already been validated, but you can validate it yourself as well using eosjs-ecc.
         
         ecc.verify(sig, location.host, scatter.identity.publicKey);
@@ -229,7 +229,7 @@ never keys. Signing with your own keys happens on your side, not Scatter's.
 #### Transactions at the Identity
 
 All transactions **at** an identity/account are using solely eosjs. They should not be passed through to Scatter using the 
-`Eos.LocalNet` reference you got before.
+`Eos.Localnet` reference you got before.
 
 ```js
 // Create your own instance of eosjs with your keyProvider and network

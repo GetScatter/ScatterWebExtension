@@ -28,6 +28,5 @@ const languages = {
 
 **Always add an english version in parenthesis.**
 
-Try to keep string lengths the same or less. In some places the lengths of the strings are pushing the bounds of their 
-containers and if you translate into longer strings there's a chance they will get cut off by a popup's bounding box.
+While you're translating the new language file try to keep string lengths the same or less. In some places the lengths of the strings are pushing the bounds of their containers and if you translate into longer strings there's a chance they will get cut off by a popup's bounding box.
 
