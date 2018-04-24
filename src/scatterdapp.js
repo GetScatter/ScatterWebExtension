@@ -114,7 +114,12 @@ const _send = (_type, _payload, bypassNetwork = false) => {
             return false;
         }
 
-        _networkGuard(reject, () => {
+        const guard =
+            _type === NetworkMessageTypes.REQUEST_ADD_NETWORK ||
+            _type === NetworkMessageTypes.REQUEST_SIGNATURE
+                ? _networkGuard : (rejector, fn) => fn();
+
+        guard(reject, () => {
             let id = IdGenerator.numeric(6);
             let message = new NetworkMessage(_type, _payload, id, network, locationHost());
             resolvers.push(new DanglingResolver(id, resolve, reject));

@@ -111,11 +111,11 @@
         methods: {
             bind(changed, original) { this[original] = changed },
             filteredIdentities(){
+                console.log(this.prompt.network)
                 return this.identities
-                    .filter(id => Object.keys(id.accounts).indexOf(this.prompt.network.unique()) > -1)
+                    .filter(id => this.prompt.network.host.length ? Object.keys(id.accounts).indexOf(this.prompt.network.unique()) > -1 : true)
                     .filter(id => id.hasRequiredFields(this.identityFields, this.prompt.network))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
-                    .sort((a,b) => !a.disabled || !b.disabled ? 1 : -1)
             },
             formatPropValue(prop, propValue){
                 switch(prop){
