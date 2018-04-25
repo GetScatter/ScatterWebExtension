@@ -1,14 +1,17 @@
 import * as KEYS from './keys';
 
-import english from './languages/english'
+import english from './languages/english';
+import portuguese from './languages/portuguese';
 
 
 export const LANG = {
     ENGLISH:'English',
+    PORTUGUESE: 'Português ( Portuguese )'
 };
 
 const languages = {
     [LANG.ENGLISH]:english,
+    [LANG.PORTUGUESE]:portuguese
 };
 
 export const locales = () => {
