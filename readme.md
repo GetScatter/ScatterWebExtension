@@ -245,7 +245,7 @@ Please refer to the [Localization README.md](https://github.com/EOSEssentials/Sc
 for more information about how to get involved with translations.
 
 ### Translators
-- <Your Name Here> for being the first to translate a new language!
+- **Your Name Here** - for being the first to translate a new language!
 - [gnumarcelo](https://github.com/gnumarcelo) - [Portuguese](https://github.com/EOSEssentials/Scatter/pull/27)
 
 
