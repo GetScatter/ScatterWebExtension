@@ -33,7 +33,6 @@ export default {
     [KEYS.PLACEHOLDER_Postal]:'Postal Code',
     [KEYS.PLACEHOLDER_Country]:'Country',
     [KEYS.PLACEHOLDER_State]:'State',
-    [KEYS.PLACEHOLDER_State]:'State',
     [KEYS.PLACEHOLDER_Password]:'Password',
     [KEYS.PLACEHOLDER_ConfirmPassword]:'Confirm Password',
     [KEYS.PLACEHOLDER_NewPassword]:'New Password',
