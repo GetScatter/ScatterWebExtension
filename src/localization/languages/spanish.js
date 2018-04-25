@@ -84,16 +84,16 @@ export default {
 
     [KEYS.IDENTITY_NameHeader]:`Nombre de Identidad`,
     [KEYS.IDENTITY_NameDescription]:`
-        Aplicaciones pueden elegir usar este nombre como tu nombre de usuario, ya que es único en todas las redes. 
+        Las Aplicaciones pueden elegir usar este nombre como tu nombre de usuario, ya que es único en todas las redes. 
         Si no estas registrado con RIDL recibirás un nombre aleatorio. 
     `,
     [KEYS.IDENTITY_AccountHeader]:`Cuenta`,
     [KEYS.IDENTITY_AccountDescription]:`
         Las Cuentas son las que sostienen tus fondos y te permiten interactuar con contractos en la Blockchain.
-        En relación con las Identidades, piense en ellas como las cuentas bancarias conectadas a tu pasaporte, 
+        En relación con las Identidades, piensa en ellas como las cuentas bancarias conectadas a tu pasaporte, 
         pueden ser cambiadas en cualquier momento.
     `,
-    [KEYS.IDENTITY_PersonalHeader]:`información Personal`,
+    [KEYS.IDENTITY_PersonalHeader]:`Información Personal`,
     [KEYS.IDENTITY_PersonalDescription]:`
         Información Personal puede ser agregada a una cuenta para aplicaciones que lo requieran. Por ejemplo,
         una página de compras puede necesitar tu nombre completo para saber a quién enviarle los artículos 
@@ -109,7 +109,7 @@ export default {
     [KEYS.PERMISSIONS_Header]:`No tienes permisos para mostrar.`,
     [KEYS.PERMISSIONS_Description]:`
         Los Permisos se establecen cuando proporcionas una Identidad para que sea usada por una aplicación 
-        o cuando agregas una acción de un contrato a la lista blanca para que sea firmada sin avisos
+        o cuando agregas una acción de contrato a la lista blanca para que sea firmada sin avisos
         de autorización.
     `,
     [KEYS.PERMISSION_RevokeIdentity]:`Revocar Identidad`,
@@ -138,8 +138,8 @@ export default {
     [KEYS.BACKUP_Header]:`Exportar respaldo encriptado`,
     [KEYS.BACKUP_Description]:`
         Exportar tu Scatter te permite importarlo en otros dispositivos. El archivo seguirá encriptado cuando sea
-        exportado así que asegúrate de tener tu mnemotécnicos o su contraseña; de lo contrario, será inútil. Las llaves privadas
-        de sus cuentas también se eliminarán antes de exportar, las únicas llaves privadas que permanecerán dentro del archivo
+        exportado así que asegúrate de tener tus mnemotécnicos o contraseña; de lo contrario, será inútil. Las llaves privadas
+        de tus cuentas también se eliminarán antes de exportar, las únicas llaves privadas que permanecerán dentro del archivo
         exportado serán tus llaves de Identidad.
     `,
 
@@ -152,24 +152,24 @@ export default {
     [KEYS.NETWORK_Header]:`Agregar nueva red`,
     [KEYS.NETWORK_Description]:`
         Las aplicaciones generalmente se ejecutan en una red específica, pero es posible 
-        que no se ejecuten todas la misma red. Por ejemplo, una aplicación puede tener una 
+        que no se ejecuten todas en la misma red. Por ejemplo, una aplicación puede tener una 
         red de prueba que tiene nuevas funcionalidades que aún no se han lanzado. Para 
         interactuar con esa red necesitarás tener una cuenta allí también.
     `,
 
     [KEYS.DESTROY_Header]:`Borrando Scatter`,
     [KEYS.DESTROY_Description]:`
-        Estás a punto de borrar todo tu llavero Scatter. La única forma de recuperar este Scatter exacto es
+        Estás a punto de borrar todo tu llavero de Scatter. La única forma de recuperar este mismo Scatter es
         importando un JSON exportado de Scatter. De lo contrario No podrás reclamar tus identidades. Asegúrate
-        de haber exportado tu Scatter desde el panel de configuraciones de respaldo de antemano.
+        de haber exportado tu Scatter desde el paración de respaldo de antemano.
     `,
-
+nel de configu
     [KEYS.LANGUAGE_Header]:`Selecciona tu idioma`,
 
     [KEYS.KEYPAIR_Header]:`Generar nuevo Par de Llaves`,
     [KEYS.KEYPAIR_Description]:`
         Puedes usar este panel para generar pares de llaves de EOS. Estos pares de llaves se generan localmente 
-        en tu máquina y nunca se envían a ningún lado. También puedes pegar un par de llaves y verificar que la clave 
+        en tu máquina y nunca se envían a ningún lado. También puedes pegar un par de llaves y verificar que la llave 
         privada coincida con la llave pública. Ten en cuenta que esas llaves se generan utilizando la entropía recopilada 
         de tu ordenador y no de una semilla específica.
     `,
@@ -224,7 +224,7 @@ export default {
     [KEYS.ALERT_InvalidPrivateKey]:[
         'Llave Privada Inválida',
 
-        `La llave privada ingresada parece inválida. Por favor, comprueba la llave y vuelve a intentarlo.`
+        `La llave privada ingresada parece inválida. Por favor, verifica la llave y vuelve a intentarlo.`
     ],
     //2
     [KEYS.ALERT_NoAccountsFound]:[
@@ -302,7 +302,7 @@ export default {
     [KEYS.PROMPT_RevokingContract]:domain => [
         'Revocando Contrato',
 
-        `Estás a punto de revocar todo una Contrato de ${domain}. Esto eliminará los permisos en todas las acciones dentro de él.`
+        `Estás a punto de revocar todo un Contrato de ${domain}. Esto eliminará los permisos en todas las acciones dentro de él.`
     ],
     //2
     [KEYS.PROMPT_RevokingContractAction]:domain => [
@@ -344,7 +344,7 @@ export default {
     [KEYS.PROMPT_SelectAccount]:[
         'Selecciona Cuenta',
 
-        'Selecciona la cuenta y autoridad que deseas utilizar para esta Identidad. Solo puedes seleccionar una a la vez'
+        'Selecciona la cuenta y autoridad que deseas utilizar para esta Identidad. Solo puedes seleccionar una a la vez.'
     ],
 
     //3
@@ -367,9 +367,9 @@ export default {
 
         `Incluso si proporcionas una Identidad con propiedades que la
          la aplicación no solicita permisos, nunca serán capaz de
-         verlos, o incluso saber que existen para esa Identidad.`,
+         verlas, o incluso saber que existen para esa Identidad.`,
 
-        `Las únicas propiedades que siempre se dan son la llave pública y el nombre de la Identidad.`,
+        `Las únicas propiedades que siempre se proporcionan son la llave pública y el nombre de la Identidad.`,
 
         /*{DOMAIN}*/ `no está solicitando ninguna información adicional. Lo único que requieren es el hash y nombre de la Identidad.`
     ],
@@ -377,7 +377,7 @@ export default {
     [KEYS.REQUEST_IdentityNoIdentities]:[
         `No tienes Identidades que coincidan con los campos requeridos por esta aplicación.`,
 
-        `Si desea utilizar una Identidad con este dominio, deberás actualizar esa Identidad y cumplir los requisitos.
+        `Si deseas utilizar una Identidad con este dominio, deberás actualizar esa Identidad y cumplir con los requisitos.
          Puedes ver lo que este dominio requiere en el panel izquierdo.`
     ],
     //4
@@ -401,7 +401,7 @@ export default {
 
         `A propósito, nunca mostraremos un mensaje/ventana emergente que requiera que inicies sesión.`,
 
-        `Si ves un mensaje/ventana emergente que solicite tu contraseña, es un sitio web malicioso que intenta obtener su contraseña.
+        `Si ves un mensaje/ventana emergente que solicite tu contraseña, es un sitio web malicioso que intenta obtener tu contraseña.
          Desbloquea Scatter solamente desde la ventana emergente de la extensión, haciendo clic en el ícono en la bandeja de tu navegador.`
     ],
     //4
@@ -413,7 +413,7 @@ export default {
         `Esto generalmente significa que se lanzó una nueva funcionalidad y una aplicación está tratando de usarla,
          pero no está actualmente incluida en la versión que tienes instalada.`,
 
-        `Ten en cuenta que dejamos la verificación de versión a las aplicaciones mismas. Podrían intentar maliciosamente
+        `Ten en cuenta que dejamos la verificación de la versión a las aplicaciones mismas. Podrían intentar maliciosamente
          hacer que descargues algo. Asegúrate de siempre descargar Scatter desde la ubicación correcta.`
     ],
 
