@@ -380,7 +380,7 @@ export default {
     [KEYS.REQUEST_SignatureWhitelist]:[
         `Do you want to whitelist this contract action?`,
 
-        `You can whitelist this action so that next time you wont have to manually authorize this.
+        `You can whitelist this action so that next time you won't have to manually authorize this.
          Every property that has a check next to it will become mutable, meaning that you can allow
          certain properties of this transaction to change and only if the other properties are changed will
          it fail to be whitelisted.`,
