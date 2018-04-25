@@ -361,11 +361,6 @@ export default {
     [KEYS.REQUEST_SignatureWhitelist]:[
         `Deseja adicionar esta ação deste contrato na sua whitelist?`,
 
-        `You can whitelist this action so that next time you wont have to manually authorize this.
-         Every property that has a check next to it will become mutable, meaning that you can allow
-         certain properties of this transaction to change and only if the other properties are changed will
-         it fail to be whitelisted.`,
-
         `Você pode colocar essa ação na sua whitelist para que, da próxima vez, não precise autorizá-la manualmente.
         Toda propriedade que tenha um check próximo a ela se tornará mutável, o que significa que você pode permitir
         que certas propriedades desta transação sejam alteraradas e se as outras propriedades forem alteradas
