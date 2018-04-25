@@ -13,8 +13,6 @@ Open a ticket in the `Issues` panel stating that you are adding a language so th
 
 **Adding Language: {LANGUAGE NAME HERE}**
 
-There is also a `translation` label, add it please.
-
 ---------
 
 
