@@ -1,7 +1,7 @@
 <template>
     <section class="main-menu">
         <section class="item" v-for="link in links">
-            <router-link :to="{name:link.route}" v-if="link.name != 'Lock'">
+            <router-link :to="{name:link.route}" v-if="link.name != locale(langKeys.MAINMENU_Lock)">
                 <figure class="icon"><i class="fa" :class="'fa-'+link.icon"></i></figure>
                 <figure class="text">{{link.name}}</figure>
             </router-link>

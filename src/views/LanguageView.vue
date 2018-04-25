@@ -4,7 +4,6 @@
         <!-- Verified -->
         <section class="panel">
             <figure class="header">{{locale(langKeys.LANGUAGE_Header)}}</figure>
-            <figure class="sub-header">{{locale(langKeys.LANGUAGE_Description)}}</figure>
             <sel v-if="selectedLanguage" :options="options"
                  :selected="options[selectedLanguage]"
                  :parser="(obj) => obj"

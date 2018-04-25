@@ -162,9 +162,6 @@ export default {
     `,
 
     [KEYS.LANGUAGE_Header]:`Selecione sua língua`,
-    [KEYS.LANGUAGE_Description]:`
-        Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter when you step away.
-    `,
 
     [KEYS.KEYPAIR_Header]:`Gerar novo Par de Chaves`,
     [KEYS.KEYPAIR_Description]:`
