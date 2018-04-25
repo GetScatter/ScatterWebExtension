@@ -12,7 +12,7 @@ export const LANG = {
 
 const languages = {
     [LANG.ENGLISH]:english,
-    [LANG.PORTUGUESE]:portuguese
+    [LANG.PORTUGUESE]:portuguese,
     [LANG.SPANISH]:spanish
 };
 
