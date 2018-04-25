@@ -8,12 +8,12 @@ The first contributor of every new language gets their name in the main `readme.
 -----------
 
 #### Before you do anything, 
-open a ticket in the `Issues` panel stating that you are adding a language so that multiple people don't work on the same thing. 
+Open a ticket in the `Issues` panel stating that you are adding a language so that multiple people don't work on the same thing. 
 **Use the following format:**
 
 **Adding Language: {LANGUAGE NAME HERE}**
 
-There is also a `translation` tag, add it please.
+There is also a `translation` label, add it please.
 
 ---------
 
