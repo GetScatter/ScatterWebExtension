@@ -29,7 +29,7 @@ export default {
     [KEYS.PLACEHOLDER_DefaultLocationName]:'Casa',
     [KEYS.PLACEHOLDER_Phone]:'Teléfono',
     [KEYS.PLACEHOLDER_Address]:'Dirección',
-    [KEYS.PLACEHOLDER_City]:'Cuidad',
+    [KEYS.PLACEHOLDER_City]:'Ciudad',
     [KEYS.PLACEHOLDER_Postal]:'Código Postal',
     [KEYS.PLACEHOLDER_Country]:'País',
     [KEYS.PLACEHOLDER_State]:'Estado',
@@ -119,7 +119,7 @@ export default {
     [KEYS.HISTORIES_Header]:`No tienes eventos históricos para mostrar.`,
     [KEYS.HISTORIES_Description]:`
         Una vez los tengas podrás ver una lista de todos los eventos que pasan por tu Scatter.
-        Lo que no verás son eventos que hayan ocurrido en tus cuestas fuera de Scatter.
+        Lo que no verás son eventos que hayan ocurrido en tus cuentas fuera de Scatter.
      `,
     [KEYS.HISTORIES_Note]:`
         Nota: La exportación de los datos de Scatter desde la opción de respaldo en el panel de configuración no guarda estos eventos.
