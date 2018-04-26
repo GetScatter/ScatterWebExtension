@@ -163,7 +163,7 @@ export default {
         importando un JSON exportado de Scatter. De lo contrario No podrás reclamar tus identidades. Asegúrate
         de haber exportado tu Scatter desde el paración de respaldo de antemano.
     `,
-nel de configu
+
     [KEYS.LANGUAGE_Header]:`Selecciona tu idioma`,
 
     [KEYS.KEYPAIR_Header]:`Generar nuevo Par de Llaves`,
@@ -418,13 +418,3 @@ nel de configu
     ],
 
 }
-
-
-
-
-
-
-
-
-
-
