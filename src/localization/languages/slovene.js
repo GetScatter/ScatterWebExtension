@@ -25,8 +25,8 @@ export default {
     [KEYS.PLACEHOLDER_LastName]:'Priimek',
     [KEYS.PLACEHOLDER_Email]:'Elektronska pošta',
     [KEYS.PLACEHOLDER_BirthDate]:'Datum rojstva',
-    [KEYS.PLACEHOLDER_LocationName]:'Location Name',
-    [KEYS.PLACEHOLDER_DefaultLocationName]:'Home',
+    [KEYS.PLACEHOLDER_LocationName]:'Lokacija ',
+    [KEYS.PLACEHOLDER_DefaultLocationName]:'Domači naslov',
     [KEYS.PLACEHOLDER_Phone]:'Telefon',
     [KEYS.PLACEHOLDER_Address]:'Naslov',
     [KEYS.PLACEHOLDER_City]:'Mesto',
@@ -70,39 +70,32 @@ export default {
 
     [KEYS.IDENTITIES_Header]:`Trenutno nimate nobene identitete.`,
     [KEYS.IDENTITIES_Description]:`
-        Identities are containers for personal information such as first and last names, addresses and
-        various blockchain accounts/keypairs. Identities also have keypairs and their ownership 
-        can be proven which makes them a way to authenticate with applications without passwords.
+        Identiteta je zbirka osebnih podatkov kot so ime in priimek, naslov. Vsebuje tudi različne
+        blockchain račune. Identitete vsebujejo tudi privatne in javne ključe lastnika, kar omogoča
+        avtentikacijo uporabnnika brez vnosa gesla.
     `,
 
-    [KEYS.IDENTITY_DisablingHeader]:`Zakaj uporabim preklic?`,
+    [KEYS.IDENTITY_DisablingHeader]:`Zakaj uporabim preklic identitete?`,
     [KEYS.IDENTITY_DisablingDescription]:`
-        Disabling this Identity will stop it from being used in applications that have a reference to it.
-        This can be used instead of permanently deleting this Identity or it's Permissions on an application,
-        which would be harder to recover.
+        Preklic ali izključitev identitete bo onemogočila uporabo le te v aplikacijah, ki se nanjo sklicujejo.
     `,
 
-    [KEYS.IDENTITY_NameHeader]:`Identity Name`,
+    [KEYS.IDENTITY_NameHeader]:`Naziv identitete`,
     [KEYS.IDENTITY_NameDescription]:`
-        Applications may choose to use this name as your username as it is unique across all networks.
-        If you are not registered with RIDL you will be assigned a random name.
+        Aplikacija lahko uporabi naziv identitete kot vaše enolično uporabniško ime na omrežju. 
     `,
     [KEYS.IDENTITY_AccountHeader]:`Račun`,
     [KEYS.IDENTITY_AccountDescription]:`
-        Accounts are what hold your funds and allow you to interact with contracts on the Blockchain. 
-        In relation to Identities think of them like the bank accounts connected to your passport, they can 
-        be changed at any time.
+        Na računu so shranjena vaša sredstva in z njim lahko upravljate s pogodbami na Blockchain-u.
     `,
     [KEYS.IDENTITY_PersonalHeader]:`Osebni podatki`,
     [KEYS.IDENTITY_PersonalDescription]:`
-        Personal information can be added to an account for applications that require it. For instance a shopping 
-        website might need your full name in order to know who to send your purchased goods to.
+        Osebne podatke lahko spremenite kadarkoli. V primeru, da neka aplikacija zahteva popolne podatke (kot so naprimer
+        spletne trgovine), lahko osebne podatke spremenite in nato povrnete v prvotno stanje.
     `,
     [KEYS.IDENTITY_LocationHeader]:`Podatki o naslovu`,
     [KEYS.IDENTITY_LocationDescription]:`
-        Location information can be added to an account for applications that require it. 
-        For instance a shopping website might need your shipping address in order to know where to send 
-        your purchased goods to.
+        Podatki o naslovu uporabnika.
     `,
 
     [KEYS.PERMISSIONS_Header]:`Trenutno nimate nobene pravice.`,
@@ -114,7 +107,7 @@ export default {
     [KEYS.PERMISSION_RevokeContract]:`Reaktiviraj pogodbo/kontrakt`,
     [KEYS.PERMISSION_RevokeAction]:`Reaktiviraj akcijo`,
 
-    [KEYS.HISTORIES_Header]:`Nimate dogodkov (zgodovine) za prikaz.`,
+    [KEYS.HISTORIES_Header]:`Nimate dogodkov za prikaz.`,
     [KEYS.HISTORIES_Description]:`
         Once you have them, you will be able to see a list of all of the events that pass through your Scatter.
         What you will not see is events that occurred on your accounts outside of scatter.
@@ -126,7 +119,7 @@ export default {
     `,
 
     [KEYS.SETTINGSMENU_Networks]:'Omrežja',
-    [KEYS.SETTINGSMENU_Keypairs]:'Key Pairs',
+    [KEYS.SETTINGSMENU_Keypairs]:'Ključ (zasebni/javni)',
     [KEYS.SETTINGSMENU_Language]:'Jezik',
     [KEYS.SETTINGSMENU_AutoLock]:'Samodejno zaklepanje',
     [KEYS.SETTINGSMENU_Password]:'Geslo',
@@ -135,16 +128,15 @@ export default {
 
     [KEYS.BACKUP_Header]:`Izvozi kriptirano varnostno kopijo`,
     [KEYS.BACKUP_Description]:`
-        Exporting your Scatter allows you to import it into other devices. The file will still be encrypted when it is 
-        exported so make sure you have either your mnemonic or your password, otherwise it will be useless. The private keys 
-        from your accounts will also be removed before exporting, the only private keys that will remain within the exported 
-        file will be your Identity keys.
+        Izvoz vašega Scatterja vam omogoča, da ga uvozite v druge naprave. Datoteka, ki jo izvozite bo še vedno šifrirana,
+        zato poskrbite, da boste imeli mnemonik ali geslo, sicer bo neuporabna. Zasebni ključi iz vaših računov bo tudi 
+        pred izvozom odstranjen, edini zasebni ključi, ki bodo ostali v izvozu bo vaš osebni ključ.
     `,
 
     [KEYS.PASS_Header]:`Vnesi novo geslo`,
     [KEYS.PASS_Description]:`
-        By changing your password you will be decrypting all of the saved information which is usually always 
-        encrypted, and then re-encrypting it with a seed from the new password.
+        S spreminjanjem gesla boste dešifrirali vse shranjene podatke, ki so ponavadi vedno
+        šifriran in jih nato ponovno šifrirali s (semenom) iz novega gesla.
     `,
 
     [KEYS.NETWORK_Header]:`Dodaj novo omrežje`,
@@ -157,14 +149,13 @@ export default {
 
     [KEYS.DESTROY_Header]:`Uniči Scatter`,
     [KEYS.DESTROY_Description]:`
-        You are about to destroy your entire Scatter keychain. The only way to get this exact Scatter back is by 
-        importing an exported Scatter JSON. You will not be able to claim your identities otherwise. Make sure you 
-        have exported your Scatter from the backup settings panel before hand.
+        Ste pred uničenjem Scatter-ja. V kolikor bi želeli v bodoče pridobiti stare podatke,
+        morate le te izvoziti v JSON obliki. Izvoz je dostopen v varnostni kopiji (meni).
     `,
 
     [KEYS.LANGUAGE_Header]:`Izberite jezik`,
     [KEYS.LANGUAGE_Description]:`
-        Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter when you step away.
+        Izbira jezika vmesnika.
     `,
 
     [KEYS.KEYPAIR_Header]:`Generaj javni in privatni ključ`,
@@ -174,14 +165,13 @@ export default {
         key. Note that these keys are generated using entropy gathered from your computer and not from any specific seed.
     `,
     [KEYS.KEYPAIR_Validation_Header]:`Generiraj javni in privatni ključ`,
-    [KEYS.KEYPAIR_Validation_Valid]:`The private key is valid and the public key generated from it matches the public key provided.`,
-    [KEYS.KEYPAIR_Validation_Invalid]:`The public key generated from the private key did not match the public key provided!`,
+    [KEYS.KEYPAIR_Validation_Valid]:`Zasebni ključ je ustrezen in javni ključ ustreza podanemu.`,
+    [KEYS.KEYPAIR_Validation_Invalid]:`Generirani javni ključ ne ustreza podanemu javnemu ključu!`,
 
 
     [KEYS.LOCK_Header]:`Časovnik za samodejno zaklepanje`,
     [KEYS.LOCK_Description]:`
-        Auto Lock handles Scatter's locking for you so that you don't have to 
-        remember to lock your Scatter when you step away.
+        Samodejno zaklepanje Scatter aplikacije.
     `,
     [KEYS.LOCK_Minute]:`Minut`,
     [KEYS.LOCK_Minutes]:`Minut`,
@@ -191,79 +181,78 @@ export default {
 
 
     [KEYS.MNEMONIC_Header]:`Mnemoniki`,
-    [KEYS.MNEMONIC_Description]:`Mnemonics are a set of words that translate into a cryptographic seed.`,
+    [KEYS.MNEMONIC_Description]:`Mnemomniki so skupek besed, ki jih program uporabi za kriptiranje podatkov.`,
     [KEYS.MNEMONIC_Note]:`
-        Be sure to save yours somewhere safe. It is the only way to regain access to your 
-        Scatter and decrypt your private information if you forget your password.
+        Bodite pozorni, da si besede shranite na varno mesto (npr. list papirja). Besede boste potrebovali v primeru, če pozabite geslo za dekriptiranje 
+        zasebnih podatkov.
     `,
 
     [KEYS.ERROR_MustSelectItem]:`Izberite opcijo.`,
 
     [KEYS.ALERT_Type]:(type) => {
         switch(type){
-            case AlertTypes.Error:              return 'Error';
+            case AlertTypes.Error:              return 'Napaka';
             case AlertTypes.Prompt:             return 'Prompt';
-            case AlertTypes.SelectAccount:      return 'Select Account';
+            case AlertTypes.SelectAccount:      return 'Izberite račun';
         }
     },
 
     [KEYS.ALERT_BadIdentityName]:[
-        'Bad Identity Name',
+        'Nepravilen vnos Identitete',
 
-        `Identity names must be between 3 and 20 characters long.
-         They must also be alphanumeric but may also contain spaces, dashes, and underscores.`
+        `Identiteta mora biti dolžine med 3 in 20 znaki.
+         Zahtevan je alfanumerični vnos. Niz lahko vsebuje tudi presledke in vezaj.`
     ],
     [KEYS.ALERT_IdentityNameExists]:[
-        'Identity Name Exists',
+        'Identiteta s tem nazivom že obstaja',
 
-        'This Identity name is registered to another Identity.'
+        'Identiteta s tem nazivom je že registrirana.'
     ],
     [KEYS.ALERT_InvalidPrivateKey]:[
-        'Invalid Private Key',
+        'Napačen zasebni ključ',
 
-        `The private key you entered seems to be invalid. Please check the key and try again.`
+        `Vnesli ste nepravilni zasebni ključ. Poizkusite ponovno.`
     ],
     [KEYS.ALERT_NoAccountsFound]:[
-        'No Accounts Found',
+        'Račun ne obstaja',
 
-        `No accounts were found connected to this private key.
-         If you want to import a key which is not generated by
-         Scatter you will need to create an account for the key
-         before importing it.`
+        `Za vnešeni zasebni ključ ne obstaja noben račun.
+         Če želite uvoziti ključ, ki ni bil generiran s pomočjo Scatter-ja
+         potem morate najprej ustvariti račun in šele nato uvoziti zasebni ključ.`
     ],
     [KEYS.ALERT_PasswordsDoNotMatch]:[
-        'Passwords Do Not Match',
+        'Geslo se ne ujema',
 
-        `The password you entered does not match it's confirmation.`
+        `Geslo, ki ste ga vnesli se ne ujema s potrdtitvenim geslom.`
     ],
     [KEYS.ALERT_BadPassword]:[
-        'Bad Password',
+        'Nepravilno geslo',
 
-        'Passwords must be at least 8 characters long'
+        'Geslo mora biti vsaj 8 znakov dolgo'
     ],
     [KEYS.ALERT_WrongPassword]:[
-        'Wrong Password',
+        'Napačno geslo',
 
-        'The password you entered was incorrect.'
+        'Vnešeno geslo je napačno.'
     ],
     [KEYS.ALERT_NetworkHostInvalid]:[
-        'Network Host Invalid',
+        'Nerpavilen naslov strežnika',
 
-        `The Network host you entered was invalid. Hosts should be either a domain name
-         ( ex: testnet.eos.io ) or an IP ( ex: 192.168.0.1 ).`
+        `Naslov strežnika mora vsebovati (ime strežnika) ali IP številko.
+         ( primer: testnet.eos.io ) ali IP (primer: 192.168.0.1 ).`
     ],
     [KEYS.ALERT_NetworkExists]:[
-        'Network Already Exists',
+        'Omrežje že obstaja',
 
-        'Another Network with this host and port already exists. There is no reason to have a network saved twice.'
+        'V sistemu že obstaja omrežje z enakim imenom ali IP številko.'
     ],
     [KEYS.ALERT_RemovingEndorsedNetwork]:[
-        'Cannot Remove Endorsed Network',
+        'Povezanega omrežja ne morete odstraniti',
 
-        `You cannot remove Scatter's endorsed Network. We use this Network to host our contracts.`
+        `Omrežje je v uporabi za shrambo pogodb.`
     ],
     [KEYS.ALERT_NoIdentityWithProperties]:fields => [
-        'No Identities Found',
+        'Identiteta ne obstaja',
 
         `This application is requesting an Identity with properties you do not have. The properties they want are '${fields.join(', ')}'`
     ],
@@ -371,25 +360,23 @@ export default {
         `If you have multiple locations and a transaction requires a location you will always be prompted.`
     ],
     [KEYS.REQUEST_ScatterIsLocked]:[
-        `Your Scatter is locked!`,
+        `Scatter je zaklenjen!`,
 
-        `Before you can do anything with your Scatter you will need to unlock it.`,
+        `Preden pričnete uporabljati Scatter, ga morare najprej odkleniti`,
 
-        `We will purposely never show a prompt/popup which requires you to log in.`,
+        `Nikoli vas ne bomo povprašali ali prikazovali vnosne maske za prijavo.`,
 
-        `If you see a prompt/popup which is requesting your password, it is a malicious website trying to get your password.
-         Always only unlock Scatter from the extension's popup by clicking on the icon in your browser tray.`
+        `V kolikor opazite okno, ki od vas zahteva vnos gesla, gre lahko za prevaro! Scatter vedno odklenite na strani vtičnika.`
     ],
     [KEYS.REQUEST_UpdateVersion]:[
-        `Your Scatter is out of date!`,
+        `Scatter je potečen!`,
 
-        /*{DOMAIN}*/ `is requiring you have a version of Scatter that is newer than the one installed.`,
+        /*{DOMAIN}*/ `potrebuje za delovanje novejšo verzijo aplikacije kot jo imate nameščeno na vašem sistemu.`,
 
-        `This usually means that new functionality was released and an application is trying to use it but it's not
-         currently included in the build you have installed.`,
+        `To pomeni, da je verjetno zahtevana novejša funkcionalnost, ki jo vaša nameščena verzija programa Scatter še ne podpira.`,
 
-        `Please Note, we leave version checking up to the applications themselves. They could be maliciously trying to
-         get you to download something. Make sure you always download Scatter from the proper location.`
+        `Opozorilo! Preverjanje posodobitev je prepuščena matični aplikaciji, ki vas lahko pripelje tudi na napačno stran,
+        zato se vedno prepričajte, da aplikacijo prenašate iz Scatter spletne strani.`
     ],
 
 }
