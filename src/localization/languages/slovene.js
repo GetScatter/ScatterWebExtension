@@ -33,7 +33,6 @@ export default {
     [KEYS.PLACEHOLDER_Postal]:'Poštna številka',
     [KEYS.PLACEHOLDER_Country]:'Dežela',
     [KEYS.PLACEHOLDER_State]:'Država',
-    [KEYS.PLACEHOLDER_State]:'Država',
     [KEYS.PLACEHOLDER_Password]:'Geslo',
     [KEYS.PLACEHOLDER_ConfirmPassword]:'Potrdite geslo',
     [KEYS.PLACEHOLDER_NewPassword]:'Novo geslo',
@@ -100,8 +99,7 @@ export default {
 
     [KEYS.PERMISSIONS_Header]:`Trenutno nimate nobene pravice.`,
     [KEYS.PERMISSIONS_Description]:`
-        Permissions are set when you either provide an Identity for an application to use, or when you whitelist 
-        a contract action to be signed without authorization prompts.
+        Dovoljenja so nastavljena, ko bodisi zagotovite identiteto za aplikacijo, ki jo želite uporabiti.
     `,
     [KEYS.PERMISSION_RevokeIdentity]:`Reaktiviraj identiteto`,
     [KEYS.PERMISSION_RevokeContract]:`Reaktiviraj pogodbo/kontrakt`,
@@ -109,13 +107,13 @@ export default {
 
     [KEYS.HISTORIES_Header]:`Nimate dogodkov za prikaz.`,
     [KEYS.HISTORIES_Description]:`
-        Once you have them, you will be able to see a list of all of the events that pass through your Scatter.
-        What you will not see is events that occurred on your accounts outside of scatter.
+        Ko jih boste imeli, boste lahko videli seznam vseh dogodkov, ki potekajo skozi vaš Scatter.
+        Kar ne boste videli so dogodki, ki so se zgodili na vaših računih zunaj Scatter-ja.
      `,
     [KEYS.HISTORIES_Note]:`
-        Note: Exporting your Scatter data from the backup option in the settings panel does not save these events.
-        When you import that Scatter instance again your histories will be empty. If you would like to export your histories
-        in the future you can do so using the action buttons on the navbar within this panel.
+        Opomba: Če izvažate podatke iz Scatterja v nastavitvah, potem se tej dogodki ne bodo shranili.
+        Ko ponovno uvažate instanco Scatter-ja, bo vaša zgodovina zapisov prazna. Če v prihdonje želite 
+        izvoziti svojo zgodovino lahko to storite z uporabo akcijskih gumbov v navigacijskem meniju.
     `,
 
     [KEYS.SETTINGSMENU_Networks]:'Omrežja',
@@ -141,10 +139,11 @@ export default {
 
     [KEYS.NETWORK_Header]:`Dodaj novo omrežje`,
     [KEYS.NETWORK_Description]:`
-        Applications usually run on a specific network, but they might not all run on
-        the same network. For instance an application can have a testing network
-        that has new features which are not yet released. In order to interact with
-        that network you will need to have an account there as well.
+        Aplikacije se običajno izvajajo v določenem omrežju, vendar se morda ne izvajajo vse na
+        istem. Na primer: Aplikacija ima lahko na testnem omrežju nove funkcionalnosti, ki
+        še niso v produkcijskem okolju. V tem primeru  ima aplikacija lahko omrežje za testiranje
+         ki ima nove funkcije, ki še niso sproščene. Da bi sodelovali
+         to omrežje boste morali imeti tudi račun tam.
     `,
 
     [KEYS.DESTROY_Header]:`Uniči Scatter`,
@@ -254,51 +253,51 @@ export default {
     [KEYS.ALERT_NoIdentityWithProperties]:fields => [
         'Identiteta ne obstaja',
 
-        `This application is requesting an Identity with properties you do not have. The properties they want are '${fields.join(', ')}'`
+        `Ta aplikacija zahteva identifikacijo z lastnostmi, ki jih nimate. Lastnosti, ki jih želijo, so '${fields.join(', ')}'`
     ],
     [KEYS.ALERT_YouMustSelectAnIdentity]:[
-        'You Must Select An Identity',
+        'Izbrati morate identiteto',
 
-        `If you do not wish to expose an Identity you can press the Deny button, otherwise an Identity must be
-         selected in order to accept this request.`
+        `Če ne želite izpostaviti identitete, lahko pritisnete gumb prepovej, sicer mora biti podana identiteta
+         da bi sprejeli to zahtevo.`
     ],
 
     [KEYS.PROMPT_DestroyingScatter]:[
-        'Destroying Scatter',
+        'Uničenje Scatter-ja',
 
-        'This is your last chance to double check your backups.'
+        'To je vaša zadnja možnost zato še enkrat preverite varnostno kopijo.'
     ],
     [KEYS.PROMPT_RevokingIdentity]:domain => [
-        'Revoking Identity',
+        'Zavrnitev identitete',
 
-        `You are about to revoke an entire Identity from ${domain}. This will remove 
-         permissions on the Identity itself and all contracts within it.`
+        `Ste pred zavrnitvijo identitete ${domain}. To bo onemogočilo vse pravice 
+         za identiteto in vse pogodbe, ki so nanjo vezane.`
     ],
     [KEYS.PROMPT_RevokingContract]:domain => [
-        'Revoking Contract',
+        'Zavrnitev pogodbe',
 
-        `You are about to revoke an entire contract from ${domain}. This will remove permissions on all actions within it.`
+        `Ste pred zavrnitvijo pogodbe ${domain}. Odstranjene bodo vse pravice in akcije, ki so povezane z pogodbo.`
     ],
     [KEYS.PROMPT_RevokingContractAction]:domain => [
-        'Revoking Contract Action',
+        'Zavrnitev akcije za pogodbo',
 
-        `You are about to revoke an action from ${domain}`
+        `Ste pred zavrnitvijo akcije za pogodbo ${domain}`
     ],
     [KEYS.PROMPT_RemovingIdentity]:name => [
-        'Removing Identity',
+        'Odstranitev identitete',
 
-        `You are about to remove an Identity with the name '${name}'. Removing Identities is not reversible and
-         all permissions will be . If the Identity is being used on applications perhaps you should just disable it instead.`
+        `Ste pred odstranitvijo identitete '${name}'. Odstranjeno identite in pravic ni mogoče povrniti. 
+         Če identiteto uporabljate že v povezavi z drugo aplikacijo lahko to enostavneje onemogočite.`
     ],
     [KEYS.PROMPT_RemovingAccount]:formattedAccountName => [
-        'Removing Account',
+        'Odstranjevanje rauna',
 
-        `You are about to remove the ${formattedAccountName} account from this Identity.`
+        `Stre pred odstranitvijo računa  ${formattedAccountName}, ki pripada trenutni identiteti.`
     ],
     [KEYS.PROMPT_RemovingNetwork]:[
-        'Removing Network',
+        'Odstranitev omrežja',
 
-        `You are about to delete a Network. You will not be able
+        `You are about to delete a Network. You will not be able 
          to create new accounts on this Network once you delete it,
          but nothing is stopping you from re-adding it. Any accounts
          already using this Network will not be modified or removed.`
@@ -311,9 +310,9 @@ export default {
          Are you sure you still want to whitelist this?`
     ],
     [KEYS.PROMPT_SelectAccount]:[
-        'Select Account',
+        'Izberite račun',
 
-        'Select the account and authority you wish to use for this Identity. You can only select one at a time.'
+        'Izberite račun in organ, ki ga boste uporabljali s to identiteto. Izberete lahko le enega na enkrat.'
     ],
 
 
@@ -354,27 +353,19 @@ export default {
          Every property that has a check next to it will become mutable, meaning that you can allow
          certain properties of this transaction to change and only if the other properties are changed will
          it fail to be whitelisted.`,
-
         `This includes required personal information, and changes to your Identity do not remove permissions.`,
-
         `If you have multiple locations and a transaction requires a location you will always be prompted.`
     ],
     [KEYS.REQUEST_ScatterIsLocked]:[
         `Scatter je zaklenjen!`,
-
         `Preden pričnete uporabljati Scatter, ga morare najprej odkleniti`,
-
         `Nikoli vas ne bomo povprašali ali prikazovali vnosne maske za prijavo.`,
-
         `V kolikor opazite okno, ki od vas zahteva vnos gesla, gre lahko za prevaro! Scatter vedno odklenite na strani vtičnika.`
     ],
     [KEYS.REQUEST_UpdateVersion]:[
         `Scatter je potečen!`,
-
         /*{DOMAIN}*/ `potrebuje za delovanje novejšo verzijo aplikacije kot jo imate nameščeno na vašem sistemu.`,
-
         `To pomeni, da je verjetno zahtevana novejša funkcionalnost, ki jo vaša nameščena verzija programa Scatter še ne podpira.`,
-
         `Opozorilo! Preverjanje posodobitev je prepuščena matični aplikaciji, ki vas lahko pripelje tudi na napačno stran,
         zato se vedno prepričajte, da aplikacijo prenašate iz Scatter spletne strani.`
     ],
