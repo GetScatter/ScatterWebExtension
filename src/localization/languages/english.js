@@ -354,7 +354,7 @@ export default {
         'Removing Identity',
 
         `You are about to remove an Identity with the name '${name}'. Removing Identities is not reversible and
-         all permissions will be . If the Identity is being used on applications perhaps you should just disable it instead.`
+         all permissions will be deleted. If the Identity is being used on applications perhaps you should just disable it instead.`
     ],
     //2
     [KEYS.PROMPT_DeletingKeyPair]:identities => [
@@ -389,7 +389,7 @@ export default {
     [KEYS.PROMPT_SelectAccount]:[
         'Select Account',
 
-        'Select the account and authority you wish to use for this Identity. You can only select one at a time.'
+        'Select the account and authorization you wish to use for this Identity. You can only select one at a time.'
     ],
     //2
     [KEYS.PROMPT_ClaimIdentity]:[
@@ -426,7 +426,7 @@ export default {
     ],
     //2
     [KEYS.REQUEST_IdentityNoIdentities]:[
-        `You don't have any Identities that match the fields that this application is requiring.`,
+        `You don't have any Identities that match the properties that this application is requiring.`,
 
         `If you would like to use an Identity with this domain, you will need to update that Identity and fulfill the requirements.
          You can see what this domain is requiring on the left panel.`
