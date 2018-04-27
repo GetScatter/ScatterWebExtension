@@ -191,7 +191,7 @@ export default {
     [KEYS.ALERT_Type]:(type) => {
         switch(type){
             case AlertTypes.Error:              return 'Napaka';
-            case AlertTypes.Prompt:             return 'Prompt';
+            case AlertTypes.Prompt:             return 'Vnos';
             case AlertTypes.SelectAccount:      return 'Izberite račun';
         }
     },
