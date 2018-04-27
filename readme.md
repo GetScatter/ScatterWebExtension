@@ -420,10 +420,11 @@ That is their password verification, nullifying the need for the hash to be stor
 
 Contributions are always welcome. 
 
-If you are not a developer and would simply like to contribute feature requests, user experience suggestions,
-or anything else you can visit our [community Trello board.](https://trello.com/invite/b/9XJfndSc/5ed0679da31231717971cc97edd559c1/scatter-community-board)
+For feature requests, user experience suggestions, or anything else take a look at the
+[existing issues](https://github.com/EOSEssentials/Scatter/issues) and if not already tracked feel free to
+[create a new one](https://github.com/EOSEssentials/Scatter/issues/new) (requires Github account, free to sign up).
 
-If you **are** a developer there's a few stipulations to contributing.
+If you are a developer there's a few stipulations to contributing.
 
 * **Never** use the `npm run build` command if you plan on submitting changes. 
   This will cause a compilation of the zip file and will make it so your branch/pull-request cannot
