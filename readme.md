@@ -61,17 +61,23 @@ document.addEventListener('scatterLoaded', scatterExtension => {
 })
 ```
 
+#### Setting the network
+
+Before you can use any signature providers you will need to set the network on your Scatter instance.
+```js
+scatter.setNetwork({host:'127.0.0.1',port:8888});
+```
+
 #### Using Scatter with [eosjs](https://github.com/EOSIO/eosjs)
 
 All user signature requests will flow through Scatter.
 
 ```js
-// Set up the network and options you want to use eosjs and Scatter with. 
-const network = { host:"192.168.56.101", port:8888 };
+// Set up any extra options you want to use eosjs with. 
 const eosOptions = {};
  
 // Get a reference to an 'Eos.Localnet' with a Scatter signature provider.
-const eos = scatter.eos( Eos.Localnet, network, eosOptions );
+const eos = scatter.eos( Eos.Localnet, eosOptions );
 ```
 
 
@@ -238,6 +244,19 @@ eosjs.transfer('youraccount', scatter.identity.account.name, '100.0000 EOS', '')
     //...
 });
 ```
+
+#### Arbitrary signatures
+
+You can request any arbitrary signature from Scatter
+
+```js
+scatter.requestArbitrarySignature(publicKey, data, whatfor = '', isHash = false)
+```
+
+If you need to sign a `sha256` hash be sure to set `isHash` to `true` as this uses a different signing method.
+Otherwise always leave it to false.
+
+**User's will always see the exact data they are signing the same way they see transactions.**
 
 
 ## Translations and localization
