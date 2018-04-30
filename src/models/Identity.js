@@ -167,6 +167,18 @@ export default class Identity {
      */
     hasAccount(network){ return this.accounts.hasOwnProperty(network.unique()) }
 
+    /***
+     * Gets an account from a public key
+     * @returns {boolean}
+     */
+    getAccountFromPublicKey(publicKey){
+        let account;
+        Object.keys(this.accounts).map(key => {
+            if(this.accounts[key].publicKey === publicKey) account = this.accounts[key];
+        })
+        return account;
+    }
+
     networkedAccount(network) { return this.accounts[network.unique()] }
 
     /***

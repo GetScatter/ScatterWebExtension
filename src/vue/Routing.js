@@ -20,6 +20,7 @@ import KeyPairView from '../views/KeyPairView.vue'
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
 import RequestSignaturePrompt from '../prompts/RequestSignaturePrompt.vue'
+import RequestArbitrarySignaturePrompt from '../prompts/RequestArbitrarySignaturePrompt.vue'
 import RequestAddNetwork from '../prompts/RequestAddNetwork.vue'
 import RequestUnlock from '../prompts/RequestUnlock.vue'
 import UpdateVersion from '../prompts/UpdateVersion.vue'
@@ -51,6 +52,7 @@ export const RouteNames = {
 
     PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
     PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
+    PROMPT_REQUEST_ARBITRARY_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_ARBITRARY_SIGNATURE}`,
     PROMPT_REQUEST_ADD_NETWORK:`${promptPrefix}${PromptTypes.REQUEST_ADD_NETWORK}`,
     PROMPT_REQUEST_UNLOCK:`${promptPrefix}${PromptTypes.REQUEST_UNLOCK}`,
     PROMPT_UPDATE_VERSION:`${promptPrefix}${PromptTypes.UPDATE_VERSION}`,
@@ -81,6 +83,7 @@ const RouteViews = {
 
     [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
     [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
+    [RouteNames.PROMPT_REQUEST_ARBITRARY_SIGNATURE]:RequestArbitrarySignaturePrompt,
     [RouteNames.PROMPT_REQUEST_ADD_NETWORK]:RequestAddNetwork,
     [RouteNames.PROMPT_REQUEST_UNLOCK]:RequestUnlock,
     [RouteNames.PROMPT_UPDATE_VERSION]:UpdateVersion,

@@ -87,6 +87,7 @@ class Content {
             case NetworkMessageTypes.GET_OR_REQUEST_IDENTITY:           this.getOrRequestIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.FORGET_IDENTITY:                   this.forgetIdentity(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_SIGNATURE:                 this.requestSignature(nonSyncMessage); break;
+            case NetworkMessageTypes.REQUEST_ARBITRARY_SIGNATURE:       this.requestArbitrarySignature(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_VERSION_UPDATE:            this.requestVersionUpdate(nonSyncMessage); break;
             case NetworkMessageTypes.AUTHENTICATE:                      this.authenticate(nonSyncMessage); break;
@@ -123,6 +124,12 @@ class Content {
     requestSignature(message){
         if(!isReady) return;
         InternalMessage.payload(InternalMessageTypes.REQUEST_SIGNATURE, message.payload)
+            .send().then(res => this.respond(message, res))
+    }
+
+    requestArbitrarySignature(message){
+        if(!isReady) return;
+        InternalMessage.payload(InternalMessageTypes.REQUEST_ARBITRARY_SIGNATURE, message.payload)
             .send().then(res => this.respond(message, res))
     }
 

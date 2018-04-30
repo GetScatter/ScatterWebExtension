@@ -128,9 +128,11 @@ const _send = (_type, _payload, bypassNetwork = false) => {
     });
 };
 
+const getNetwork = () => network;
+
 const setupSigProviders = context => {
     PluginRepository.signatureProviders().map(sigProvider => {
-        context[sigProvider.name] = sigProvider.signatureProvider(_bindNetwork, _send, throwIfNoIdentity);
+        context[sigProvider.name] = sigProvider.signatureProvider(getNetwork, _send, throwIfNoIdentity);
     })
 };
 
@@ -151,8 +153,6 @@ export default class Scatterdapp {
         resolvers = [];
 
         setupSigProviders(this);
-        // const proxies = new BlockchainPlugins(_bindNetwork, _send, throwIfNoIdentity, publicKey, network)
-        // this['eos'] = proxies.eos;
 
         _subscribe();
 
@@ -205,6 +205,14 @@ export default class Scatterdapp {
     }
 
     /***
+     * Sets the network being used
+     * @param _network
+     */
+    setNetwork(_network){
+        _bindNetwork(_network);
+    }
+
+    /***
      * Allows an application to prompt the user to add the network they are using to the user's Scatter
      * Will instantly return true if the network already exists
      */
@@ -243,6 +251,23 @@ export default class Scatterdapp {
      */
     requireVersion(_version){
         requiredVersion = _version;
+    }
+
+    /***
+     * Requests a signature for arbitrary data.
+     * @param publicKey
+     * @param data - The data to be signed
+     * @param whatfor
+     * @param isHash - True if the data requires a hash signature
+     */
+    requestArbitrarySignature(publicKey, data, whatfor = '', isHash = false){
+        return _send(NetworkMessageTypes.REQUEST_ARBITRARY_SIGNATURE, {
+            domain:locationHost(),
+            publicKey,
+            data,
+            whatfor,
+            isHash
+        }, true);
     }
 
 }

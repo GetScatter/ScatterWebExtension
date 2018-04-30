@@ -41,4 +41,10 @@ export default class KeyPair {
         if(this.isEncrypted())
             this.privateKey = AES.decrypt(this.privateKey, seed);
     }
+
+    static blockchain(publicKey){
+        if(publicKey.indexOf('EOS') !== -1) return Blockchains.EOS;
+        if(publicKey.indexOf('0x') !== -1 && publicKey.length === 42) return Blockchains.ETH;
+        return null;
+    }
 }

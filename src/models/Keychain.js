@@ -55,4 +55,8 @@ export default class Keychain {
             ? this.identities = this.identities.map(id => id.publicKey === identity.publicKey ? identity : id)
             : this.identities.unshift(identity);
     }
+
+    findAccountsWithPublicKey(publicKey){
+        return this.identities.map(id => id.getAccountFromPublicKey(publicKey)).filter(acc => !!acc);
+    }
 }

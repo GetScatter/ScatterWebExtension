@@ -2,9 +2,13 @@ import Plugin from '../Plugin';
 import * as PluginTypes from '../PluginTypes';
 import {Blockchains} from '../../models/Blockchains'
 import * as NetworkMessageTypes from '../../messages/NetworkMessageTypes'
-const ecc = require('eosjs-ecc');
+import StringHelpers from '../../util/StringHelpers'
+import Error from '../../models/errors/Error'
+// const ecc = require('eosjs-ecc');
+import Eos from 'eosjs'
+let {ecc} = Eos.modules;
 
-let networkBinder = new WeakMap();
+let networkGetter = new WeakMap();
 let internalMessageSender = new WeakMap();
 let throwIfNoIdentity = new WeakMap();
 
@@ -20,22 +24,34 @@ export default class EOS extends Plugin {
         return `${account.name}@${account.authority}`
     }
 
-    signer(bgContext, payload, publicKey, callback){
-        const buf = Buffer.from(payload.buf.data, 'utf8');
+    signer(bgContext, payload, publicKey, callback, arbitrary = false, isHash = false){
         bgContext.publicToPrivate(privateKey => {
-            callback(privateKey ? ecc.sign(buf, privateKey) : null);
-        }, publicKey);
+            if(!privateKey){
+                callback(null);
+                return false;
+            }
+
+            let sig;
+            if(arbitrary && isHash) sig = ecc.Signature.signHash(payload.data, privateKey).toString();
+            else sig = ecc.sign(Buffer.from(arbitrary ? payload.data : payload.buf.data, 'utf8'), privateKey);
+
+            callback(sig);
+        }, publicKey)
+
+
     }
 
     signatureProvider(...args){
 
-        networkBinder = args[0];
+        networkGetter = args[0];
         internalMessageSender = args[1];
         throwIfNoIdentity = args[2];
 
-        return (_eos, network, _options = {}) => {
+        return (_eos, _options = {}) => {
 
-            networkBinder(network);
+            const network = networkGetter();
+            if(!network) throw Error.noNetwork();
+
             const httpEndpoint = `http://${network.host}:${network.port}`;
 
             // The proxy stands between the eosjs object and scatter.

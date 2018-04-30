@@ -58,21 +58,22 @@ export default class Background {
     dispenseMessage(sendResponse, message){
         Background.checkAutoLock();
         switch(message.type){
-            case InternalMessageTypes.SET_SEED:                     Background.setSeed(sendResponse, message.payload); break;
-            case InternalMessageTypes.SET_TIMEOUT:                  Background.setTimeout(sendResponse, message.payload); break;
-            case InternalMessageTypes.IS_UNLOCKED:                  Background.isUnlocked(sendResponse); break;
-            case InternalMessageTypes.LOAD:                         Background.load(sendResponse); break;
-            case InternalMessageTypes.UPDATE:                       Background.update(sendResponse, message.payload); break;
-            case InternalMessageTypes.PUB_TO_PRIV:                  Background.publicToPrivate(sendResponse, message.payload); break;
-            case InternalMessageTypes.DESTROY:                      Background.destroy(sendResponse); break;
-            case InternalMessageTypes.IDENTITY_FROM_PERMISSIONS:    Background.identityFromPermissions(sendResponse, message.payload); break;
-            case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:      Background.getOrRequestIdentity(sendResponse, message.payload); break;
-            case InternalMessageTypes.FORGET_IDENTITY:              Background.forgetIdentity(sendResponse, message.payload); break;
-            case InternalMessageTypes.REQUEST_SIGNATURE:            Background.requestSignature(sendResponse, message.payload); break;
-            case InternalMessageTypes.REQUEST_ADD_NETWORK:          Background.requestAddNetwork(sendResponse, message.payload); break;
-            case InternalMessageTypes.REQUEST_GET_VERSION:          Background.requestGetVersion(sendResponse); break;
-            case InternalMessageTypes.REQUEST_VERSION_UPDATE:       Background.requestVersionUpdate(sendResponse, message.payload); break;
-            case InternalMessageTypes.AUTHENTICATE:                 Background.authenticate(sendResponse, message.payload); break;
+            case InternalMessageTypes.SET_SEED:                         Background.setSeed(sendResponse, message.payload); break;
+            case InternalMessageTypes.SET_TIMEOUT:                      Background.setTimeout(sendResponse, message.payload); break;
+            case InternalMessageTypes.IS_UNLOCKED:                      Background.isUnlocked(sendResponse); break;
+            case InternalMessageTypes.LOAD:                             Background.load(sendResponse); break;
+            case InternalMessageTypes.UPDATE:                           Background.update(sendResponse, message.payload); break;
+            case InternalMessageTypes.PUB_TO_PRIV:                      Background.publicToPrivate(sendResponse, message.payload); break;
+            case InternalMessageTypes.DESTROY:                          Background.destroy(sendResponse); break;
+            case InternalMessageTypes.IDENTITY_FROM_PERMISSIONS:        Background.identityFromPermissions(sendResponse, message.payload); break;
+            case InternalMessageTypes.GET_OR_REQUEST_IDENTITY:          Background.getOrRequestIdentity(sendResponse, message.payload); break;
+            case InternalMessageTypes.FORGET_IDENTITY:                  Background.forgetIdentity(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_SIGNATURE:                Background.requestSignature(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_ARBITRARY_SIGNATURE:      Background.requestArbitrarySignature(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_ADD_NETWORK:              Background.requestAddNetwork(sendResponse, message.payload); break;
+            case InternalMessageTypes.REQUEST_GET_VERSION:              Background.requestGetVersion(sendResponse); break;
+            case InternalMessageTypes.REQUEST_VERSION_UPDATE:           Background.requestVersionUpdate(sendResponse, message.payload); break;
+            case InternalMessageTypes.AUTHENTICATE:                     Background.authenticate(sendResponse, message.payload); break;
         }
     }
 
@@ -169,7 +170,8 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             StorageService.get().then(scatter => {
                 scatter.decrypt(seed);
-                const keypair = scatter.keychain.keypairs.find(x => x.publicKey === publicKey);
+                let keypair = scatter.keychain.keypairs.find(keypair => keypair.publicKey === publicKey);
+                if(!keypair) keypair = scatter.keychain.identities.find(id => id.publicKey === publicKey);
                 sendResponse((keypair) ? AES.decrypt(keypair.privateKey, seed) : null);
             })
         })
@@ -334,6 +336,19 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
                 SignatureService.requestSignature(payload, scatter, this, sendResponse);
+            })
+        })
+    }
+
+    /***
+     * Prompts a request for an arbitrary signature
+     * @param sendResponse
+     * @param payload
+     */
+    static requestArbitrarySignature(sendResponse, payload){
+        this.lockGuard(sendResponse, () => {
+            Background.load(scatter => {
+                SignatureService.requestArbitrarySignature(payload, scatter, this, sendResponse);
             })
         })
     }

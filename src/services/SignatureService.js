@@ -1,6 +1,7 @@
 import Prompt from '../models/prompts/Prompt';
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import Identity from '../models/Identity';
+import KeyPair from '../models/KeyPair';
 import Network from '../models/Network';
 import Error from '../models/errors/Error';
 import {LocationFields} from '../models/Identity';
@@ -13,6 +14,36 @@ import {Blockchains} from '../models/Blockchains';
 import PluginRepository from '../plugins/PluginRepository'
 
 export default class SignatureService {
+
+    static requestArbitrarySignature(payload, scatter, context, sendResponse){
+        const {publicKey, domain, data} = payload;
+        const identitySigner = scatter.keychain.identities.find(id => id.publicKey === publicKey);
+        const accountSigners = scatter.keychain.findAccountsWithPublicKey(publicKey);
+        if(!identitySigner && !accountSigners.length) {
+            sendResponse(Error.signatureError("signature_rejected", "User rejected the signature request"));
+            return false;
+        }
+
+        NotificationService.open(new Prompt(PromptTypes.REQUEST_ARBITRARY_SIGNATURE, domain, null, Object.assign(payload, {identitySigner, accountSigners}), approval => {
+            if(!approval || !approval.hasOwnProperty('accepted')){
+                sendResponse(Error.signatureError("signature_rejected", "User rejected the signature request"));
+                return false;
+            }
+
+            PluginRepository.findPlugin(KeyPair.blockchain(publicKey)).signer(context, payload, publicKey, signature => {
+                if(!signature){
+                    sendResponse(Error.maliciousEvent());
+                    return false;
+                }
+
+                sendResponse(signature);
+            }, true, payload.isHash)
+
+
+        }));
+
+
+    }
 
     static requestSignature(payload, scatter, context, sendResponse, blockchain = Blockchains.EOS){
         const {domain, network, requiredFields} = payload;
