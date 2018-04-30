@@ -68,18 +68,6 @@ Before you can use any signature providers you will need to set the network on y
 scatter.setNetwork({host:'127.0.0.1',port:8888});
 ```
 
-#### Using Scatter with [eosjs](https://github.com/EOSIO/eosjs)
-
-All user signature requests will flow through Scatter.
-
-```js
-// Set up any extra options you want to use eosjs with. 
-const eosOptions = {};
- 
-// Get a reference to an 'Eos.Localnet' with a Scatter signature provider.
-const eos = scatter.eos( Eos.Localnet, eosOptions );
-```
-
 
 #### Requesting an Identity
 
@@ -154,6 +142,18 @@ scatter.forgetIdentity().then(() => {
 
 Users can also do this without you providing a way for them to do so from their own permissions panel.
 
+
+#### Using Scatter with [eosjs](https://github.com/EOSIO/eosjs)
+
+All user signature requests will flow through Scatter.
+
+```js
+// Set up any extra options you want to use eosjs with. 
+const eosOptions = {};
+ 
+// Get a reference to an 'Eos.Localnet' with a Scatter signature provider.
+const eos = scatter.eos( Eos.Localnet, eosOptions );
+```
 
 #### Requesting a Signature using eosjs
 
