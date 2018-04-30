@@ -19,6 +19,7 @@ export const GENERIC_Host = 'gen_host';
 export const GENERIC_Port = 'gen_port';
 export const GENERIC_Requires = 'gen_requires';
 export const GENERIC_RequiredProperties = 'gen_required_props';
+export const GENERIC_Import = 'gen_import';
 
 export const PLACEHOLDER_Name = 'plc_name';
 export const PLACEHOLDER_PublicKey = 'plc_pubk';
@@ -43,6 +44,8 @@ export const PLACEHOLDER_DomainOrIP = 'plc_dom_or_ip';
 
 export const BUTTON_CreateIdentity = 'btn_new_id';
 export const BUTTON_ImportAccount = 'btn_import_acc';
+export const BUTTON_ImportKeychain = 'btn_import_keychain';
+export const BUTTON_SelectFile = 'btn_sel_file';
 export const BUTTON_AddNewLocation = 'btn_add_loc';
 export const BUTTON_SetAsDefaultLocation = 'btn_set_def_loc';
 export const BUTTON_RemoveLocation = 'btn_rem_loc';
@@ -131,6 +134,9 @@ export const KEYPAIR_Validation_Invalid = 'kp_v_invalid';
 
 export const BACKUP_Header = 'backup_head';
 export const BACKUP_Description = 'backup_desc';
+
+export const IMPORT_Header = 'import_head';
+export const IMPORT_Description = 'import_desc';
 
 export const DESTROY_Header = 'destr_head';
 export const DESTROY_Description = 'destr_desc';

@@ -4,6 +4,7 @@ export const SET_SCATTER = 'setScatter';
 export const IS_UNLOCKED = 'isUnlocked';
 export const UPDATE_STORED_SCATTER = 'updateStoredScatter';
 export const CREATE_NEW_SCATTER = 'createNewScatter';
+export const IMPORT_SCATTER = 'importScatter';
 export const SET_MNEMONIC = 'setMnemonic';
 export const SET_SEED = 'setSeed';
 export const SET_AUTO_LOCK = 'setAutoLock';

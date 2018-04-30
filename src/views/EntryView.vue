@@ -10,7 +10,7 @@
             </section>
             <figure class="line"></figure>
             <section class="p20">
-                <btn :text="locale(langKeys.BUTTON_LoadFromBackup)" v-on:clicked="create"></btn>
+                <btn :text="locale(langKeys.BUTTON_LoadFromBackup)" v-on:clicked="importKeychain"></btn>
             </section>
         </section>
         <section v-else>
@@ -64,6 +64,10 @@
                         this[Actions.LOAD_SCATTER]().then(() => setTimeout(() => this.next(), 100));
                     }).catch(() => this.hiding = false);
                 }, 200)
+            },
+            importKeychain(){
+                console.log('importing');
+                this.$router.push({name:RouteNames.LOAD_FROM_BACKUP})
             },
             next(){
                 if(this.mnemonic) this.$router.push({name:RouteNames.SHOW_MNEMONIC});

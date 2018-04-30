@@ -38,6 +38,7 @@ export default {
     [KEYS.PLACEHOLDER_NewPassword]:'Nova Senha',
     [KEYS.PLACEHOLDER_ConfirmNewPassword]:'Confime Nova Senha',
     [KEYS.PLACEHOLDER_DomainOrIP]:'Domínio ou IP',
+    [KEYS.GENERIC_Import]:'Importar',
 
     [KEYS.BUTTON_CreateIdentity]:'Criar Identidade',
     [KEYS.BUTTON_ImportAccount]:'Importar Conta',

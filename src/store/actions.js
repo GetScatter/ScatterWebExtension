@@ -2,6 +2,7 @@ import * as Actions from './constants'
 import Hasher from '../util/Hasher'
 import Mnemonic from '../util/Mnemonic'
 import Scatter from '../models/Scatter'
+import Meta from '../models/Meta'
 import Network from '../models/Network'
 import InternalMessage from '../messages/InternalMessage'
 import * as InternalMessageTypes from '../messages/InternalMessageTypes'
@@ -46,6 +47,23 @@ export const actions = {
                 dispatch(Actions.SET_SCATTER, Scatter.fromJson(_scatter));
                 resolve(_scatter)
             })
+        })
+    },
+
+    [Actions.IMPORT_SCATTER]:({dispatch}, {imported, seed}) => {
+        return new Promise((resolve, reject) => {
+            const scatter = Scatter.fromJson(imported);
+            scatter.settings.hasEncryptionKey = true;
+            scatter.settings.networks = [Network.endorsedNetwork()];
+            scatter.meta = new Meta();
+
+            console.log('s', seed);
+
+            InternalMessage.payload(InternalMessageTypes.SET_SEED, seed).send().then(() => {
+                dispatch(Actions.UPDATE_STORED_SCATTER, scatter).then(_scatter => {
+                    resolve();
+                })
+            });
         })
     },
 

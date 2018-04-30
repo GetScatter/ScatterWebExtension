@@ -22,6 +22,8 @@ export default class Keychain {
         return p;
     }
 
+    clone(){ return Keychain.fromJson(JSON.parse(JSON.stringify(this))) }
+
     removePermission(permission){ this.permissions = this.permissions.filter(perm => perm.checksum !== permission.checksum); }
     getPermission(checksum){ return this.permissions.find(permission => permission.checksum === checksum); }
     hasPermission(checksum, fields = []){
@@ -58,5 +60,13 @@ export default class Keychain {
 
     findAccountsWithPublicKey(publicKey){
         return this.identities.map(id => id.getAccountFromPublicKey(publicKey)).filter(acc => !!acc);
+    }
+
+    forBackup(){
+        const clone = this.clone();
+        clone.keypairs = [];
+        clone.permissions = [];
+        return clone;
+
     }
 }

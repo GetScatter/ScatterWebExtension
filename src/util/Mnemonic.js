@@ -14,6 +14,10 @@ export class Mnemonic {
         return [mnemonic, bip39.mnemonicToSeedHex(mnemonic)];
     }
 
+    static async mnemonicToSeed(mnemonic){
+        return bip39.mnemonicToSeedHex(mnemonic);
+    }
+
     /***
      * Generates a random mnemonic
      * @returns {[string,string]}

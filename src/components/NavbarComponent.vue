@@ -44,6 +44,7 @@
             },
             breadcrumb(){
                 switch(this.$route.name){
+                    case RouteNames.LOAD_FROM_BACKUP: return 'Import Keychain';
                     case RouteNames.SETTINGS: return 'Settings';
                     case RouteNames.TRANSFER: return 'Transfer';
                     case RouteNames.IDENTITIES: return 'Identities';

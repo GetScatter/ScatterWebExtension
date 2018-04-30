@@ -17,6 +17,7 @@ export default {
     [KEYS.GENERIC_Port]:'Port',
     [KEYS.GENERIC_Requires]:'Requires',
     [KEYS.GENERIC_RequiredProperties]:'Required Properties',
+    [KEYS.GENERIC_Import]:'Import',
 
     [KEYS.PLACEHOLDER_Name]:'Name',
     [KEYS.PLACEHOLDER_PublicKey]:'Public Key',
@@ -41,6 +42,8 @@ export default {
 
     [KEYS.BUTTON_CreateIdentity]:'Create Identity',
     [KEYS.BUTTON_ImportAccount]:'Import Account',
+    [KEYS.BUTTON_ImportKeychain]:'Import Keychain',
+    [KEYS.BUTTON_SelectFile]:'Select File',
     [KEYS.BUTTON_AddNewLocation]:'Add New Location',
     [KEYS.BUTTON_SetAsDefaultLocation]:'Set As Default Location',
     [KEYS.BUTTON_RemoveLocation]:'Remove Location',
@@ -138,6 +141,12 @@ export default {
         exported so make sure you have either your mnemonic or your password, otherwise it will be useless. The private keys 
         from your accounts will also be removed before exporting, the only private keys that will remain within the exported 
         file will be your Identity keys.
+    `,
+
+    [KEYS.IMPORT_Header]:`Import encrypted backup`,
+    [KEYS.IMPORT_Description]:`
+        Importing your encrypted keychain file will rebuild you Scatter keychain but it will not import your old networks or 
+        accounts. 
     `,
 
     [KEYS.PASS_Header]:`Enter a new password`,

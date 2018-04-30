@@ -17,6 +17,7 @@ export default {
     [KEYS.GENERIC_Port]:'Puerto',
     [KEYS.GENERIC_Requires]:'Requiere',
     [KEYS.GENERIC_RequiredProperties]:'Propiedades Requeridas',
+    [KEYS.GENERIC_Import]:'Importar',
 
     [KEYS.PLACEHOLDER_Name]:'Nombre',
     [KEYS.PLACEHOLDER_PublicKey]:'Llave Pública',

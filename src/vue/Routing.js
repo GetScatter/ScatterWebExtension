@@ -16,6 +16,7 @@ import AutoLockView from '../views/AutoLockView.vue'
 import LanguageView from '../views/LanguageView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import KeyPairView from '../views/KeyPairView.vue'
+import LoadFromBackup from '../views/LoadFromBackup.vue'
 
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
@@ -29,6 +30,7 @@ export const promptPrefix = 'prompt_';
 
 export const RouteNames = {
     ENTRY:'entry',
+    LOAD_FROM_BACKUP:'loadFromBackup',
     SHOW_MNEMONIC:'showMnemonic',
     FIRST_TIME:'firstTime',
     MAIN_MENU:'mainMenu',
@@ -60,6 +62,7 @@ export const RouteNames = {
 
 const RouteViews = {
     [RouteNames.ENTRY]:EntryView,
+    [RouteNames.LOAD_FROM_BACKUP]:LoadFromBackup,
     [RouteNames.SHOW_MNEMONIC]:ShowMnemonicView,
     [RouteNames.FIRST_TIME]:FirstTimeView,
     [RouteNames.MAIN_MENU]:MainMenuView,
@@ -91,6 +94,7 @@ const RouteViews = {
 
 export const RouteDepth = {
     [RouteNames.ENTRY]:-1,
+    [RouteNames.LOAD_FROM_BACKUP]:1,
     [RouteNames.SHOW_MNEMONIC]:1,
     [RouteNames.FIRST_TIME]:2,
     [RouteNames.MAIN_MENU]:0,
@@ -139,7 +143,10 @@ export class Routing {
     }
 
     static isRestricted(routeName) {
-        return routeName !== RouteNames.ENTRY
+        return ![
+            RouteNames.ENTRY,
+            RouteNames.LOAD_FROM_BACKUP
+        ].includes(routeName)
     }
 
 }
