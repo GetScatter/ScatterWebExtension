@@ -100,7 +100,7 @@ export default class EOS extends Plugin {
 
                         // TODO: We need to check about the implications of multiple eosjs instances
                         return new Promise((resolve, reject) => {
-                            _eos(Object.assign(JSON.stringify(_options), {httpEndpoint, signProvider}))[method](...args)
+                            _eos(Object.assign(_options, {httpEndpoint, signProvider}))[method](...args)
                                 .then(result => {
 
                                     // Standard method ( ie. not contract )
