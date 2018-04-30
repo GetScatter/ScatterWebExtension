@@ -250,7 +250,7 @@ eosjs.transfer('youraccount', scatter.identity.account.name, '100.0000 EOS', '')
 You can request any arbitrary signature from Scatter
 
 ```js
-scatter.requestArbitrarySignature(publicKey, data, whatfor = '', isHash = false)
+scatter.getArbitrarySignature(publicKey, data, whatfor = '', isHash = false)
 ```
 
 If you need to sign a `sha256` hash be sure to set `isHash` to `true` as this uses a different signing method.
@@ -363,10 +363,9 @@ The only way for a website to push requests into Scatter and use it's private ke
 ```js
 // An identity must be requested and bound before requesting transactions
 const identity = await scatter.getIdentity();
-scatter.useIdentity(identity)
 -------------------------
 // The object returned here has no network, and no signature or key provider
-const eos = scatter.eos( Eos.Localnet, {host, port} );
+const eos = scatter.eos( Eos.Localnet, {} );
 -------------------------
 // When the transfer method is called the network and signature provider 
 // are bound outside of the website's accessible application scope.

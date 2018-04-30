@@ -34,9 +34,7 @@ let currentVersion = new WeakMap();
 let requiredVersion = new WeakMap();
 
 const throwIfNoIdentity = () => {
-    if(!publicKey) throws(
-        'You must select an Identity to use before requesting transaction signatures. ' +
-        'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {publicKey}.');
+    if(!publicKey) throws('There is no identity with an account set on your Scatter instance.');
 };
 
 
@@ -136,6 +134,12 @@ const setupSigProviders = context => {
     })
 };
 
+const useIdentity = (_identityObjectOrPublicKey) => {
+    if(typeof _identityObjectOrPublicKey === 'object') this.identity = _identityObjectOrPublicKey;
+    publicKey = typeof _identityObjectOrPublicKey === 'string' ? _identityObjectOrPublicKey :
+        _identityObjectOrPublicKey.hasOwnProperty('hash') ? _identityObjectOrPublicKey.publicKey : '';
+}
+
 
 /***
  * Scatterdapp is the object injected into the web application that
@@ -156,52 +160,7 @@ export default class Scatterdapp {
 
         _subscribe();
 
-        if(this.identity) this.useIdentity(publicKey);
-
-    }
-
-    /***
-     * Gets an Identity from the user to use.
-     * You shouldn't rely on the state of this object to be immutable.
-     * Identities are subject to change and if you use values you saved in
-     * a database vs the values on the identity currently signature providers will not work.
-     * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
-     */
-    getIdentity(fields = []){
-        return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
-            domain:locationHost(),
-            network:network,
-            fields
-        }).then(async identity => {
-            this.useIdentity(identity);
-            return identity;
-        });
-    }
-
-    /***
-     * Signs out the identity
-     * Will remove permissions for the identity but not contract/action permissions.
-     * @returns {Promise.<TResult>}
-     */
-    forgetIdentity(){
-        throwIfNoIdentity();
-        return _send(NetworkMessageTypes.FORGET_IDENTITY, {
-            domain:locationHost()
-        }).then(() => {
-            this.identity = null;
-            publicKey = null;
-            return true;
-        });
-    }
-
-    /***
-     * Sets which Identity to use for transaction signing
-     * @param _identityObjectOrPublicKey - The publicKey of the identity, or an Identity object
-     */
-    useIdentity(_identityObjectOrPublicKey){
-        if(typeof _identityObjectOrPublicKey === 'object') this.identity = _identityObjectOrPublicKey;
-        publicKey = typeof _identityObjectOrPublicKey === 'string' ? _identityObjectOrPublicKey :
-            _identityObjectOrPublicKey.hasOwnProperty('hash') ? _identityObjectOrPublicKey.publicKey : '';
+        if(this.identity) useIdentity(publicKey);
     }
 
     /***
@@ -213,16 +172,36 @@ export default class Scatterdapp {
     }
 
     /***
-     * Allows an application to prompt the user to add the network they are using to the user's Scatter
-     * Will instantly return true if the network already exists
+     * Suggests the set network to the user's Scatter.
      */
     suggestNetwork(){
+        if(!network) throws("You must set a network first.");
         return _send(NetworkMessageTypes.REQUEST_ADD_NETWORK, {
             domain:locationHost(),
             network:network
         });
     }
 
+    /***
+     * Gets an Identity from the user to use.
+     * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
+     */
+    getIdentity(fields = []){
+        return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
+            domain:locationHost(),
+            network:network,
+            fields
+        }).then(async identity => {
+            useIdentity(identity);
+            return identity;
+        });
+    }
+
+    /***
+     * Authenticates the identity on scope
+     * Returns a signature which can be used to self verify against the domain name
+     * @returns {Promise.<T>}
+     */
     async authenticate(){
         throwIfNoIdentity();
 
@@ -245,6 +224,21 @@ export default class Scatterdapp {
     }
 
     /***
+     * Signs out the identity.
+     * @returns {Promise.<TResult>}
+     */
+    forgetIdentity(){
+        throwIfNoIdentity();
+        return _send(NetworkMessageTypes.FORGET_IDENTITY, {
+            domain:locationHost()
+        }).then(() => {
+            this.identity = null;
+            publicKey = null;
+            return true;
+        });
+    }
+
+    /***
      * Sets a version requirement. If the version is not met all
      * scatter requests will fail and notify the user of the reason.
      * @param _version
@@ -260,7 +254,7 @@ export default class Scatterdapp {
      * @param whatfor
      * @param isHash - True if the data requires a hash signature
      */
-    requestArbitrarySignature(publicKey, data, whatfor = '', isHash = false){
+    getArbitrarySignature(publicKey, data, whatfor = '', isHash = false){
         return _send(NetworkMessageTypes.REQUEST_ARBITRARY_SIGNATURE, {
             domain:locationHost(),
             publicKey,
