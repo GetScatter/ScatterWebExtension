@@ -71,8 +71,8 @@ const _bindNetwork = (_network) => {
     if(!_network || !_network.hasOwnProperty('host') || !_network.hasOwnProperty('port'))
         throws('Malformed network. { host:string, port:number }');
 
-    if(isNaN(_network.port) || !_network.host.length || _network.host.indexOf('.') === -1)
-        throws('"port" must be a number and "host" must be a string of a domain or an ip.');
+    if(isNaN(_network.port) || !_network.host.length || (_network.host.indexOf('.') === -1 && _network.host !== 'localhost'))
+        throws('"port" must be a number and "host" must be a string of a domain or an ip or localhost.');
 
     network = _network;
 };
