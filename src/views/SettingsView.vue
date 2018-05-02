@@ -22,7 +22,6 @@
         mounted(){
             this.links = [
                 {route:RouteNames.NETWORKS, name:this.locale(this.langKeys.SETTINGSMENU_Networks), icon:'globe'},
-                {route:RouteNames.KEYPAIRS, name:this.locale(this.langKeys.SETTINGSMENU_Keypairs), icon:'key'},
                 {route:RouteNames.LANGUAGE, name:this.locale(this.langKeys.SETTINGSMENU_Language), icon:'language'},
                 {route:RouteNames.AUTO_LOCK, name:this.locale(this.langKeys.SETTINGSMENU_AutoLock), icon:'clock-o'},
                 {route:RouteNames.CHANGE_PASSWORD, name:this.locale(this.langKeys.SETTINGSMENU_Password), icon:'asterisk'},

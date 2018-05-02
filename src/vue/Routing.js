@@ -17,6 +17,7 @@ import LanguageView from '../views/LanguageView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import KeyPairView from '../views/KeyPairView.vue'
 import LoadFromBackup from '../views/LoadFromBackup.vue'
+import KeyPairsView from '../views/KeyPairsView.vue'
 
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
@@ -39,6 +40,7 @@ export const RouteNames = {
     TRANSFER:'transfer',
     IDENTITIES:'identities',
     IDENTITY:'identity',
+    KEYS:'keys',
     PERMISSIONS:'permissions',
     DOMAIN_PERMISSIONS:'domainPermissions',
     HISTORY:'history',
@@ -71,6 +73,7 @@ const RouteViews = {
     [RouteNames.TRANSFER]:SettingsView,
     [RouteNames.IDENTITIES]:IdentitiesView,
     [RouteNames.IDENTITY]:IdentityView,
+    [RouteNames.KEYS]:KeyPairsView,
     [RouteNames.PERMISSIONS]:PermissionsView,
     [RouteNames.DOMAIN_PERMISSIONS]:DomainPermissionView,
     [RouteNames.HISTORY]:HistoryView,
@@ -103,6 +106,8 @@ export const RouteDepth = {
     [RouteNames.TRANSFER]:1,
     [RouteNames.IDENTITIES]:1,
     [RouteNames.IDENTITY]:2,
+    [RouteNames.KEYS]:2,
+    [RouteNames.KEYPAIRS]:3,
     [RouteNames.PERMISSIONS]:1,
     [RouteNames.DOMAIN_PERMISSIONS]:2,
     [RouteNames.HISTORY]:1,
@@ -113,9 +118,7 @@ export const RouteDepth = {
     [RouteNames.AUTO_LOCK]:101,
     [RouteNames.LANGUAGE]:101,
     [RouteNames.BACKUP]:101,
-    [RouteNames.EXPORT_JSON]:102,
     [RouteNames.DESTROY]:101,
-    [RouteNames.KEYPAIRS]:101,
 };
 
 export class Routing {

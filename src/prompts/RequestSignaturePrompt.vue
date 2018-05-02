@@ -162,7 +162,7 @@
                 const account = this.identity().networkedAccount(this.network);
 
                 // TODO: EOS Hardcode
-                return PluginRepository.findPlugin('eos').accountFormatter(account)
+                return PluginRepository.plugin('eos').accountFormatter(account)
             },
 
             bind(changed, dotNotation) {

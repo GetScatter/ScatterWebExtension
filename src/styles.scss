@@ -73,6 +73,12 @@ main {
   }
 }
 
+
+.copier {
+  position:absolute;
+  top:-9999px;
+}
+
 .panel-box {
   background:#fff;
   border-radius:4px;
@@ -103,7 +109,7 @@ main {
 
     .header {
       font-size:12px;
-      color:#b2b2b2;
+      color: #9d9d9d;
 
       &.big {
         font-size:14px;
@@ -112,7 +118,7 @@ main {
 
       &.small {
         font-size:9px;
-        color:#cecece;
+        color: #a9a9a9;
       }
 
       &.margin {

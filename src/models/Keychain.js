@@ -24,6 +24,7 @@ export default class Keychain {
 
     clone(){ return Keychain.fromJson(JSON.parse(JSON.stringify(this))) }
 
+    removePermissionsByKeypair(keypair){ this.permissions = this.permissions.filter(perm => perm.keypair !== keypair.unique()); }
     removePermission(permission){ this.permissions = this.permissions.filter(perm => perm.checksum !== permission.checksum); }
     getPermission(checksum){ return this.permissions.find(permission => permission.checksum === checksum); }
     hasPermission(checksum, fields = []){
@@ -68,5 +69,17 @@ export default class Keychain {
         clone.permissions = [];
         return clone;
 
+    }
+
+    hasKeyPair(keypair){
+        return this.keypairs.find(key => key.publicKey.toLowerCase() === keypair.publicKey.toLowerCase())
+    }
+
+    hasKeyPairByName(keypair){
+        return this.keypairs.find(key => key.name.toLowerCase() === keypair.name.toLowerCase())
+    }
+
+    removeKeyPair(keypair){
+        this.keypairs = this.keypairs.filter(key => key.unique() !== keypair.unique());
     }
 }

@@ -18,6 +18,8 @@ export default {
     [KEYS.GENERIC_Requires]:'Requires',
     [KEYS.GENERIC_RequiredProperties]:'Required Properties',
     [KEYS.GENERIC_Import]:'Import',
+    [KEYS.GENERIC_ChainID]:'Chain ID',
+    [KEYS.GENERIC_Blockchain]:'Blockchain',
 
     [KEYS.PLACEHOLDER_Name]:'Name',
     [KEYS.PLACEHOLDER_PublicKey]:'Public Key',
@@ -66,6 +68,7 @@ export default {
     [KEYS.BUTTON_SelectIdentity]:'Select Identity',
 
     [KEYS.MAINMENU_Identities]:'Identities',
+    [KEYS.MAINMENU_Keys]:'Key Pairs',
     [KEYS.MAINMENU_Permissions]:'Permissions',
     [KEYS.MAINMENU_History]:'History',
     [KEYS.MAINMENU_Lock]:'Lock',
@@ -88,6 +91,10 @@ export default {
     [KEYS.IDENTITY_NameDescription]:`
         Applications may choose to use this name as your username as it is unique across all networks.
         If you are not registered with RIDL you will be assigned a random name.
+    `,
+    [KEYS.IDENTITY_NoKeyPairsHeader]:`No Key Pairs!`,
+    [KEYS.IDENTITY_NoKeyPairsDescription]:`
+        Before you can add blockchain accounts to this Identity you need to add some key pairs. Go to the main menu and select: 
     `,
     [KEYS.IDENTITY_AccountHeader]:`Account`,
     [KEYS.IDENTITY_AccountDescription]:`
@@ -172,6 +179,11 @@ export default {
 
     [KEYS.LANGUAGE_Header]:`Select your language`,
 
+    [KEYS.KEYPAIRS_NoKeyPairsHeader]:`You don't have any keypairs.`,
+    [KEYS.KEYPAIRS_NoKeyPairsDescription]:`
+        Click the button on the top right to create/import a keypair.
+    `,
+
     [KEYS.KEYPAIR_Header]:`Generate a new Key Pair`,
     [KEYS.KEYPAIR_Description]:`
         You can use this panel to generate EOS key pairs. These key pairs are generated locally on your machine 
@@ -224,6 +236,18 @@ export default {
         'Identity Name Exists',
 
         'This Identity name is registered to another Identity.'
+    ],
+    //2
+    [KEYS.ALERT_KeyPairExists]:[
+        'Key Pair Exists',
+
+        'This Key Pair is already registered in your keychain.'
+    ],
+    //2
+    [KEYS.ALERT_BadKeyPairName]:[
+        'Bad Key Pair Name',
+
+        'Key Pairs must be named uniquely.'
     ],
     //2
     [KEYS.ALERT_InvalidPrivateKey]:[
@@ -321,6 +345,12 @@ export default {
 
         `You are about to remove an Identity with the name '${name}'. Removing Identities is not reversible and
          all permissions will be . If the Identity is being used on applications perhaps you should just disable it instead.`
+    ],
+    //2
+    [KEYS.PROMPT_DeletingKeyPair]:identities => [
+        'Deleting Key Pair',
+
+        identities.length ? `This Key Pair is used in: '${identities.join(', ')}'` : `This keypair is not used in any Identities.`
     ],
     //2
     [KEYS.PROMPT_RemovingAccount]:formattedAccountName => [

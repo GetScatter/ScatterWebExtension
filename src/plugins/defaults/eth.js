@@ -31,7 +31,7 @@ class ScatterEthereumWallet {
         // const web3 = new Web3();
         // const account = web3.eth.accounts.create();
         // const accounts = [account];
-        const accounts = ['0x25eeb9393caf76698c084cfc372855f0426bc658'];
+        const accounts = ['0x8bde5c170f48b3e94acb08996f95bfe8dfeba5f3'];
         return new Promise((resolve, reject) => {
             callback(null, accounts);
             resolve(accounts)
@@ -46,6 +46,7 @@ class ScatterEthereumWallet {
 
         return new Promise(async (resolve, reject) => {
             if (txData.gas !== undefined) txData.gasLimit = txData.gas;
+            console.log('txData', txData);
             txData.value = txData.value || '0x00';
             txData.data = ethUtil.addHexPrefix(txData.data);
 
@@ -53,16 +54,18 @@ class ScatterEthereumWallet {
             // const payload = Object.assign(txData, { domain:location.host.replace('www.',''), network, requiredFields });
             // const result = await internalMessageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
 
-            const privateKey = ethUtil.toBuffer('0xf842b62a117bb22f51c9dc42acafebab561ac163450ffac3baef3ff538b4cbf9');
+            const privateKey = ethUtil.addHexPrefix('2861292df0a197151202d08495e8f58c1c2b00bb24a5d3e2a9968a81ed2d08f3');
 
             const tx = new EthTx(txData);
-            tx.sign(privateKey);
+            tx.sign(ethUtil.toBuffer(privateKey));
             const sig = '0x' + tx.serialize().toString('hex');
             resolve(sig);
             callback(null, sig);
         })
     }
 }
+
+const toBuffer = key => ethUtil.toBuffer(ethUtil.addHexPrefix(key));
 
 export default class ETH extends Plugin {
 
@@ -72,6 +75,17 @@ export default class ETH extends Plugin {
 
     accountFormatter(account){
         return `${account.publicKey}`
+    }
+
+    privateToPublic(privateKey){ return ethUtil.addHexPrefix(ethUtil.privateToAddress(toBuffer(privateKey)).toString('hex')); }
+    validPrivateKey(privateKey){ return ethUtil.isValidPrivate(toBuffer(privateKey)); }
+    validPublicKey(publicKey){   return ethUtil.isValidAddress(publicKey); }
+    randomPrivateKey(){
+        return new Promise((resolve, reject) => {
+            const entropy = Array.from({length:32}).map(i => Math.round(Math.random() * 255));
+            const privateKey = new Buffer(entropy);
+            resolve(privateKey.toString('hex'));
+        })
     }
 
     signer(bgContext, payload, publicKey, callback, arbitrary = false, isHash = false){
@@ -88,7 +102,7 @@ export default class ETH extends Plugin {
             const network = networkGetter();
             if(!network) throw Error.noNetwork();
 
-            const rpcUrl = `${_prefix}://${network.host}:${network.port}`;
+            const rpcUrl = `${_prefix}://${network.hostport()}`;
 
             const engine = new ProviderEngine();
             const web3 = new Web3(engine);

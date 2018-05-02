@@ -7,7 +7,8 @@ export default class Permission {
         // Mandatory
         this.domain = '';
         this.network = '';
-        this.publicKey = '';
+        this.identity = '';
+        this.keypair = '';
 
         // Optional
         this.contract = null;
@@ -27,7 +28,7 @@ export default class Permission {
         return p;
     }
 
-    identity(keychain){
+    getIdentity(keychain){
         return keychain.findIdentity(this.publicKey);
     }
 
@@ -47,6 +48,6 @@ export default class Permission {
     // TODO: identity was disabled, and another was used in it's place. Possibly if there is
     // TODO: already a permission for any identity another should not be added.
     identityIsNotDisabled(keychain){
-        return !this.identity(keychain).disabled;
+        return !this.getIdentity(keychain).disabled;
     }
 }

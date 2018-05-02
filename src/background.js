@@ -235,7 +235,7 @@ export default class Background {
                 sendResponse(null);
                 return false;
             }
-            const identity = permission.identity(scatter.keychain);
+            const identity = permission.getIdentity(scatter.keychain);
             sendResponse(identity.asOnlyRequiredFields(permission.fields, permission.network));
         });
     }
@@ -269,7 +269,7 @@ export default class Background {
                         this.addPermissions([Permission.fromJson({
                             domain,
                             network,
-                            publicKey:identity.publicKey,
+                            identity:identity.publicKey,
                             timestamp:+ new Date(),
                             fields,
                             checksum:domain

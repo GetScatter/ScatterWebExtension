@@ -95,7 +95,7 @@ describe('Signature Request', async testDone => {
 
     it('should be able to set up a transaction to be signed', done => {
 
-        const signProvider = PluginRepository.findPlugin(Blockchains.EOS).signatureProvider();
+        const signProvider = PluginRepository.plugin(Blockchains.EOS).signatureProvider();
         eos.transfer('inita', 'initb', '10.000 EOS', '', {signProvider}).then(done => {
 
         });

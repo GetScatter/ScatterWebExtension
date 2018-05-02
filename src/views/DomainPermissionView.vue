@@ -4,11 +4,11 @@
         <search v-on:changed="changed => bind(changed, 'searchText')" :placeholder="'Search: ' + domain"></search>
 
         <section class="p20 scroller with-search">
-            <section v-for="(domainPermissions, hash) in filterBySearch()" class="panel-box" :class="{'disabled':domainPermissions.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).disabled}">
+            <section v-for="(domainPermissions, hash) in filterBySearch()" class="panel-box" :class="{'disabled':domainPermissions.find(perm => perm.isIdentityOnly()).getIdentity(scatter.keychain).disabled}">
 
                 <!-- Account Information -->
                 <section class="panel">
-                    <figure class="header big identity-header">{{domainPermissions.find(perm => perm.isIdentityOnly()).identity(scatter.keychain).name}}</figure>
+                    <figure class="header big identity-header">{{domainPermissions.find(perm => perm.isIdentityOnly()).getIdentity(scatter.keychain).name}}</figure>
                     <figure class="revoke-identity" v-on:click="revoke({type:'identity', perm:domainPermissions.find(perm => perm.isIdentityOnly())})">
                         {{locale(langKeys.PERMISSION_RevokeIdentity)}}
                     </figure>
@@ -108,7 +108,7 @@
                     scatter.keychain.permissions = scatter.keychain.permissions.filter(perm =>
                         perm.network.unique() !== permission.network.unique() ||
                         perm.domain !== permission.domain ||
-                        perm.publicKey !== permission.publicKey);
+                        perm.identity !== permission.identity);
                     this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.goBackIfEmpty());
                 });
             },

@@ -1,5 +1,6 @@
 
 export const MAINMENU_Identities = 'mm_ids';
+export const MAINMENU_Keys = 'mm_keys';
 export const MAINMENU_Permissions = 'mm_perm';
 export const MAINMENU_History = 'mm_hist';
 export const MAINMENU_Lock = 'mm_lock';
@@ -20,6 +21,8 @@ export const GENERIC_Port = 'gen_port';
 export const GENERIC_Requires = 'gen_requires';
 export const GENERIC_RequiredProperties = 'gen_required_props';
 export const GENERIC_Import = 'gen_import';
+export const GENERIC_ChainID = 'gen_chain_id';
+export const GENERIC_Blockchain = 'gen_blockchain';
 
 export const PLACEHOLDER_Name = 'plc_name';
 export const PLACEHOLDER_PublicKey = 'plc_pubk';
@@ -74,6 +77,8 @@ export const IDENTITY_DisablingHeader = 'id_disbl_head';
 export const IDENTITY_DisablingDescription = 'id_disbl_desc';
 export const IDENTITY_NameHeader = 'id_name_head';
 export const IDENTITY_NameDescription = 'id_name_desc';
+export const IDENTITY_NoKeyPairsHeader = 'id_no_kp_head';
+export const IDENTITY_NoKeyPairsDescription = 'id_no_kp_desc';
 export const IDENTITY_AccountHeader = 'id_account_head';
 export const IDENTITY_AccountDescription = 'id_account_desc';
 export const IDENTITY_PersonalHeader = 'id_pers_head';
@@ -126,6 +131,9 @@ export const PASS_Description = 'pass_desc';
 export const NETWORK_Header = 'netw_head';
 export const NETWORK_Description = 'netw_desc';
 
+export const KEYPAIRS_NoKeyPairsHeader = 'kps_head';
+export const KEYPAIRS_NoKeyPairsDescription = 'kps_desc';
+
 export const KEYPAIR_Header = 'kp_head';
 export const KEYPAIR_Description = 'kp_desc';
 export const KEYPAIR_Validation_Header = 'kp_v_head';
@@ -148,6 +156,8 @@ export const ERROR_MustSelectItem = 'err_mst_sel_item';
 export const ALERT_Type = 'alert_type';
 export const ALERT_BadIdentityName = 'alert_bad_id_name';
 export const ALERT_IdentityNameExists = 'alert_id_name_exists';
+export const ALERT_BadKeyPairName = 'alert_bad_kp_name';
+export const ALERT_KeyPairExists = 'alert_keypair_exists';
 export const ALERT_InvalidPrivateKey = 'alert_inv_priv_key';
 export const ALERT_NoAccountsFound = 'alert_no_acc_fnd';
 export const ALERT_PasswordsDoNotMatch = 'alert_pass_no_mtch';
@@ -166,6 +176,7 @@ export const PROMPT_RevokingContractAction = 'prompt_revk_contr_act';
 export const PROMPT_RemovingIdentity = 'prompt_rm_id';
 export const PROMPT_RemovingAccount = 'prompt_rm_acc';
 export const PROMPT_RemovingNetwork = 'prompt_rm_net';
+export const PROMPT_DeletingKeyPair = 'alert_del_kp';
 export const PROMPT_WhitelistingContractAction = 'prompt_white_act';
 export const PROMPT_SelectAccount = 'prompt_sel_acc';
 

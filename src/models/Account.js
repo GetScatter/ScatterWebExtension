@@ -2,6 +2,7 @@ import KeyPair from './KeyPair';
 
 export default class Account {
     constructor(){
+        this.keypairUnique = '';
         this.publicKey = '';
         this.name = '';
         this.authority = '';

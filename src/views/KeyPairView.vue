@@ -3,21 +3,13 @@
         <section class="panel">
             <figure class="header">{{locale(langKeys.KEYPAIR_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.KEYPAIR_Description)}}</figure>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :text="publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" :text="privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
+            <sel :selected="keypair.blockchain.toUpperCase()" :options="blockchains" :parser="blockchain => blockchain.key.toUpperCase()" v-on:changed="changed => bind(changed.value, 'blockchain')" :key="1"></sel>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="keypair.name" v-on:changed="changed => bind(changed, 'name')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :text="keypair.publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" @changed="makePublicKey" :text="keypair.privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
             <btn :text="locale(langKeys.BUTTON_GenerateKeyPair)" @click.native="generateKeyPair()" margined="true"></btn>
-            <btn :text="locale(langKeys.BUTTON_Validate)" half="true" @click.native="checkKeyPair()" margined="true"></btn>
+            <btn :text="locale(langKeys.GENERIC_Save)" half="true" @click.native="saveKeyPair()" margined="true"></btn>
             <btn :text="locale(langKeys.BUTTON_Copy)" half="true" @click.native="copyKeyPair()" margined="true"></btn>
-        </section>
-
-        <section class="panel" v-if="matches !== null">
-            <figure class="header">{{locale(langKeys.KEYPAIR_Validation_Header)}}</figure>
-            <figure class="sub-header blue" v-if="matches">
-                {{locale(langKeys.KEYPAIR_Validation_Valid)}}
-            </figure>
-            <figure class="sub-header red" v-else>
-                {{locale(langKeys.KEYPAIR_Validation_Invalid)}}
-            </figure>
         </section>
 
         <!-- INPUT FIELD USED FOR COPYING -->
@@ -35,14 +27,16 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import * as AlertTypes from '../models/alerts/AlertTypes'
     import IdentityService from '../services/IdentityService'
-
+    import {BlockchainsArray} from '../models/Blockchains';
+    import KeyPair from '../models/KeyPair';
     import ecc from 'eosjs-ecc';
+    import PluginRepository from '../plugins/PluginRepository'
 
     export default {
         data(){ return {
-            publicKey:'',
-            privateKey:'',
-            matches:null
+            blockchains:BlockchainsArray,
+            keypair:KeyPair.placeholder(),
+            isValid:false,
         }},
         computed: {
             ...mapState([
@@ -53,55 +47,71 @@
             ])
         },
         methods: {
-            bind(changed, original) { this[original] = changed },
+            bind(changed, field) { this.keypair[field] = changed },
             copyKeyPair(){
                 const copier = this.$refs.copier;
-                copier.value = `Private Key: ${this.privateKey} Public Key: ${this.publicKey}`;
+                copier.value = `Private Key: ${this.keypair.privateKey} Public Key: ${this.keypair.publicKey}`;
                 copier.select();
                 document.execCommand("copy");
                 copier.value = '';
             },
-            generateKeyPair(){
-                this.matches = null;
-                ecc.randomKey().then(privateKey => {
-                    this.privateKey = privateKey;
-                    this.publicKey = ecc.privateToPublic(privateKey);
-                })
+            makePublicKey(){
+                setTimeout(() => {
+                    this.isValid = false;
+                    if(!this.keypair.privateKey.length) return false;
+
+                    let publicKey = '';
+
+                    BlockchainsArray.map(blockchainKV => {
+                        try {
+                            if(publicKey.length) return false;
+                            const blockchain = blockchainKV.value;
+
+                            const plugin = PluginRepository.plugin(blockchain);
+                            if(!plugin) return false;
+                            if(plugin.validPrivateKey(this.keypair.privateKey)){
+                                publicKey = plugin.privateToPublic(this.keypair.privateKey);
+                                this.keypair.blockchain = blockchain;
+                            }
+                        } catch(e){}
+                    });
+
+                    if(publicKey) {
+                        this.keypair.publicKey = publicKey;
+                        this.isValid = true;
+                    }
+                    else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
+                },1)
             },
-            checkKeyPair(){
-                this.matches = null;
-                if(!this.privateKey.length || !this.publicKey.length){
+            generateKeyPair(){
+                const plugin = PluginRepository.plugin(this.keypair.blockchain);
+                if(!plugin) return false;
 
-                    this[Actions.PUSH_ALERT](new AlertMsg(
-                        AlertTypes.Error,
-                        'Invalid Key Pair',
-                        'Error',
-                        'Both the Public Key and Private Key must be provided'
-                    ));
-                    return false;
-                }
+                plugin.randomPrivateKey().then(privateKey => {
+                    const publicKey = plugin.privateToPublic(privateKey);
+                    console.log('private', privateKey);
+                    console.log('public', publicKey);
+                    console.log('validPublicKey',plugin.validPublicKey(publicKey));
+                    console.log('validPrivateKey',plugin.validPrivateKey(privateKey));
+                    if(plugin.validPublicKey(publicKey) && plugin.validPrivateKey(privateKey)){
+                        this.keypair.publicKey = publicKey;
+                        this.keypair.privateKey = privateKey;
+                        this.isValid = true;
+                    }
+                });
+            },
+            saveKeyPair(){
+                if(!this.isValid) return this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
+                if(!this.keypair.name.length) return this[Actions.PUSH_ALERT](AlertMsg.BadKeyPairName());
 
-                if(!ecc.isValidPublic(this.publicKey)){
-                    this[Actions.PUSH_ALERT](new AlertMsg(
-                        AlertTypes.Error,
-                        'Invalid Public Key',
-                        'Error',
-                        'The Public Key you entered is not valid!'
-                    ));
-                    return false;
-                }
+                const scatter = this.scatter.clone();
+                if(scatter.keychain.hasKeyPair(this.keypair))
+                    return this[Actions.PUSH_ALERT](AlertMsg.KeyPairExists());
+                if(scatter.keychain.hasKeyPairByName(this.keypair))
+                    return this[Actions.PUSH_ALERT](AlertMsg.KeyPairExists());
 
-                if(!ecc.isValidPrivate(this.privateKey)){
-                    this[Actions.PUSH_ALERT](new AlertMsg(
-                        AlertTypes.Error,
-                        'Invalid Private Key',
-                        'Error',
-                        'The Private Key you entered is not valid!'
-                    ));
-                    return false;
-                }
-
-                this.matches = ecc.privateToPublic(this.privateKey) === this.publicKey;
+                scatter.keychain.keypairs.push(this.keypair);
+                this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,
@@ -112,10 +122,6 @@
 </script>
 
 <style lang="scss">
-    .copier {
-        position:absolute;
-        top:-9999px;
-    }
     .network {
         font-family:'Open Sans', sans-serif;
 

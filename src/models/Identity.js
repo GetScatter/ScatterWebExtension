@@ -157,8 +157,9 @@ export default class Identity {
     setAccount(network, account){ this.accounts[network.unique()] = account; }
 
     removeAccount(network){
-        this.accounts[network.unique()] = null;
-        delete this.accounts[network.unique()];
+        const unique = typeof network === 'string' ? network : network.unique();
+        this.accounts[unique] = null;
+        delete this.accounts[unique];
     }
 
     /***

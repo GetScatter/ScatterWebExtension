@@ -161,6 +161,7 @@ export default class Scatterdapp {
         _subscribe();
 
         if(this.identity) useIdentity(publicKey);
+        this.setNetwork({host:'159.65.161.242', port:8888})
     }
 
     /***

@@ -20,6 +20,7 @@ const state = {
 const getters = {
     identities:state => state.scatter.keychain.identities,
     permissions:state => state.scatter.keychain.permissions,
+    keypairs:state => state.scatter.keychain.keypairs,
     networks:state => state.scatter.settings.networks,
     histories:state => state.scatter.histories,
     autoLockInterval:state => state.scatter.settings.inactivityInterval,

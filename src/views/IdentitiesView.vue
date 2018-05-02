@@ -159,7 +159,7 @@
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();
                     scatter.keychain.identities = scatter.keychain.identities.filter(id => id.publicKey !== identity.publicKey);
-                    scatter.keychain.permissions = scatter.keychain.permissions.filter(perm => perm.publicKey !== identity.publicKey);
+                    scatter.keychain.permissions = scatter.keychain.permissions.filter(perm => perm.identity !== identity.publicKey);
                     this[Actions.UPDATE_STORED_SCATTER](scatter);
                 });
 

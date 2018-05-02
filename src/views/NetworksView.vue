@@ -14,13 +14,13 @@
                 <section class="panel">
                     <figure class="header big"><i class="fa fa-globe"></i>{{network.host}}</figure>
                     <figure class="header small margin"><i class="fa fa-plug"></i>{{network.port}}</figure>
+                    <figure class="header small margin"><i class="fa fa-chain"></i>{{network.blockchain.toUpperCase()}}</figure>
                 </section>
 
                 <!-- Actions -->
                 <section class="panel">
                     <section class="actions">
-                        <!--<figure v-on:click="goToNetwork(network)" class="action"><i class="fa fa-pencil-square-o"></i></figure>-->
-                        <figure class="action red right" v-on:click="deleteNetwork(network)"><i class="fa fa-minus-square"></i></figure>
+                        <figure class="action red right" v-on:click="deleteNetwork(network)"><i class="fa fa-ban"></i></figure>
                     </section>
                 </section>
 
@@ -50,7 +50,6 @@
         },
         methods: {
             bind(changed, original) { this[original] = changed },
-            goToNetwork(network){ this.$router.push({ name:RouteNames.NETWORK, query: { networkunique: network.unique() } }) },
             createNetwork(){ this.$router.push({ name:RouteNames.NETWORK, query: { networkunique: '' } }) },
             filterBySearch(){ return this.networks.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
             deleteNetwork(network){
@@ -78,7 +77,10 @@
 </script>
 
 <style lang="scss">
-    .networks {
-
+    .header {
+        &.small {
+            display:inline-block;
+            margin-right:8px;
+        }
     }
 </style>

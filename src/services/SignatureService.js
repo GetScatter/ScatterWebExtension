@@ -30,7 +30,7 @@ export default class SignatureService {
                 return false;
             }
 
-            PluginRepository.findPlugin(KeyPair.blockchain(publicKey)).signer(context, payload, publicKey, signature => {
+            PluginRepository.plugin(KeyPair.blockchain(publicKey)).signer(context, payload, publicKey, signature => {
                 if(!signature){
                     sendResponse(Error.maliciousEvent());
                     return false;
@@ -64,7 +64,7 @@ export default class SignatureService {
 
         // Checking if Identity still has all the necessary accounts
         const requiredAccounts = ContractHelpers.actionParticipants(payload, blockchain);
-        const formattedName = PluginRepository.findPlugin(blockchain).accountFormatter(account);
+        const formattedName = PluginRepository.plugin(blockchain).accountFormatter(account);
         if(!requiredAccounts.includes(formattedName)){
             sendResponse(Error.signatureAccountMissing());
             return false;
@@ -72,7 +72,7 @@ export default class SignatureService {
 
 
         const sign = (returnedFields) => {
-            PluginRepository.findPlugin(blockchain).signer(context, payload, account.publicKey, signature => {
+            PluginRepository.plugin(blockchain).signer(context, payload, account.publicKey, signature => {
                 if(!signature){
                     sendResponse(Error.maliciousEvent());
                     return false;
@@ -130,7 +130,8 @@ export default class SignatureService {
                         network,
                         contract,
                         action,
-                        publicKey:identity.publicKey,
+                        identity:identity.publicKey,
+                        keypair:account.keypairUnique,
                         checksum,
                         timestamp:+ new Date(),
                         mutableFields:approval.mutableFields,

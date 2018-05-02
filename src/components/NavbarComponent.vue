@@ -43,6 +43,7 @@
                 }
             },
             breadcrumb(){
+                // TODO: Localize
                 switch(this.$route.name){
                     case RouteNames.LOAD_FROM_BACKUP: return 'Import Keychain';
                     case RouteNames.SETTINGS: return 'Settings';
@@ -60,7 +61,8 @@
                     case RouteNames.DESTROY: return 'Destroy';
                     case RouteNames.AUTO_LOCK: return 'Auto Lock';
                     case RouteNames.LANGUAGE: return 'Language';
-                    case RouteNames.KEYPAIRS: return 'Key Pairs';
+                    case RouteNames.KEYPAIRS: return 'Key Pair';
+                    case RouteNames.KEYS: return 'Key Pairs';
                 }
                 return 'Undefined'
             },

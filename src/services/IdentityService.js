@@ -26,7 +26,7 @@ export default class IdentityService {
 
     static identityFromPermissionsOrNull(domain, scatter){
         const identityFromPermission = IdentityService.identityPermission(domain, scatter);
-        return identityFromPermission ? identityFromPermission.identity(scatter.keychain) : null;
+        return identityFromPermission ? identityFromPermission.getIdentity(scatter.keychain) : null;
     }
 
     static getOrRequestIdentity(domain, network, fields, scatter, callback){

@@ -24,6 +24,11 @@ export default class EOS extends Plugin {
         return `${account.name}@${account.authority}`
     }
 
+    privateToPublic(privateKey){ return ecc.privateToPublic(privateKey); }
+    validPrivateKey(privateKey){ return ecc.isValidPrivate(privateKey); }
+    validPublicKey(publicKey){   return ecc.isValidPublic(publicKey); }
+    randomPrivateKey(){ return ecc.randomKey(); }
+
     signer(bgContext, payload, publicKey, callback, arbitrary = false, isHash = false){
         bgContext.publicToPrivate(privateKey => {
             if(!privateKey){
@@ -37,8 +42,6 @@ export default class EOS extends Plugin {
 
             callback(sig);
         }, publicKey)
-
-
     }
 
     signatureProvider(...args){
@@ -52,7 +55,7 @@ export default class EOS extends Plugin {
             const network = networkGetter();
             if(!network) throw Error.noNetwork();
 
-            const httpEndpoint = `http://${network.host}:${network.port}`;
+            const httpEndpoint = `http://${network.hostport()}`;
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions

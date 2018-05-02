@@ -46,6 +46,7 @@
             input(){ this.emit(); },
             text(){ this.input = this.text; },
             disabled(isDisabled){ if(isDisabled) this.open = false; },
+            selected(){ this.selectedOption = this.selected; }
         }
     }
 </script>
@@ -62,7 +63,6 @@
         border-radius:4px;
         background:#fff;
         transition:background 0.2s ease;
-        z-index:2;
 
         &.disabled {
             background: #f5f5f5;
@@ -93,7 +93,8 @@
             height:50px;
             line-height:50px;
             width:100%;
-            padding:0 15px;
+            padding:0 35px 0 15px;
+            overflow: hidden;
         }
 
         .options {
@@ -111,6 +112,7 @@
             overflow:auto;
             transition:all 0.2s ease, max-height 0.5s ease;
             transition-property: visibility, box-shadow, opacity, max-height;
+            z-index:2;
 
             .option {
                 padding:10px;
