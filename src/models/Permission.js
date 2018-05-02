@@ -29,7 +29,7 @@ export default class Permission {
     }
 
     getIdentity(keychain){
-        return keychain.findIdentity(this.publicKey);
+        return keychain.findIdentity(this.identity);
     }
 
     isIdentityOnly(){

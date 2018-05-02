@@ -89,12 +89,9 @@
 
                 plugin.randomPrivateKey().then(privateKey => {
                     const publicKey = plugin.privateToPublic(privateKey);
-                    console.log('private', privateKey);
-                    console.log('public', publicKey);
-                    console.log('validPublicKey',plugin.validPublicKey(publicKey));
-                    console.log('validPrivateKey',plugin.validPrivateKey(privateKey));
                     if(plugin.validPublicKey(publicKey) && plugin.validPrivateKey(privateKey)){
                         this.keypair.publicKey = publicKey;
+                        console.log(publicKey);
                         this.keypair.privateKey = privateKey;
                         this.isValid = true;
                     }

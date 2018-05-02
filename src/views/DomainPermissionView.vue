@@ -4,7 +4,7 @@
         <search v-on:changed="changed => bind(changed, 'searchText')" :placeholder="'Search: ' + domain"></search>
 
         <section class="p20 scroller with-search">
-            <section v-for="(domainPermissions, hash) in filterBySearch()" class="panel-box" :class="{'disabled':domainPermissions.find(perm => perm.isIdentityOnly()).getIdentity(scatter.keychain).disabled}">
+            <section v-for="(domainPermissions, hash) in filterBySearch()" class="panel-box">
 
                 <!-- Account Information -->
                 <section class="panel">

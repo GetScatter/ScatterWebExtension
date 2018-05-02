@@ -35,6 +35,7 @@
     import {RouteNames} from '../vue/Routing'
     import Scatter from '../models/Scatter'
     import AlertMsg from '../models/alerts/AlertMsg'
+    import PluginRepository from '../plugins/PluginRepository'
 
     export default {
         data(){ return {
@@ -52,8 +53,9 @@
             bind(changed, original) { this[original] = changed },
             createNetwork(){ this.$router.push({ name:RouteNames.NETWORK, query: { networkunique: '' } }) },
             filterBySearch(){ return this.networks.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
-            deleteNetwork(network){
-                if(network.isEndorsedNetwork()){
+            async deleteNetwork(network){
+                const plugin = PluginRepository.plugin(network.blockchain);
+                if(await plugin.isEndorsedNetwork(network)){
                     this[Actions.PUSH_ALERT](AlertMsg.RemovingEndorsedNetwork());
                     return false;
                 }

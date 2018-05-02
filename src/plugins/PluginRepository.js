@@ -19,7 +19,7 @@ class PluginRepositorySingleton {
         this.plugins.push(new EOS());
         this.plugins.push(new ETH());
 
-        // TODO: Get from store repo
+        // TODO: Get from machine storage repo
     }
 
     signatureProviders(){

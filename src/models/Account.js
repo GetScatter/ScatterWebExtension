@@ -1,4 +1,5 @@
 import KeyPair from './KeyPair';
+import PluginRepository from '../plugins/PluginRepository';
 
 export default class Account {
     constructor(){
@@ -6,6 +7,12 @@ export default class Account {
         this.publicKey = '';
         this.name = '';
         this.authority = '';
+    }
+
+    formatted(){
+        const blockchain = this.keypairUnique.split(':')[0];
+        if(!blockchain || !blockchain.length) return this.name;
+        return PluginRepository.plugin(blockchain).accountFormatter(this);
     }
 
     static placeholder(){ return new Account(); }

@@ -141,13 +141,14 @@ main {
         clear: both;
 
         span {
-          font-size:9px;
+          font-size:11px;
           display:block;
           float:left;
           width:50%;
 
           &:nth-child(1){
             color:#a1a1a1;
+            text-transform: capitalize;
           }
           &:nth-child(2){
             color:#666666;
@@ -155,7 +156,7 @@ main {
           }
 
           &.big {
-            font-size:11px;
+            font-size:13px;
 
             &:nth-child(1){ color:#666666; }
           }
@@ -176,7 +177,7 @@ main {
         height:30px;
         line-height:30px;
         text-align:center;
-        background:#a5a5a5;
+        background: #6f6f6f;
         color:#fff;
         font-size:14px;
         float:left;

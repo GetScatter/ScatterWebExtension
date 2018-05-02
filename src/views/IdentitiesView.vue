@@ -32,8 +32,8 @@
                     <figure class="header small reverse-margin">accounts</figure>
                     <section class="items" v-for="network in Object.keys(identity.accounts)">
                         <section class="item">
-                            <span>{{`${network}`}}</span>
-                            <span>{{`${identity.accounts[network].name}@${identity.accounts[network].authority}`}}</span>
+                            <span>{{network}}</span>
+                            <span>{{identity.accounts[network].formatted()}}</span>
                             <!--<span class="big">{{getBalanceFor(identities.accounts[account])}}</span>-->
                         </section>
                     </section>
@@ -67,7 +67,7 @@
                 <!-- Actions -->
                 <section class="panel">
                     <section class="actions">
-                        <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil-square-o"></i></figure>
+                        <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil"></i></figure>
                         <figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>
                         <!--<figure class="action toggle-switch right" v-on:click="toggleIdentity(identity)">-->
                             <!--<figure class="switch" :class="{'enabled':!identity.disabled}">{{(identity.disabled) ? 'Disabled' : 'Enabled'}}</figure>-->

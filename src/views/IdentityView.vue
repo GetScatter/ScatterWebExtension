@@ -38,7 +38,9 @@
                  :parser="keypair => keypair.name"
                  v-on:changed="selectKeypair"></sel>
 
-            <btn :disabled="importing || !selectedKeypair || !selectedKeypair.publicKey.length" :text="locale(langKeys.BUTTON_ImportAccount)" v-on:clicked="importAccount" margined="true"></btn>
+            <btn :disabled="importing || !selectedKeypair || !selectedKeypair.publicKey.length"
+                 :text="locale(langKeys.GENERIC_Import)"
+                 v-on:clicked="importAccount" margined="true"></btn>
         </section>
 
         <!-- NO KEY PAIRS -->
@@ -61,7 +63,7 @@
         <!-- Location Information -->
         <section class="panel">
             <figure class="header">{{locale(langKeys.IDENTITY_LocationHeader)}}</figure>
-            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_LocationDescription)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.IDENTITY_LocationDescription)}}</figure>
 
             <btn :text="locale(langKeys.BUTTON_AddNewLocation)" v-on:clicked="addNewLocation"></btn>
             <sel :selected="selectedLocation" :options="identity.locations" :parser="(location) => location.name.length ? location.name : langKeys.PLACEHOLDER_DefaultLocationName"
@@ -170,13 +172,9 @@
             selectKeypair(keypair){
                 this.selectedKeypair = !keypair.publicKey.length ? null : keypair;
             },
-            accountFromNetwork(){
-                return this.scatter.keychain.networkedAccount(this.selectedNetwork);
-            },
             removeAccount(){
                 const account = this.identity.accounts[this.selectedNetwork.unique()];
-                // TODO: EOS Hardcode
-                const formattedAccount = PluginRepository.plugin('eos').accountFormatter(account);
+                const formattedAccount = PluginRepository.plugin(this.selectedNetwork.blockchain).accountFormatter(account);
 
                 this[Actions.PUSH_ALERT](AlertMsg.RemovingAccount(formattedAccount)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
@@ -209,6 +207,7 @@
                 const index = this.identity.locations.indexOf(this.selectedLocation);
                 this.identity.locations.splice(index, 1);
                 if(wasDefault) this.identity.locations[0].isDefault = true;
+                this.selectedLocation = this.identity.locations[0];
             },
             saveIdentity(){
                 if(!Identity.nameIsValid(this.identity.name)){

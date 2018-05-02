@@ -4,6 +4,7 @@ import {Blockchains} from '../../models/Blockchains'
 import * as NetworkMessageTypes from '../../messages/NetworkMessageTypes'
 import StringHelpers from '../../util/StringHelpers'
 import Error from '../../models/errors/Error'
+import Network from '../../models/Network'
 // const ecc = require('eosjs-ecc');
 import Eos from 'eosjs'
 let {ecc} = Eos.modules;
@@ -20,10 +21,22 @@ export default class EOS extends Plugin {
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT)
     }
 
+    async getEndorsedNetwork(){
+        return new Promise((resolve, reject) => {
+            resolve(new Network('mainnet.eos.io', 8080, Blockchains.EOS));
+        });
+    }
+
+    async isEndorsedNetwork(network){
+        const endorsedNetwork = await this.getEndorsedNetwork();
+        return network.hostport() === endorsedNetwork.hostport();
+    }
+
     accountFormatter(account){
         return `${account.name}@${account.authority}`
     }
 
+    accountsAreImported(){ return true; }
     privateToPublic(privateKey){ return ecc.privateToPublic(privateKey); }
     validPrivateKey(privateKey){ return ecc.isValidPrivate(privateKey); }
     validPublicKey(publicKey){   return ecc.isValidPublic(publicKey); }

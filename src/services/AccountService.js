@@ -3,6 +3,7 @@ import KeyPair from '../models/KeyPair'
 import AlertMsg from '../models/alerts/AlertMsg'
 import EOSKeygen from '../util/EOSKeygen'
 import * as Actions from '../store/constants';
+import PluginRepository from '../plugins/PluginRepository'
 
 // TODO: Only dependence on eosjs
 import * as Eos from 'eosjs';
@@ -20,18 +21,31 @@ export default class AccountService {
         return new Promise((resolve, reject) => {
             const accountSelected = (account) => resolve({keypair, account});
 
-            AccountService.getAccountsFromPublicKey(keypair.publicKey, network).then(accounts => {
-                switch(accounts.length){
-                    case 0: context[Actions.PUSH_ALERT](AlertMsg.NoAccountsFound()); reject(); return false;
-                    // Only one account, so returning it
-                    case 1: accountSelected(Account.fromJson({name:accounts[0].name, authority:accounts[0].authority, publicKey:keypair.publicKey, keypairUnique:keypair.unique() })); break;
-                    // More than one account, prompting account selection
-                    default: context[Actions.PUSH_ALERT](AlertMsg.SelectAccount(accounts)).then(res => {
-                        if(!res || !res.hasOwnProperty('selected')) { reject(); return false; }
-                        accountSelected(Account.fromJson(Object.assign(res.selected, {publicKey:keypair.publicKey})));
-                    })
-                }
-            });
+            // Accounts for this blockchain need importation
+            if(PluginRepository.plugin(network.blockchain).accountsAreImported()){
+                AccountService.getAccountsFromPublicKey(keypair.publicKey, network).then(accounts => {
+                    switch(accounts.length){
+                        case 0: context[Actions.PUSH_ALERT](AlertMsg.NoAccountsFound()); reject(); return false;
+                        // Only one account, so returning it
+                        case 1: accountSelected(Account.fromJson({name:accounts[0].name, authority:accounts[0].authority, publicKey:keypair.publicKey, keypairUnique:keypair.unique() })); break;
+                        // More than one account, prompting account selection
+                        default: context[Actions.PUSH_ALERT](AlertMsg.SelectAccount(accounts)).then(res => {
+                            if(!res || !res.hasOwnProperty('selected')) { reject(); return false; }
+                            accountSelected(Account.fromJson(Object.assign(res.selected, {publicKey:keypair.publicKey, keypairUnique:keypair.unique()})));
+                        })
+                    }
+                });
+            }
+
+            // Accounts for this blockchain are freebased.
+            else accountSelected(Account.fromJson({
+                name:keypair.name,
+                authority:'',
+                publicKey:keypair.publicKey,
+                keypairUnique:keypair.unique()
+            }))
+
+
         })
     }
 

@@ -299,7 +299,7 @@ export default {
     [KEYS.ALERT_RemovingEndorsedNetwork]:[
         'Cannot Remove Endorsed Network',
 
-        `You cannot remove Scatter's endorsed Network. We use this Network to host our contracts.`
+        `You cannot remove Scatter's endorsed Networks.`
     ],
     //2
     [KEYS.ALERT_NoIdentityWithProperties]:fields => [

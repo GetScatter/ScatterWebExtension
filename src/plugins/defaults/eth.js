@@ -11,6 +11,7 @@ const WebsocketSubprovider = require('web3-provider-engine/subproviders/websocke
 import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
 const EthTx = require('ethereumjs-tx')
 const ethUtil = require('ethereumjs-util')
+import Network from '../../models/Network'
 
 
 
@@ -74,9 +75,21 @@ export default class ETH extends Plugin {
     }
 
     accountFormatter(account){
-        return `${account.publicKey}`
+        return `${account.name}`
     }
 
+    async getEndorsedNetwork(){
+        return new Promise((resolve, reject) => {
+            resolve(new Network('ethereum.com', 8080, Blockchains.ETH));
+        });
+    }
+
+    async isEndorsedNetwork(network){
+        const endorsedNetwork = await this.getEndorsedNetwork();
+        return network.hostport() === endorsedNetwork.hostport();
+    }
+
+    accountsAreImported(){ return false; }
     privateToPublic(privateKey){ return ethUtil.addHexPrefix(ethUtil.privateToAddress(toBuffer(privateKey)).toString('hex')); }
     validPrivateKey(privateKey){ return ethUtil.isValidPrivate(toBuffer(privateKey)); }
     validPublicKey(publicKey){   return ethUtil.isValidAddress(publicKey); }
