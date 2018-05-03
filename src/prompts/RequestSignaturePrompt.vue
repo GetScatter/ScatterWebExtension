@@ -139,7 +139,7 @@
         },
         mounted(){
             this.network = Network.fromJson(this.prompt.network);
-            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields, this.network);
+            const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields);
 
             if(!hasAllRequiredFields){
                 this[Actions.PUSH_ALERT](AlertMsg.NoIdentityWithProperties(this.requiredFields)).then(closed => {

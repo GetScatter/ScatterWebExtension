@@ -26,6 +26,10 @@ class PluginRepositorySingleton {
         return this.plugins.filter(plugin => plugin.type === PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
+    supportedBlockchains(){
+        return this.signatureProviders().map(plugin => name)
+    }
+
     plugin(name){
         return this.plugins.find(plugin => plugin.name === name);
     }

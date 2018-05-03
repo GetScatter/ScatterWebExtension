@@ -36,6 +36,13 @@ export default class EOS extends Plugin {
         return `${account.name}@${account.authority}`
     }
 
+    returnableAccount(account){
+        return {
+            name:account.name,
+            authority:account.authority
+        }
+    }
+
     accountsAreImported(){ return true; }
     privateToPublic(privateKey){ return ecc.privateToPublic(privateKey); }
     validPrivateKey(privateKey){ return ecc.isValidPrivate(privateKey); }

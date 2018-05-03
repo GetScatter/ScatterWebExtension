@@ -236,7 +236,7 @@ export default class Background {
                 return false;
             }
             const identity = permission.getIdentity(scatter.keychain);
-            sendResponse(identity.asOnlyRequiredFields(permission.fields, permission.network));
+            sendResponse(identity.asOnlyRequiredFields(permission.fields));
         });
     }
 

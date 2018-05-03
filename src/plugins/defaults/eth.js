@@ -4,7 +4,6 @@ import {Blockchains} from '../../models/Blockchains'
 import * as NetworkMessageTypes from '../../messages/NetworkMessageTypes'
 import StringHelpers from '../../util/StringHelpers'
 import Error from '../../models/errors/Error'
-import Web3 from 'web3';
 const ProviderEngine = require('web3-provider-engine');
 const RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 const WebsocketSubprovider = require('web3-provider-engine/subproviders/websocket');
@@ -28,10 +27,6 @@ class ScatterEthereumWallet {
     }
 
     getAccounts(callback) {
-        console.log('getting account');
-        // const web3 = new Web3();
-        // const account = web3.eth.accounts.create();
-        // const accounts = [account];
         const accounts = ['0x8bde5c170f48b3e94acb08996f95bfe8dfeba5f3'];
         return new Promise((resolve, reject) => {
             callback(null, accounts);
@@ -78,6 +73,12 @@ export default class ETH extends Plugin {
         return `${account.name}`
     }
 
+    returnableAccount(account){
+        return {
+            publicKey:account.publicKey
+        }
+    }
+
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
             resolve(new Network('ethereum.com', 8080, Blockchains.ETH));
@@ -118,7 +119,7 @@ export default class ETH extends Plugin {
             const rpcUrl = `${_prefix}://${network.hostport()}`;
 
             const engine = new ProviderEngine();
-            const web3 = new Web3(engine);
+            const web3 = new _web3(engine);
 
 
 

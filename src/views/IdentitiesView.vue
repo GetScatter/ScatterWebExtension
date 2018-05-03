@@ -20,7 +20,7 @@
 
         </section>
         <section v-if="identities.length" class="p20 scroller with-search">
-            <section v-for="identity in filterBySearch()" class="panel-box" :class="{'disabled':identity.disabled}">
+            <section v-for="identity in filterBySearch()" class="panel-box">
 
                 <!-- Header -->
                 <section class="panel">
@@ -69,9 +69,6 @@
                     <section class="actions">
                         <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil"></i></figure>
                         <figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>
-                        <!--<figure class="action toggle-switch right" v-on:click="toggleIdentity(identity)">-->
-                            <!--<figure class="switch" :class="{'enabled':!identity.disabled}">{{(identity.disabled) ? 'Disabled' : 'Enabled'}}</figure>-->
-                        <!--</figure>-->
                     </section>
                 </section>
 
@@ -144,11 +141,6 @@
                 return this.balances[identity.network.unique()][identity.account.name];
             },
             filterBySearch(){ return this.identities.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
-            toggleIdentity(identity){
-                const scatter = this.scatter.clone();
-                scatter.keychain.identities.find(x => x.publicKey === identity.publicKey).disabled = !identity.disabled;
-                this[Actions.UPDATE_STORED_SCATTER](scatter);
-            },
             removeIdentity(identity){
 //                if(this.identities.length === 1){
 //                    this[Actions.PUSH_ALERT](AlertMsg.CantRemoveLastIdentity());

@@ -13,15 +13,20 @@ console.log(process.env.SCATTER_ENV);
 
 const production = process.env.SCATTER_ENV === 'production';
 const vueAlias = `vue/dist/vue${production ? '.min' : ''}.js`;
-const productionPlugins = !production ? [] : [
-    new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
+
+const devPlugins = [
     new webpack.DefinePlugin({
         'process.env': {
             NODE_ENV: '"production"'
         }
-    }),
-    new UglifyJsPlugin()
+    })
 ];
+const prodPlugins = devPlugins.concat([
+    new ZipPlugin({ path: '../', filename: 'scatter.zip' }),
+    new UglifyJsPlugin(),
+])
+
+const productionPlugins = !production ? devPlugins : prodPlugins;
 
 const runningTests = process.env.SCATTER_ENV === 'testing';
 const externals = runningTests ? [nodeExternals()] : [];
@@ -82,6 +87,6 @@ module.exports = {
         })
     ].concat(productionPlugins),
     stats: { colors: true },
-    devtool: 'inline-source-map',
+    devtool: 'source-map', //inline-
     externals
 }

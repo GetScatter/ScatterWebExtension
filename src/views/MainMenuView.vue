@@ -40,6 +40,9 @@
                 'scatter'
             ])
         },
+        mounted(){
+            console.log('Main Menu123')
+        },
         methods: {
             bind(changed, original) { this[original] = changed },
             lockScatter(){

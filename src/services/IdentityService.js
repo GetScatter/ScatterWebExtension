@@ -41,14 +41,14 @@ export default class IdentityService {
                 return false;
             }
 
-            callback(id.asOnlyRequiredFields(fields, network), !!identityFromPermission);
+            callback(id.asOnlyRequiredFields(fields), !!identityFromPermission);
         };
 
         if(identity){
             // Even though there is a previous permission,
             // the identity might have changed and no longer
             // meets the requirements.
-            if(identity.hasRequiredFields(fields, network)){
+            if(identity.hasRequiredFields(fields)){
                 sendBackIdentity(identity);
                 return false;
             } else {

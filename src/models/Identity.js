@@ -2,21 +2,83 @@ import IdGenerator from '../util/IdGenerator'
 import Account from './Account';
 import Network from './Network';
 import ObjectHelpers from '../util/ObjectHelpers'
+import {BlockchainsArray} from '../models/Blockchains'
 import Hasher from '../util/Hasher'
+import PluginRepository from '../plugins/PluginRepository'
 import AES from 'aes-oop';
 
 
+
+
+
 /********************************************/
-/*          Personal Information            */
+/*            REQUIREABLE FIELDS            */
 /********************************************/
 
-/* Requirable Fields for an Identity's PersonalInformation */
 export const PersonalFields = {
     firstname:'firstname',
     lastname:'lastname',
     email:'email',
     birthdate:'birthdate'
 };
+
+export const LocationFields = {
+    phone:'phone',
+    address:'address',
+    city:'city',
+    state:'state',
+    country:'country',
+    zipcode:'zipcode'
+};
+
+export const AccountFields = {
+    blockchain:'blockchain',
+    network:'network'
+};
+
+export const IdentityBaseFields = {
+    account:'accounts'
+};
+
+
+/*
+//EXAMPLE
+scatter.getIdentity({
+    personal:['email'],
+    accounts:[
+        {blockchain:Blockchains.EOS,network:{chainId:1}},
+        {blockchain:Blockchains.ETH,network:{chainId:1}}
+    ],
+    location:['country']
+})
+*/
+
+
+export class IdentityRequiredFields {
+    constructor(){
+        this.accounts = [];
+        this.personal = [];
+        this.location = [];
+    }
+
+    static fromJson(json){
+        const p = Object.assign(new IdentityRequiredFields(), json);
+        p.accounts = json.hasOwnProperty('accounts') ? json.accounts.map(Network.fromJson) : [];
+        return p;
+    }
+
+    isValid(){
+        if(JSON.stringify(Object.keys(new IdentityRequiredFields())) !== JSON.stringify(Object.keys(this))) return false;
+        if(!this.personal.every(field => Object.keys(PersonalFields).includes(field))) return false;
+        if(!this.location.every(field => Object.keys(LocationFields).includes(field))) return false;
+        if(this.accounts.length && !this.accounts.every(network => network.isValid())) return false;
+        return true;
+    }
+}
+
+/********************************************/
+/*          Personal Information            */
+/********************************************/
 
 export class PersonalInformation {
     constructor(){ Object.keys(PersonalFields).forEach(fieldName => this[fieldName] = ''); }
@@ -30,15 +92,6 @@ export class PersonalInformation {
 /*          Location Information            */
 /********************************************/
 
-/* Requirable Fields for an Identity's LocationInformation */
-export const LocationFields = {
-    phone:'phone',
-    address:'address',
-    city:'city',
-    state:'state',
-    country:'country',
-    zipcode:'zipcode'
-};
 
 export class LocationInformation {
     constructor(){
@@ -55,10 +108,12 @@ export class LocationInformation {
         if(fields.includes(LocationFields.country) &&
             this.hasOwnProperty('country') &&
             typeof this.country !== 'string')
-            foundFields.push(LocationFields.country)
+            foundFields.push(LocationFields.country);
 
         return foundFields;
     }
+
+    hasFields(fields){ return this.findFields(fields).length === fields.length; }
 }
 
 
@@ -67,29 +122,21 @@ export class LocationInformation {
 /*                 Identity                 */
 /********************************************/
 
-/* Requirable Fields for an Identity */
-export const IdentityFields = {
-    account:'account'
-};
-
 let {PrivateKey} = require('eosjs-ecc');
 
 export default class Identity {
 
     constructor(){
+        // Basic fields
         this.hash = '';
         this.privateKey = '';
         this.publicKey = '';
-
         this.name = '';
 
+        // Requireable fields
         this.accounts = {};
-        this.network = null;
-
         this.personal = PersonalInformation.placeholder();
         this.locations = [LocationInformation.placeholder()];
-
-        this.disabled = false;
     }
 
     initialize(){
@@ -110,7 +157,6 @@ export default class Identity {
             acc[network] = Account.fromJson(json.accounts[network]);
             return acc;
         }, {});
-        if(json.hasOwnProperty('network') && json.network) p.network = Network.fromJson(json.network);
         p.personal = PersonalInformation.fromJson(json.personal);
         if(json.hasOwnProperty('locations')) p.locations = json.locations.map(location => LocationInformation.fromJson(location));
         else p.locations = [LocationInformation.placeholder()];
@@ -118,88 +164,106 @@ export default class Identity {
     }
 
     clone(){ return Identity.fromJson(JSON.parse(JSON.stringify(this))) }
-
-
-    /***
-     * Checks whether a private key is encrypted
-     * @returns {boolean}
-     */
-    isEncrypted(){
-        // EOS private keys are 51 characters long
-        // AES encrypted EOS private keys are 108 characters long
-        return this.privateKey.length > 70
-    }
-
-    /***
-     * Encrypts this Identity's Private Key
-     * @param seed - The seed to encrypt with
-     */
-    encrypt(seed){
-        if(!this.isEncrypted())
-            this.privateKey = AES.encrypt(this.privateKey, seed);
-    }
-
-    /***
-     * Decrypts this Identity's Private Key
-     * @param seed - The seed to decrypt with
-     */
-    decrypt(seed){
-        if(this.isEncrypted())
-            this.privateKey = AES.decrypt(this.privateKey, seed);
-    }
-
-    /***
-     * Returns a pre-defined default location or the first on the stack
-     * @returns {T|*}
-     */
+    isEncrypted(){ return this.privateKey.length > 70 }
+    encrypt(seed){ if(!this.isEncrypted()) this.privateKey = AES.encrypt(this.privateKey, seed); }
+    decrypt(seed){ if(this.isEncrypted()) this.privateKey = AES.decrypt(this.privateKey, seed); }
     defaultLocation(){ return this.locations.find(location => location.isDefault) || this.locations[0]; }
-
     setAccount(network, account){ this.accounts[network.unique()] = account; }
-
+    hasAccount(network){ return this.accounts.hasOwnProperty(network.unique()) }
+    networkedAccount(network) { return this.accounts[network.unique()] }
     removeAccount(network){
         const unique = typeof network === 'string' ? network : network.unique();
         this.accounts[unique] = null;
         delete this.accounts[unique];
     }
 
-    /***
-     * Checks if this Identity has an associated account.
-     * @returns {boolean}
-     */
-    hasAccount(network){ return this.accounts.hasOwnProperty(network.unique()) }
-
-    /***
-     * Gets an account from a public key
-     * @returns {boolean}
-     */
     getAccountFromPublicKey(publicKey){
         let account;
         Object.keys(this.accounts).map(key => {
             if(this.accounts[key].publicKey === publicKey) account = this.accounts[key];
-        })
+        });
         return account;
     }
 
-    networkedAccount(network) { return this.accounts[network.unique()] }
 
     /***
      * Checks if an Identity has specified fields.
      * This is used when an interacting application requires specific information.
      * @param fields - The fields to check for
-     * @param network
      * @returns {boolean}
      */
-    hasRequiredFields(fields, network = null){
-        let foundFields = [];
+    hasRequiredFields(fields){
+        const requiredFields = IdentityRequiredFields.fromJson(fields);
+        if(!requiredFields.isValid()) return false;
 
-        // fields should always be lowercase and insecureHash and name should never be searched for
-        fields = fields.map(field => field.toLowerCase()).filter(field => field !== 'hash' && field !== 'name');
+        if(requiredFields.personal.length)
+            if(!requiredFields.personal.every(field => this.personal[field].length))
+                return false;
 
-        if(fields.includes(IdentityFields.account) && this.hasAccount(network)) foundFields.push(IdentityFields.account);
-        foundFields = foundFields.concat(this.personal.findFields(fields));
-        this.locations.map(location => foundFields = foundFields.concat(location.findFields(fields)));
-        foundFields = ObjectHelpers.distinct(foundFields);
-        return fields.every(field => foundFields.includes(field));
+        if(requiredFields.location.length)
+            if(!this.locations.find(location => location.hasFields(requiredFields.location)))
+                return false;
+
+        if(requiredFields.accounts.length)
+            if(!requiredFields.accounts.every(network => this.hasAccount(network)))
+                return false;
+
+        return true;
+    }
+
+    /***
+     * Returns an object with only the required fields from this Identity
+     * @param fields
+     * @param location
+     */
+    asOnlyRequiredFields(fields, location = null){
+        const requiredFields = IdentityRequiredFields.fromJson(fields);
+        if(!requiredFields.isValid()) return null;
+
+
+        const identity = {hash:this.hash, publicKey:this.publicKey, name:this.name};
+
+        if(requiredFields.personal.length){
+            identity.personal = {};
+            requiredFields.personal.map(field => identity.personal[field] = this.personal[field]);
+        }
+
+        if(requiredFields.location.length){
+            identity.location = {};
+            if(!location) location = this.defaultLocation();
+            requiredFields.location.map(field => identity.location[field] = location[field]);
+        }
+
+        if(requiredFields.accounts.length){
+            identity.accounts = [];
+
+            requiredFields.accounts.map(network => {
+                const account = PluginRepository.plugin(network.blockchain).returnableAccount(this.networkedAccount(network));
+                identity.accounts.push(Object.assign(account, {blockchain:network.blockchain}));
+            });
+        }
+
+        return identity;
+    }
+
+    /***
+     * Sets up the fields returned to the application
+     * @param requiredFields
+     * @param fieldsObject
+     * @param selectedLocation
+     */
+    static asReturnedFields(requiredFields, fieldsObject, selectedLocation){
+        fieldsObject.location = selectedLocation;
+        return fieldsObject.asOnlyRequiredFields(requiredFields, selectedLocation);
+        // let returnedFields = {};
+        // requiredFields.map(field => {
+        //     let fullPath = '';
+        //     if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
+        //     else if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
+        //     else fullPath = field;
+        //     returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(fieldsObject, fullPath);
+        // });
+        // return returnedFields;
     }
 
     /***
@@ -212,57 +276,7 @@ export default class Identity {
         else return this.defaultLocation()[requirable];
     }
 
-    /***
-     * Returns an object with only the required fields from this Identity
-     * @param fields
-     * @param network
-     */
-    asOnlyRequiredFields(fields, network){
-        // Adding mandatory fields and converting to lowercase
-        fields = ObjectHelpers.distinct(fields.map(field => field.toLowerCase()).concat(['hash', 'publicKey', 'name']));
-
-        const clone = {personal:{},location:{}};
-        fields.map(field => {
-            if(Object.keys(this).includes(field)) clone[field] = this[field];
-            if(Object.keys(PersonalFields).includes(field))
-               clone.personal[PersonalFields[field]] = this.personal[PersonalFields[field]];
-            if(Object.keys(LocationFields).includes(field))
-               clone.location[LocationFields[field]] = this.defaultLocation()[LocationFields[field]];
-            if(field === IdentityFields.account) clone[IdentityFields.account] = this.networkedAccount(network)
-        });
-
-        if(!Object.keys(clone.personal).length) delete clone.personal;
-        if(!Object.keys(clone.location).length) delete clone.location;
-
-        return clone;
-    }
-
-    /***
-     * Sets up the fields returned to the application
-     * @param requiredFields
-     * @param fieldsObject
-     * @param selectedLocation
-     */
-    static asReturnedFields(requiredFields, fieldsObject, selectedLocation){
-        fieldsObject.location = selectedLocation;
-        let returnedFields = {};
-        requiredFields.map(field => {
-            let fullPath = '';
-            if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
-            else if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
-            else fullPath = field;
-            returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(fieldsObject, fullPath);
-        });
-        return returnedFields;
-    }
-
-    /***
-     * Checks if a name is valid
-     * Names must be alphanumeric and may contain spaces, dashes, and underscores.
-     * @param name - The name to validate
-     * @returns {boolean}
-     */
     static nameIsValid(name){
-        return name.length > 3 && name.length < 20 && /^([a-zA-Z0-9 _-]+)$/.test(name)
+        return /^[a-zA-Z0-9_-]{3,20}$/.test(name)
     }
 }

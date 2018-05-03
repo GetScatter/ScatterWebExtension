@@ -42,12 +42,12 @@
             <section class="partition scroller" v-if="filteredIdentities().length">
 
 
-                <section v-for="identity in filteredIdentities()" class="panel-box" :class="{'disabled':identity.disabled}">
+                <section v-for="identity in filteredIdentities()" class="panel-box">
 
                     <!-- Header -->
                     <section class="panel">
                         <figure class="header big identity-header">{{identity.name}}</figure>
-                        <figure v-if="!identity.disabled" class="select-identity"
+                        <figure class="select-identity"
                                 v-on:click="selectIdentity(identity)"
                                 :class="{'selected':selectedIdentity && selectedIdentity.publicKey === identity.publicKey}">
                             {{locale(langKeys.BUTTON_SelectIdentity)}}
@@ -114,7 +114,7 @@
                 console.log(this.prompt.network)
                 return this.identities
                     .filter(id => this.prompt.network.host.length ? Object.keys(id.accounts).indexOf(this.prompt.network.unique()) > -1 : true)
-                    .filter(id => id.hasRequiredFields(this.identityFields, this.prompt.network))
+                    .filter(id => id.hasRequiredFields(this.identityFields))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
             },
             formatPropValue(prop, propValue){

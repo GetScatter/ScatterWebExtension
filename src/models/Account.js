@@ -10,9 +10,13 @@ export default class Account {
     }
 
     formatted(){
-        const blockchain = this.keypairUnique.split(':')[0];
+        const blockchain = this.blockchain();
         if(!blockchain || !blockchain.length) return this.name;
         return PluginRepository.plugin(blockchain).accountFormatter(this);
+    }
+
+    blockchain(){
+        return this.keypairUnique.split(':')[0];
     }
 
     static placeholder(){ return new Account(); }
