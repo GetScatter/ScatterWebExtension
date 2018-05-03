@@ -59,25 +59,6 @@ const _subscribe = () => {
 };
 
 /***
- * Binds a network to this instance of scatterdapp.
- * Only one network can be bound, and it cannot be re-bound.
- * @param _network
- * @returns {boolean}
- */
-const _bindNetwork = (_network) => {
-    if(network)
-        throws("You can only bind a network once.");
-
-    if(!_network || !_network.hasOwnProperty('host') || !_network.hasOwnProperty('port'))
-        throws('Malformed network. { host:string, port:number }');
-
-    if(isNaN(_network.port) || !_network.host.length || (_network.host.indexOf('.') === -1 && _network.host !== 'localhost'))
-        throws('"port" must be a number and "host" must be a string of a domain or an ip or localhost.');
-
-    network = _network;
-};
-
-/***
  * Only a Scatterdapp which has had a network bound to it
  * can be used.
  * @param _reject
@@ -126,11 +107,9 @@ const _send = (_type, _payload, bypassNetwork = false) => {
     });
 };
 
-const getNetwork = () => network;
-
 const setupSigProviders = context => {
     PluginRepository.signatureProviders().map(sigProvider => {
-        context[sigProvider.name] = sigProvider.signatureProvider(getNetwork, _send, throwIfNoIdentity);
+        context[sigProvider.name] = sigProvider.signatureProvider(_send, throwIfNoIdentity);
     })
 };
 
@@ -161,15 +140,6 @@ export default class Scatterdapp {
         _subscribe();
 
         if(this.identity) useIdentity(publicKey);
-        this.setNetwork({host:'159.65.161.242', port:8888})
-    }
-
-    /***
-     * Sets the network being used
-     * @param _network
-     */
-    setNetwork(_network){
-        _bindNetwork(_network);
     }
 
     /***

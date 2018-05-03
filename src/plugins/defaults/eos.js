@@ -66,15 +66,12 @@ export default class EOS extends Plugin {
 
     signatureProvider(...args){
 
-        networkGetter = args[0];
-        internalMessageSender = args[1];
-        throwIfNoIdentity = args[2];
+        internalMessageSender = args[0];
+        throwIfNoIdentity = args[1];
 
-        return (_eos, _options = {}) => {
-
-            const network = networkGetter();
-            if(!network) throw Error.noNetwork();
-
+        return (network, _eos, _options = {}) => {
+            network = Network.fromJson(network);
+            if(!network.isValid()) throw Error.noNetwork();
             const httpEndpoint = `http://${network.hostport()}`;
 
             // The proxy stands between the eosjs object and scatter.
