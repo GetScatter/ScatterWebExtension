@@ -1,7 +1,6 @@
 # Scatter
 
-Scatter is a browser extension that allows you to sign transactions on the EOS blockchain using your private keys
-from web applications without ever exposing your keys and provide personal information easily and only when you want to.
+Scatter is a browser extension that allows you to sign transactions for multiple blockchains and provide personal information to web applications without ever exposing your keys or filling out forms.
 
 ## Table of Contents
 
