@@ -170,10 +170,10 @@ const eos = scatter.eos( network, Eos.Localnet, eosOptions );
 
 ```js
 // You can pass in either an HTTP or WebSocket provider prefix to the network
-const prefix = 'http' || 'ws';
+const protocol = 'http' || 'ws';
 
 // Get a reference to a 'Web3' instance with a Scatter signature provider.
-const web3 = scatter.eth(network, Web3, prefix);
+const web3 = scatter.eth(network, Web3, protocol);
 ```
 
 #### Requesting a Signature
