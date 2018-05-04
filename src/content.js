@@ -40,6 +40,7 @@ class Content {
         stream.onSync(async () => {
             const version = await this.getVersion();
             const identity = await this.identityFromPermissions();
+            console.log('identity', identity);
 
             // Pushing an instance of Scatterdapp to the web application
             stream.send(NetworkMessage.payload(NetworkMessageTypes.PUSH_SCATTER, {version, identity}), PairingTags.INJECTED);
@@ -53,11 +54,6 @@ class Content {
 
     getVersion(){
         return InternalMessage.signal(InternalMessageTypes.REQUEST_GET_VERSION)
-            .send()
-    }
-
-    identityFromPermissions(){
-        return InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:location.host.replace('www.', '')})
             .send()
     }
 
@@ -91,6 +87,7 @@ class Content {
             case NetworkMessageTypes.REQUEST_ADD_NETWORK:               this.requestAddNetwork(nonSyncMessage); break;
             case NetworkMessageTypes.REQUEST_VERSION_UPDATE:            this.requestVersionUpdate(nonSyncMessage); break;
             case NetworkMessageTypes.AUTHENTICATE:                      this.authenticate(nonSyncMessage); break;
+            case NetworkMessageTypes.IDENTITY_FROM_PERMISSIONS:         this.identityFromPermissions(nonSyncMessage); break;
             default:                                                    stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED)
         }
     }
@@ -107,6 +104,14 @@ class Content {
         stream.key = message.handshake.length ? message.handshake : null;
         stream.send({type:'sync'}, PairingTags.INJECTED);
         stream.synced = true;
+    }
+
+    identityFromPermissions(message = null){
+        const promise = InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:location.host.replace('www.', '')}).send();
+        if(!message) return promise;
+        else promise.then(res => {
+            if(message) this.respond(message, res);
+        });
     }
 
     getOrRequestIdentity(message){

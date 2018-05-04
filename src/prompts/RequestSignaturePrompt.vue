@@ -3,7 +3,7 @@
 
         <section class="floating-header">
             <figure class="identity-name">{{identity().name}}</figure>
-            <figure class="account-authority" v-if="network !== null">{{formattedAccount()}}</figure>
+            <figure class="account-authority">{{formattedAccount()}}</figure>
             <figure class="switches">
                 <figure class="switch"
                         v-for="displayType in displayTypes"
@@ -29,21 +29,26 @@
                     <figure class="label">{{locale(langKeys.GENERIC_Action)}}</figure>
                     <figure class="value big">{{message.type}}</figure>
 
-                    <section class="key-value" v-if="prompt.data.requiredFields.length">
-                        <figure class="key">{{locale(langKeys.GENERIC_Requires)}}</figure>
-                        <figure class="value">
-                            {{prompt.data.requiredFields.join(', ')}}
-                        </figure>
+                    <section v-if="!requiredFields.isEmpty()">
+                        <section class="key-value">
+                            <figure class="key">{{locale(langKeys.GENERIC_Requires)}}</figure>
+                            <figure class="value" v-for="field in requiredFields.personal">
+                                {{field}}
+                            </figure>
+                            <figure class="value" v-for="account in requiredFields.accounts">
+                                {{account.blockchain.toUpperCase()}} {{locale(langKeys.GENERIC_Account)}}
+                            </figure>
 
-                        <section v-if="viableLocations.length && selectedLocation">
-                            <sel :selected="selectedLocation"
-                                 :options="viableLocations"
-                                 :parser="location => location.name"
-                                 v-on:changed="changed => bind(changed, 'selectedLocation')"></sel>
+                            <section v-if="requiredFields.location.length && viableLocations.length && selectedLocation">
+                                <sel :selected="selectedLocation"
+                                     :options="viableLocations"
+                                     :parser="location => location.name"
+                                     v-on:changed="changed => bind(changed, 'selectedLocation')"></sel>
 
-                            <section style="margin-top:10px;" v-for="(value, key) in selectedLocation" v-if="requiredFields.includes(key)">
-                                <figure class="label">{{key}}</figure>
-                                <figure class="value">{{typeof value === 'object' ? value.name : value}}</figure>
+                                <section style="margin-top:10px;" v-for="(value, key) in selectedLocation" v-if="requiredFields.location.includes(key)">
+                                    <figure class="label">{{key}}</figure>
+                                    <figure class="value">{{typeof value === 'object' ? value.name : value}}</figure>
+                                </section>
                             </section>
                         </section>
                     </section>
@@ -123,8 +128,7 @@
             selectedLocation:null,
 
             returnedFields:{},
-            mutableFields:[],
-            network:null,
+            mutableFields:[]
         }},
         computed: {
             ...mapState([
@@ -138,7 +142,6 @@
             ])
         },
         mounted(){
-            this.network = Network.fromJson(this.prompt.network);
             const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields);
 
             if(!hasAllRequiredFields){
@@ -148,18 +151,22 @@
                 });
             }
 
+
+            this.returnedFields = this.identity().clone();
+
             if(this.requiresLocationDetails()){
-                const requiredLocationFields = Object.keys(LocationFields).filter(field => this.requiredFields.includes(field));
+                const requiredLocationFields = Object.keys(LocationFields).filter(field => this.requiredFields.location.includes(field));
                 this.viableLocations = this.identity().locations.filter(location => location.findFields(requiredLocationFields).length === requiredLocationFields.length);
                 this.selectedLocation = this.viableLocations.find(location => location.isDefault) || this.viableLocations[0];
-                this.returnedFields = this.identity().clone();
                 this.returnedFields.location = this.selectedLocation;
             }
+
         },
         methods: {
             setDisplayType(type){ this.selectedDisplayType = type; },
             formattedAccount(){
-                const account = this.identity().networkedAccount(this.network);
+                const network = Network.fromJson(this.prompt.data.network);
+                const account = this.identity().networkedAccount(network);
 
                 // TODO: EOS Hardcode
                 return PluginRepository.plugin('eos').accountFormatter(account)
@@ -172,7 +179,7 @@
             },
 
             requiresLocationDetails(){
-                return !!this.requiredFields.find(field => Object.keys(LocationFields).includes(field));
+                return this.requiredFields.hasOwnProperty('location') && this.requiredFields.location.length;
             },
 
             /***
@@ -200,6 +207,7 @@
             },
             accepted(){
                 const returnedFields = Identity.asReturnedFields(this.requiredFields, this.returnedFields, this.selectedLocation);
+
 
                 this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields, mutableFields:this.mutableFields});
                 NotificationService.close();

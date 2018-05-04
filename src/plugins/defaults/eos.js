@@ -8,18 +8,20 @@ import Network from '../../models/Network'
 // const ecc = require('eosjs-ecc');
 import Eos from 'eosjs'
 let {ecc} = Eos.modules;
+import {IdentityRequiredFields} from '../../models/Identity';
+import ObjectHelpers from '../../util/ObjectHelpers'
 
 let networkGetter = new WeakMap();
-let internalMessageSender = new WeakMap();
+let messageSender = new WeakMap();
 let throwIfNoIdentity = new WeakMap();
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
 export default class EOS extends Plugin {
 
-    constructor(){
-        super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT)
-    }
+    constructor(){ super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT) }
+    accountFormatter(account){ return `${account.name}@${account.authority}` }
+    returnableAccount(account){ return { name:account.name, authority:account.authority }}
 
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
@@ -32,22 +34,19 @@ export default class EOS extends Plugin {
         return network.hostport() === endorsedNetwork.hostport();
     }
 
-    accountFormatter(account){
-        return `${account.name}@${account.authority}`
-    }
-
-    returnableAccount(account){
-        return {
-            name:account.name,
-            authority:account.authority
-        }
-    }
-
     accountsAreImported(){ return true; }
     privateToPublic(privateKey){ return ecc.privateToPublic(privateKey); }
     validPrivateKey(privateKey){ return ecc.isValidPrivate(privateKey); }
     validPublicKey(publicKey){   return ecc.isValidPublic(publicKey); }
     randomPrivateKey(){ return ecc.randomKey(); }
+
+    actionParticipants(payload){
+        return ObjectHelpers.flatten(
+            payload.messages
+                .map(message => message.authorization
+                    .map(auth => `${auth.actor}@${auth.permission}`))
+        );
+    }
 
     signer(bgContext, payload, publicKey, callback, arbitrary = false, isHash = false){
         bgContext.publicToPrivate(privateKey => {
@@ -66,7 +65,7 @@ export default class EOS extends Plugin {
 
     signatureProvider(...args){
 
-        internalMessageSender = args[0];
+        messageSender = args[0];
         throwIfNoIdentity = args[1];
 
         return (network, _eos, _options = {}) => {
@@ -86,7 +85,8 @@ export default class EOS extends Plugin {
                         if(args.find(arg => arg.hasOwnProperty('keyProvider'))) throw Error.usedKeyProvider();
 
                         let requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields'));
-                        requiredFields = requiredFields ? requiredFields.requiredFields : [];
+                        requiredFields = IdentityRequiredFields.fromJson(requiredFields ? requiredFields.requiredFields : {});
+                        if(!requiredFields.isValid()) throw Error.malformedRequiredFields();
 
                         // The signature provider which gets elevated into the user's Scatter
                         const signProvider = async signargs => {
@@ -94,9 +94,10 @@ export default class EOS extends Plugin {
 
                             // Friendly formatting
                             signargs.messages = await messagesBuilder(_eos, signargs, httpEndpoint, args[0]);
+                            console.log(signargs.messages);
 
                             const payload = Object.assign(signargs, { domain:location.host.replace('www.',''), network, requiredFields });
-                            const result = await internalMessageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
+                            const result = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
 
                             // No signature
                             if(!result) return null;

@@ -223,6 +223,7 @@ export default class Background {
     /********************************************/
 
     static identityFromPermissions(sendResponse, payload){
+        console.log('id from perms', payload)
         if(!seed.length) {
             sendResponse(null);
             return false;
@@ -249,9 +250,8 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
                 const {domain, fields} = payload;
-                const network = Network.fromJson(payload.network);
 
-                IdentityService.getOrRequestIdentity(domain, network, fields, scatter, (identity, fromPermission) => {
+                IdentityService.getOrRequestIdentity(domain, fields, scatter, (identity, fromPermission) => {
                     if(!identity){
                         sendResponse(Error.signatureError("identity_rejected", "User rejected the provision of an Identity"));
                         return false;
@@ -260,7 +260,6 @@ export default class Background {
                     if(!fromPermission) {
                         this.addHistory(HistoricEventTypes.PROVIDED_IDENTITY, {
                             domain,
-                            network,
                             provided:!!identity,
                             identityName:identity ? identity.name : false,
                             publicKey:(identity) ? identity.publicKey : false
@@ -268,7 +267,6 @@ export default class Background {
 
                         this.addPermissions([Permission.fromJson({
                             domain,
-                            network,
                             identity:identity.publicKey,
                             timestamp:+ new Date(),
                             fields,

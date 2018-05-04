@@ -11,12 +11,15 @@ import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wa
 const EthTx = require('ethereumjs-tx')
 const ethUtil = require('ethereumjs-util')
 import Network from '../../models/Network'
+import {IdentityRequiredFields} from '../../models/Identity';
+import ObjectHelpers from '../../util/ObjectHelpers'
 
 
 
-let networkGetter = new WeakMap();
-let internalMessageSender = new WeakMap();
+let messageSender = new WeakMap();
 let throwIfNoIdentity = new WeakMap();
+let network = new WeakMap();
+let web3;
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
@@ -26,58 +29,91 @@ class ScatterEthereumWallet {
         this.signTransaction = this.signTransaction.bind(this);
     }
 
-    getAccounts(callback) {
-        const accounts = ['0x8bde5c170f48b3e94acb08996f95bfe8dfeba5f3'];
-        return new Promise((resolve, reject) => {
-            callback(null, accounts);
-            resolve(accounts)
-        })
+    async getAccounts(callback) {
+        const result = await messageSender(NetworkMessageTypes.IDENTITY_FROM_PERMISSIONS);
+        const accounts = !result ? [] : result.accounts
+            .filter(account => account.blockchain === Blockchains.ETH)
+            .map(account => account.publicKey);
+
+        callback(null, accounts);
+        return accounts;
     }
 
-    signTransaction(txData, callback){
-        // defaults
-        const network = networkGetter();
+    async signTransaction(transaction){
+        console.log('ethereum payload', transaction);
         if(!network) throw Error.noNetwork();
 
+        // Basic settings
+        if (transaction.gas !== undefined) transaction.gasLimit = transaction.gas;
+        transaction.value = transaction.value || '0x00';
+        if(transaction.hasOwnProperty('data')) transaction.data = ethUtil.addHexPrefix(transaction.data);
 
-        return new Promise(async (resolve, reject) => {
-            if (txData.gas !== undefined) txData.gasLimit = txData.gas;
-            console.log('txData', txData);
-            txData.value = txData.value || '0x00';
-            txData.data = ethUtil.addHexPrefix(txData.data);
+        // Required Fields
+        const requiredFields = IdentityRequiredFields.fromJson(transaction.hasOwnProperty('requiredFields') ? transaction.requiredFields : {});
+        if(!requiredFields.isValid()) throw Error.malformedRequiredFields();
 
-            // const requiredFields = [];
-            // const payload = Object.assign(txData, { domain:location.host.replace('www.',''), network, requiredFields });
-            // const result = await internalMessageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
+        // Contract ABI
+        const abi = transaction.hasOwnProperty('abi') ? transaction.abi : null;
+        if(!abi && transaction.hasOwnProperty('data'))
+            throw Error.signatureError('no_abi', 'You must provide a JSON ABI along with your transaction so that users can read the contract');
 
-            const privateKey = ethUtil.addHexPrefix('2861292df0a197151202d08495e8f58c1c2b00bb24a5d3e2a9968a81ed2d08f3');
+        // Messages for display
+        transaction.messages = await messagesBuilder(transaction, abi);
 
-            const tx = new EthTx(txData);
-            tx.sign(ethUtil.toBuffer(privateKey));
-            const sig = '0x' + tx.serialize().toString('hex');
-            resolve(sig);
-            callback(null, sig);
-        })
+        // Signature Request Popup
+        const payload = Object.assign(transaction, { domain:location.host.replace('www.',''), network, requiredFields });
+        const {signatures, returnedFields} = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
+
+        if(transaction.hasOwnProperty('fieldsCallback'))
+            transaction.fieldsCallback(returnedFields);
+
+        return signatures[0];
     }
 }
+
+
+const messagesBuilder = async (transaction, abi) => {
+    let params = {};
+    let methodABI;
+    if(abi){
+        methodABI = abi.find(method => transaction.data.indexOf(method.signature) !== -1);
+        if(!methodABI) throw Error.signatureError('no_abi_method', "No method signature on the abi you provided matched the data for this transaction");
+
+        params = web3.eth.abi.decodeParameters(methodABI.inputs, transaction.data.replace(methodABI.signature, ''));
+        params = Object.keys(params).reduce((acc, key) => {
+            if(methodABI.inputs.map(input => input.name).includes(key))
+                acc[key] = params[key];
+            return acc;
+        }, {});
+    }
+
+    const h2n = web3.utils.hexToNumberString;
+
+    const data = Object.assign(params, {
+        // gas:h2n(transaction.gas),
+        gasLimit:h2n(transaction.gasLimit),
+        gasPrice:web3.utils.fromWei(h2n(transaction.gasPrice)),
+    });
+
+    if(transaction.hasOwnProperty('value') && transaction.value > 0)
+        data.value = h2n(transaction.value);
+
+
+    return [{
+        data,
+        code:transaction.to,
+        type:abi ? methodABI.name : 'transfer',
+        authorization:transaction.from
+    }];
+};
 
 const toBuffer = key => ethUtil.toBuffer(ethUtil.addHexPrefix(key));
 
 export default class ETH extends Plugin {
 
-    constructor(){
-        super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
-    }
-
-    accountFormatter(account){
-        return `${account.name}`
-    }
-
-    returnableAccount(account){
-        return {
-            publicKey:account.publicKey
-        }
-    }
+    constructor(){ super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT) }
+    accountFormatter(account){ return `${account.name}` }
+    returnableAccount(account){ return { publicKey:account.publicKey }}
 
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
@@ -102,34 +138,49 @@ export default class ETH extends Plugin {
         })
     }
 
-    signer(bgContext, payload, publicKey, callback, arbitrary = false, isHash = false){
+    actionParticipants(payload){
+        return ObjectHelpers.flatten(
+            payload.messages
+                .map(message => message.authorization)
+        );
+    }
 
+    signer(bgContext, transaction, publicKey, callback, arbitrary = false, isHash = false){
+        bgContext.publicToPrivate(basePrivateKey => {
+            if(!basePrivateKey){
+                callback(null);
+                return false;
+            }
+
+            const privateKey = ethUtil.addHexPrefix(basePrivateKey);
+            const tx = new EthTx(transaction);
+            tx.sign(ethUtil.toBuffer(privateKey));
+            const sig = ethUtil.addHexPrefix(tx.serialize().toString('hex'));
+
+            callback(sig);
+        }, publicKey)
     }
 
     signatureProvider(...args){
 
-        internalMessageSender = args[0];
+        messageSender = args[0];
         throwIfNoIdentity = args[1];
 
-        return (network, _web3, _prefix) => {
-            network = Network.fromJson(network);
+        return (_network, _web3, _prefix) => {
+            network = Network.fromJson(_network);
             if(!network.isValid()) throw Error.noNetwork();
             const rpcUrl = `${_prefix}://${network.hostport()}`;
 
             const engine = new ProviderEngine();
-            const web3 = new _web3(engine);
-
-            console.log('new ScatterEthereumWallet()', new ScatterEthereumWallet());
+            web3 = new _web3(engine);
 
             const walletSubprovider = new HookedWalletSubprovider(new ScatterEthereumWallet());
-            console.log('walletSubprovider', walletSubprovider);
             engine.addProvider(walletSubprovider);
 
             if(_prefix.indexOf('http') !== -1) engine.addProvider(new RpcSubprovider({rpcUrl}));
             else engine.addProvider(new WebsocketSubprovider({rpcUrl}));
 
             engine.start();
-
 
             return web3;
 

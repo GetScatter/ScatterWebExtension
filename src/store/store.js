@@ -5,6 +5,8 @@ import {mutations} from './mutations';
 import {actions} from './actions';
 import * as LANG_KEYS from '../localization/keys';
 
+import {IdentityRequiredFields} from '../models/Identity'
+
 Vue.use(Vuex);
 
 const state = {
@@ -27,9 +29,9 @@ const getters = {
     language:state => state.scatter.settings.language,
 
     // FOR PROMPTS ONLY
-    identityFields:state => state.prompt.data || [],
+    identityFields:state => IdentityRequiredFields.fromJson(state.prompt.data),
+    requiredFields:state => IdentityRequiredFields.fromJson(state.prompt.data.requiredFields || {}),
     messages:state => state.prompt.data.messages || [],
-    requiredFields:state => state.prompt.data.requiredFields || [],
 };
 
 export const store = new Vuex.Store({

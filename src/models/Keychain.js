@@ -50,7 +50,7 @@ export default class Keychain {
     findIdentity(publicKey){ return this.identities.find(id => id.publicKey === publicKey); }
     findIdentityFromDomain(domain){
         const idFromPermissions =  this.permissions.find(permission => permission.isIdentityOnly() && permission.domain === domain);
-        if(idFromPermissions) return this.findIdentity(idFromPermissions.publicKey);
+        if(idFromPermissions) return this.findIdentity(idFromPermissions.identity);
         else return null;
     }
     updateOrPushIdentity(identity){
@@ -71,12 +71,17 @@ export default class Keychain {
 
     }
 
-    hasKeyPair(keypair){
-        return this.keypairs.find(key => key.publicKey.toLowerCase() === keypair.publicKey.toLowerCase())
+    getKeyPair(keypair){
+        return this.getKeyPairByPublicKey(keypair.publicKey);
+        // return this.keypairs.find(key => key.publicKey.toLowerCase() === keypair.publicKey.toLowerCase())
     }
 
-    hasKeyPairByName(keypair){
-        return this.keypairs.find(key => key.name.toLowerCase() === keypair.name.toLowerCase())
+    getKeyPairByName(name){
+        return this.keypairs.find(key => key.name.toLowerCase() === name.toLowerCase())
+    }
+
+    getKeyPairByPublicKey(publicKey){
+        return this.keypairs.find(key => key.publicKey.toLowerCase() === publicKey.toLowerCase())
     }
 
     removeKeyPair(keypair){

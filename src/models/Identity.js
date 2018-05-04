@@ -61,10 +61,17 @@ export class IdentityRequiredFields {
         this.location = [];
     }
 
+    static placeholder(){ return new IdentityRequiredFields(); }
     static fromJson(json){
         const p = Object.assign(new IdentityRequiredFields(), json);
         p.accounts = json.hasOwnProperty('accounts') ? json.accounts.map(Network.fromJson) : [];
         return p;
+    }
+
+    isEmpty(){
+        return !this.accounts.length
+            && !this.personal.length
+            && !this.location.length
     }
 
     isValid(){
@@ -254,16 +261,11 @@ export default class Identity {
      */
     static asReturnedFields(requiredFields, fieldsObject, selectedLocation){
         fieldsObject.location = selectedLocation;
-        return fieldsObject.asOnlyRequiredFields(requiredFields, selectedLocation);
-        // let returnedFields = {};
-        // requiredFields.map(field => {
-        //     let fullPath = '';
-        //     if(Object.keys(LocationFields).includes(field)) fullPath = `location.${field}`;
-        //     else if(Object.keys(PersonalFields).includes(field)) fullPath = `personal.${field}`;
-        //     else fullPath = field;
-        //     returnedFields[field] = ObjectHelpers.getFieldFromObjectByDotNotation(fieldsObject, fullPath);
-        // });
-        // return returnedFields;
+        const returnedFields = fieldsObject.asOnlyRequiredFields(requiredFields, selectedLocation);
+        delete returnedFields.hash;
+        delete returnedFields.name;
+        delete returnedFields.publicKey;
+        return returnedFields;
     }
 
     /***
@@ -271,6 +273,7 @@ export default class Identity {
      * @param requirable
      */
     getPropertyValueByName(requirable){
+        if(requirable instanceof Network) return this.networkedAccount(requirable);
         if(Object.keys(this).includes(requirable)) return this[requirable];
         else if(Object.keys(this.personal).includes(requirable)) return this.personal[requirable];
         else return this.defaultLocation()[requirable];

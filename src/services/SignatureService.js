@@ -45,7 +45,8 @@ export default class SignatureService {
 
     }
 
-    static requestSignature(payload, scatter, context, sendResponse, blockchain = Blockchains.EOS){
+    static requestSignature(payload, scatter, context, sendResponse){
+        console.log('payload', payload);
         const {domain, network, requiredFields} = payload;
 
         // TODO: consolidate functionality and switch based on blockchain type ( EOS, ETH, etc )
@@ -59,13 +60,17 @@ export default class SignatureService {
 
         // Getting the account from the identity based on the network
         const account = identity.networkedAccount(Network.fromJson(network));
+        if(!account) {
+            sendResponse(Error.signatureAccountMissing());
+            return false;
+        }
 
-
+        const blockchain = account.blockchain();
 
         // Checking if Identity still has all the necessary accounts
-        const requiredAccounts = ContractHelpers.actionParticipants(payload, blockchain);
+        const requiredAccounts = PluginRepository.plugin(blockchain).actionParticipants(payload);
         const formattedName = PluginRepository.plugin(blockchain).accountFormatter(account);
-        if(!requiredAccounts.includes(formattedName)){
+        if(!requiredAccounts.includes(formattedName) && !requiredAccounts.includes(account.publicKey)){
             sendResponse(Error.signatureAccountMissing());
             return false;
         }
@@ -101,12 +106,12 @@ export default class SignatureService {
         const hasTransactionPermissions = payload.messages.every(message => {
             const {contract, action} = ContractHelpers.getContractAndActionNames(message);
             const checksum = ContractHelpers.contractActionChecksum(contract, action, domain, network);
-            const fields = ContractHelpers.getActionFields(message);
+            const fields = message.data;
             return scatter.keychain.hasPermission(checksum, fields);
         });
 
-        const needsLocationAndIdentityHasMultiple = identity.locations.length > 1 &&
-            requiredFields.some(field => Object.keys(LocationFields).includes(field));
+        const needsLocationAndIdentityHasMultiple = (identity.locations.length > 1 && requiredFields.location.length);
+        console.log('needsLocationAndIdentityHasMultiple', needsLocationAndIdentityHasMultiple);
 
         if(!needsLocationAndIdentityHasMultiple && hasTransactionPermissions) {
             const identityClone = identity.clone();
@@ -122,7 +127,7 @@ export default class SignatureService {
 
             if(approval.whitelisted){
                 context.addPermissions(payload.messages.map(message => {
-                    const fields = ContractHelpers.getActionFields(message);
+                    const fields = message.data;
                     const {contract, action} = ContractHelpers.getContractAndActionNames(message);
                     const checksum = ContractHelpers.contractActionChecksum(contract, action, domain, network);
                     return Permission.fromJson({

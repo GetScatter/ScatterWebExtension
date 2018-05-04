@@ -103,6 +103,10 @@ main {
   .panel {
     padding:15px;
 
+    &.inner {
+      padding:15px 0;
+    }
+
     &:not(:last-child){
       border-bottom:1px solid #f6f6f6;
     }

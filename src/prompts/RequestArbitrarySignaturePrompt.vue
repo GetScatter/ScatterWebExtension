@@ -23,7 +23,7 @@
             <section class="partition scroller">
                 <section class="panel-box">
                     <section class="panel">
-                        <figure class="header public-key">{{prompt.data.publicKey}}</figure>
+                        <figure class="header public-key">{{keyToName(prompt.data.publicKey)}}</figure>
                     </section>
                 </section>
                 <br>
@@ -54,7 +54,8 @@
         }},
         computed: {
             ...mapState([
-                'prompt'
+                'prompt',
+                'scatter'
             ]),
             ...mapGetters([
 
@@ -62,6 +63,10 @@
         },
         methods: {
             bind(changed, original) { this[original] = changed },
+            keyToName(publicKey){
+                const keypair = this.scatter.keychain.getKeyPairByPublicKey(publicKey);
+                return keypair ? keypair.name : publicKey;
+            },
             signers(){
                 if(this.prompt.data.identitySigner) return [this.prompt.data.identitySigner];
                 else return this.prompt.data.accountSigners;

@@ -140,6 +140,16 @@ Scatter has a few endorsed networks that is uses for retrieving information such
 `EOS Mainnet ( chainId ? )` and `ETH Mainnet ( chainId 1 )`. If you are using those you can 
 simply leave the `host` and `port` null and it will default to the chainId internally. 
 
+#### Suggesting a network to the user
+
+You can _suggest_ that the user add a network to their Scatter if you are not using a generic network.
+
+```js
+scatter.suggestNetwork(network);
+```
+
+This will provide a prompt for them which will display the network they will be adding, and give them a chance
+to accept or deny the addition.
 
 
 
@@ -153,7 +163,7 @@ simply leave the `host` and `port` null and it will default to the chainId inter
 const eosOptions = {};
  
 // Get a reference to an 'Eosjs' instance with a Scatter signature provider.
-const eth = scatter.eos( network, Eos.Localnet, eosOptions );
+const eos = scatter.eos( network, Eos.Localnet, eosOptions );
 ```
 
 
@@ -179,7 +189,16 @@ eos.contract('hello').then(contract => {
 });
  
 // Web3
-contract.methods.hello(...args).send({})
+// Basic transaction
+web3.eth.sendTransaction({
+    from: account.publicKey,
+    to: '0x11f4d0.....',
+    value: '1'
+})
+ 
+// Or on a contract method
+const abi = require('some_abi.json');
+contract.methods.hello(...args).send({from:account.publicKey, abi})
 ```
 
 #### Multi-part signatures involving the application AND an Identity
@@ -261,8 +280,18 @@ scatter.getIdentity(requiredFields)...
 const contract = await eos.contract('hello', {requiredFields});
  
 // Web3
-contract.methods.hello(...args)
-    .send({requiredFields})
+// On a regular transaction
+web3.eth.sendTransaction({
+    from: publicKey,
+    to: '0x11f4d......',
+    value: '1',
+    requiredFields,
+    fieldsCallback
+})
+
+const fieldsCallback = fields => console.log('Returned Fields', fields);
+const options = {from:publicKey, abi, requiredFields, fieldsCallback};
+contract.methods.hello(...args).send(options)
 ```
 
 It's best practice to not request location fields until they are needed, as user's can have multiple 
@@ -273,7 +302,9 @@ This allows you to request all information needed for a physical sale with one c
 _For instance in this case we could be a shopping website that needs shipping details along with 
 the transfer of digital currency._
 
-When using requiredFields on transactions you need to put the requirements into the uppermost method and not the 
+#### EOS Stipulations
+
+When using requiredFields on EOS transactions you need to put the requirements into the uppermost method and not the 
 action as requirements should fulfill any and all actions within; including multiple atomic transactions and not just per action.
 ```js
 //CORRECT
@@ -282,6 +313,23 @@ eos.contract('hello', {requiredFields}).then(contract => contract.hi(...args))
 //INCORRECT
 eos.contract('hello').then(contract => contract.hi(...args, {requiredFields}))
 ```
+
+#### Ethereum Stipulations
+
+When you request signatures for contract methods you **must** supply the abi of the contract. This allows Scatter to 
+display the decoded fields to the user so they can see exactly what they are signing.
+
+**Ethereum support is currently lacking as it is a new development.** Some things are missing, such as the ability for users 
+to change gas price and limit.
+ 
+#### Finding Accounts by Blockchain
+
+```js
+const eosAccount = identity.accounts.find(account => account.blockchain === 'eos');
+const ethAccount = identity.accounts.find(account => account.blockchain === 'eth');
+```
+
+
 
 
 

@@ -2,6 +2,7 @@ import NetworkMessage from './messages/NetworkMessage';
 import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import * as PairingTags from './messages/PairingTags'
 import Error from './models/errors/Error'
+import Network from './models/Network'
 import IdGenerator from './util/IdGenerator';
 import PluginRepository from './plugins/PluginRepository';
 const ecc = require('eosjs-ecc');
@@ -59,51 +60,26 @@ const _subscribe = () => {
 };
 
 /***
- * Only a Scatterdapp which has had a network bound to it
- * can be used.
- * @param _reject
- * @param _runIfNetworkBound
- * @param bypassNetwork
- */
-const _networkGuard = (_reject, _runIfNetworkBound, bypassNetwork) => {
-    if(!bypassNetwork && !network) {
-        throws(`It seems that a network was not set. 
-                Did you create your eosjs instance using scatter.eos() ?`);
-        _reject(null);
-    }
-    _runIfNetworkBound();
-};
-
-/***
  * Turns message sending between the application
  * and the content script into async promises
  * @param _type
  * @param _payload
- * @param bypassNetwork
  */
-const _send = (_type, _payload, bypassNetwork = false) => {
+const _send = (_type, _payload) => {
     return new Promise((resolve, reject) => {
 
         // Version requirements
         if(!!requiredVersion && requiredVersion > currentVersion){
-            const mandatoryNetwork = network ? network : {host:'', port:0};
-            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:locationHost()}, -1, null, locationHost());
+            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:locationHost()}, -1, locationHost());
             stream.send(message, PairingTags.SCATTER);
             reject(Error.requiresUpgrade());
             return false;
         }
 
-        const guard =
-            _type === NetworkMessageTypes.REQUEST_ADD_NETWORK ||
-            _type === NetworkMessageTypes.REQUEST_SIGNATURE
-                ? _networkGuard : (rejector, fn) => fn();
-
-        guard(reject, () => {
-            let id = IdGenerator.numeric(6);
-            let message = new NetworkMessage(_type, _payload, id, network, locationHost());
-            resolvers.push(new DanglingResolver(id, resolve, reject));
-            stream.send(message, PairingTags.SCATTER);
-        }, bypassNetwork);
+        let id = IdGenerator.numeric(6);
+        let message = new NetworkMessage(_type, _payload, id, locationHost());
+        resolvers.push(new DanglingResolver(id, resolve, reject));
+        stream.send(message, PairingTags.SCATTER);
     });
 };
 
@@ -132,7 +108,6 @@ export default class Scatterdapp {
         publicKey = _options.identity ? _options.identity.publicKey : null;
         this.identity = _options.identity;
         stream = _stream;
-        network = null;
         resolvers = [];
 
         setupSigProviders(this);
@@ -145,8 +120,8 @@ export default class Scatterdapp {
     /***
      * Suggests the set network to the user's Scatter.
      */
-    suggestNetwork(){
-        if(!network) throws("You must set a network first.");
+    suggestNetwork(network){
+        if(!Network.fromJson(network).isValid()) throws('The provided network is invalid.');
         return _send(NetworkMessageTypes.REQUEST_ADD_NETWORK, {
             domain:locationHost(),
             network:network
@@ -157,7 +132,7 @@ export default class Scatterdapp {
      * Gets an Identity from the user to use.
      * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
      */
-    getIdentity(fields = []){
+    getIdentity(fields = {}){
         return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
             domain:locationHost(),
             network:network,

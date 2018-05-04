@@ -29,7 +29,7 @@ export default class IdentityService {
         return identityFromPermission ? identityFromPermission.getIdentity(scatter.keychain) : null;
     }
 
-    static getOrRequestIdentity(domain, network, fields, scatter, callback){
+    static getOrRequestIdentity(domain, fields, scatter, callback){
 
         // Possibly getting an Identity that has been synced with this application.
         const identityFromPermission = IdentityService.identityFromPermissionsOrNull(domain, scatter);
@@ -55,6 +55,6 @@ export default class IdentityService {
                 // TODO: Remove permission
             }
         }
-        else NotificationService.open(new Prompt(PromptTypes.REQUEST_IDENTITY, domain, network, fields, sendBackIdentity));
+        else NotificationService.open(new Prompt(PromptTypes.REQUEST_IDENTITY, domain, null, fields, sendBackIdentity));
     }
 }

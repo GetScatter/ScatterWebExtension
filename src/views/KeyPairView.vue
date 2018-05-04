@@ -102,9 +102,9 @@
                 if(!this.keypair.name.length) return this[Actions.PUSH_ALERT](AlertMsg.BadKeyPairName());
 
                 const scatter = this.scatter.clone();
-                if(scatter.keychain.hasKeyPair(this.keypair))
+                if(scatter.keychain.getKeyPair(this.keypair))
                     return this[Actions.PUSH_ALERT](AlertMsg.KeyPairExists());
-                if(scatter.keychain.hasKeyPairByName(this.keypair))
+                if(scatter.keychain.getKeyPairByName(this.keypair.name))
                     return this[Actions.PUSH_ALERT](AlertMsg.KeyPairExists());
 
                 scatter.keychain.keypairs.push(this.keypair);

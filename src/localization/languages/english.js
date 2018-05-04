@@ -20,6 +20,7 @@ export default {
     [KEYS.GENERIC_Import]:'Import',
     [KEYS.GENERIC_ChainID]:'Chain ID',
     [KEYS.GENERIC_Blockchain]:'Blockchain',
+    [KEYS.GENERIC_Account]:'Account',
 
     [KEYS.PLACEHOLDER_Name]:'Name',
     [KEYS.PLACEHOLDER_PublicKey]:'Public Key',
