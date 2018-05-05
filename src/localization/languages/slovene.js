@@ -352,7 +352,7 @@ export default {
     ],
     [KEYS.REQUEST_ScatterIsLocked]:[
         `Scatter je zaklenjen!`,
-        `Preden pričnete uporabljati Scatter, ga morare najprej odkleniti`,
+        `Preden pričnete uporabljati Scatter, ga morate najprej odkleniti`,
         `Nikoli vas ne bomo povprašali ali prikazovali vnosne maske za prijavo.`,
         `V kolikor opazite okno, ki od vas zahteva vnos gesla, gre lahko za prevaro! Scatter vedno odklenite na strani vtičnika.`
     ],
