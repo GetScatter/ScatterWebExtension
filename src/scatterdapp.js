@@ -2,6 +2,7 @@ import NetworkMessage from './messages/NetworkMessage';
 import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import * as PairingTags from './messages/PairingTags'
 import Error from './models/errors/Error'
+import Network from './models/Network'
 import IdGenerator from './util/IdGenerator';
 import PluginRepository from './plugins/PluginRepository';
 const ecc = require('eosjs-ecc');
@@ -34,9 +35,7 @@ let currentVersion = new WeakMap();
 let requiredVersion = new WeakMap();
 
 const throwIfNoIdentity = () => {
-    if(!publicKey) throws(
-        'You must select an Identity to use before requesting transaction signatures. ' +
-        'Request an Identity and then use scatter.useIdentity() with the hash or add a parameter to this with {publicKey}.');
+    if(!publicKey) throws('There is no identity with an account set on your Scatter instance.');
 };
 
 
@@ -61,73 +60,40 @@ const _subscribe = () => {
 };
 
 /***
- * Binds a network to this instance of scatterdapp.
- * Only one network can be bound, and it cannot be re-bound.
- * @param _network
- * @returns {boolean}
- */
-const _bindNetwork = (_network) => {
-    if(network)
-        throws("You can only bind a network once.");
-
-    if(!_network || !_network.hasOwnProperty('host') || !_network.hasOwnProperty('port'))
-        throws('Malformed network. { host:string, port:number }');
-
-    if(isNaN(_network.port) || !_network.host.length || _network.host.indexOf('.') === -1)
-        throws('"port" must be a number and "host" must be a string of a domain or an ip.');
-
-    network = _network;
-};
-
-/***
- * Only a Scatterdapp which has had a network bound to it
- * can be used.
- * @param _reject
- * @param _runIfNetworkBound
- * @param bypassNetwork
- */
-const _networkGuard = (_reject, _runIfNetworkBound, bypassNetwork) => {
-    if(!bypassNetwork && !network) {
-        throws(`It seems that a network was not set. 
-                Did you create your eosjs instance using scatter.eos() ?`);
-        _reject(null);
-    }
-    _runIfNetworkBound();
-};
-
-/***
  * Turns message sending between the application
  * and the content script into async promises
  * @param _type
  * @param _payload
- * @param bypassNetwork
  */
-const _send = (_type, _payload, bypassNetwork = false) => {
+const _send = (_type, _payload) => {
     return new Promise((resolve, reject) => {
 
         // Version requirements
         if(!!requiredVersion && requiredVersion > currentVersion){
-            const mandatoryNetwork = network ? network : {host:'', port:0};
-            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:locationHost()}, -1, null, locationHost());
+            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:locationHost()}, -1, locationHost());
             stream.send(message, PairingTags.SCATTER);
             reject(Error.requiresUpgrade());
             return false;
         }
 
-        _networkGuard(reject, () => {
-            let id = IdGenerator.numeric(6);
-            let message = new NetworkMessage(_type, _payload, id, network, locationHost());
-            resolvers.push(new DanglingResolver(id, resolve, reject));
-            stream.send(message, PairingTags.SCATTER);
-        }, bypassNetwork);
+        let id = IdGenerator.numeric(6);
+        let message = new NetworkMessage(_type, _payload, id, locationHost());
+        resolvers.push(new DanglingResolver(id, resolve, reject));
+        stream.send(message, PairingTags.SCATTER);
     });
 };
 
 const setupSigProviders = context => {
     PluginRepository.signatureProviders().map(sigProvider => {
-        context[sigProvider.name] = sigProvider.signatureProvider(_bindNetwork, _send, throwIfNoIdentity);
+        context[sigProvider.name] = sigProvider.signatureProvider(_send, throwIfNoIdentity);
     })
 };
+
+const useIdentity = (_identityObjectOrPublicKey) => {
+    if(typeof _identityObjectOrPublicKey === 'object') this.identity = _identityObjectOrPublicKey;
+    publicKey = typeof _identityObjectOrPublicKey === 'string' ? _identityObjectOrPublicKey :
+        _identityObjectOrPublicKey.hasOwnProperty('hash') ? _identityObjectOrPublicKey.publicKey : '';
+}
 
 
 /***
@@ -142,74 +108,46 @@ export default class Scatterdapp {
         publicKey = _options.identity ? _options.identity.publicKey : null;
         this.identity = _options.identity;
         stream = _stream;
-        network = null;
         resolvers = [];
 
         setupSigProviders(this);
-        // const proxies = new BlockchainPlugins(_bindNetwork, _send, throwIfNoIdentity, publicKey, network)
-        // this['eos'] = proxies.eos;
 
         _subscribe();
 
-        if(this.identity) this.useIdentity(publicKey);
-
+        if(this.identity) useIdentity(publicKey);
     }
 
     /***
-     * Gets an Identity from the user to use.
-     * You shouldn't rely on the state of this object to be immutable.
-     * Identities are subject to change and if you use values you saved in
-     * a database vs the values on the identity currently signature providers will not work.
-     * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
+     * Suggests the set network to the user's Scatter.
      */
-    getIdentity(fields = []){
-        return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
-            domain:locationHost(),
-            network:network,
-            fields
-        }).then(async identity => {
-            this.useIdentity(identity);
-            return identity;
-        });
-    }
-
-    /***
-     * Signs out the identity
-     * Will remove permissions for the identity but not contract/action permissions.
-     * @returns {Promise.<TResult>}
-     */
-    forgetIdentity(){
-        throwIfNoIdentity();
-        return _send(NetworkMessageTypes.FORGET_IDENTITY, {
-            domain:locationHost()
-        }).then(() => {
-            this.identity = null;
-            publicKey = null;
-            return true;
-        });
-    }
-
-    /***
-     * Sets which Identity to use for transaction signing
-     * @param _identityObjectOrPublicKey - The publicKey of the identity, or an Identity object
-     */
-    useIdentity(_identityObjectOrPublicKey){
-        if(typeof _identityObjectOrPublicKey === 'object') this.identity = _identityObjectOrPublicKey;
-        publicKey = typeof _identityObjectOrPublicKey === 'string' ? _identityObjectOrPublicKey :
-            _identityObjectOrPublicKey.hasOwnProperty('hash') ? _identityObjectOrPublicKey.publicKey : '';
-    }
-
-    /***
-     * Allows an application to prompt the user to add the network they are using to the user's Scatter
-     * Will instantly return true if the network already exists
-     */
-    suggestNetwork(){
+    suggestNetwork(network){
+        if(!Network.fromJson(network).isValid()) throws('The provided network is invalid.');
         return _send(NetworkMessageTypes.REQUEST_ADD_NETWORK, {
             domain:locationHost(),
             network:network
         });
     }
 
+    /***
+     * Gets an Identity from the user to use.
+     * @param fields - You can specify required fields such as ['email', 'country', 'firstname']
+     */
+    getIdentity(fields = {}){
+        return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
+            domain:locationHost(),
+            network:network,
+            fields
+        }).then(async identity => {
+            useIdentity(identity);
+            return identity;
+        });
+    }
+
+    /***
+     * Authenticates the identity on scope
+     * Returns a signature which can be used to self verify against the domain name
+     * @returns {Promise.<T>}
+     */
     async authenticate(){
         throwIfNoIdentity();
 
@@ -232,12 +170,44 @@ export default class Scatterdapp {
     }
 
     /***
+     * Signs out the identity.
+     * @returns {Promise.<TResult>}
+     */
+    forgetIdentity(){
+        throwIfNoIdentity();
+        return _send(NetworkMessageTypes.FORGET_IDENTITY, {
+            domain:locationHost()
+        }).then(() => {
+            this.identity = null;
+            publicKey = null;
+            return true;
+        });
+    }
+
+    /***
      * Sets a version requirement. If the version is not met all
      * scatter requests will fail and notify the user of the reason.
      * @param _version
      */
     requireVersion(_version){
         requiredVersion = _version;
+    }
+
+    /***
+     * Requests a signature for arbitrary data.
+     * @param publicKey
+     * @param data - The data to be signed
+     * @param whatfor
+     * @param isHash - True if the data requires a hash signature
+     */
+    getArbitrarySignature(publicKey, data, whatfor = '', isHash = false){
+        return _send(NetworkMessageTypes.REQUEST_ARBITRARY_SIGNATURE, {
+            domain:locationHost(),
+            publicKey,
+            data,
+            whatfor,
+            isHash
+        }, true);
     }
 
 }

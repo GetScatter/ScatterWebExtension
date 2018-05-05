@@ -17,6 +17,10 @@ export default {
     [KEYS.GENERIC_Port]:'Port',
     [KEYS.GENERIC_Requires]:'Requires',
     [KEYS.GENERIC_RequiredProperties]:'Required Properties',
+    [KEYS.GENERIC_Import]:'Import',
+    [KEYS.GENERIC_ChainID]:'Chain ID',
+    [KEYS.GENERIC_Blockchain]:'Blockchain',
+    [KEYS.GENERIC_Account]:'Account',
 
     [KEYS.PLACEHOLDER_Name]:'Name',
     [KEYS.PLACEHOLDER_PublicKey]:'Public Key',
@@ -33,7 +37,6 @@ export default {
     [KEYS.PLACEHOLDER_Postal]:'Postal Code',
     [KEYS.PLACEHOLDER_Country]:'Country',
     [KEYS.PLACEHOLDER_State]:'State',
-    [KEYS.PLACEHOLDER_State]:'State',
     [KEYS.PLACEHOLDER_Password]:'Password',
     [KEYS.PLACEHOLDER_ConfirmPassword]:'Confirm Password',
     [KEYS.PLACEHOLDER_NewPassword]:'New Password',
@@ -42,6 +45,8 @@ export default {
 
     [KEYS.BUTTON_CreateIdentity]:'Create Identity',
     [KEYS.BUTTON_ImportAccount]:'Import Account',
+    [KEYS.BUTTON_ImportKeychain]:'Import Keychain',
+    [KEYS.BUTTON_SelectFile]:'Select File',
     [KEYS.BUTTON_AddNewLocation]:'Add New Location',
     [KEYS.BUTTON_SetAsDefaultLocation]:'Set As Default Location',
     [KEYS.BUTTON_RemoveLocation]:'Remove Location',
@@ -64,6 +69,7 @@ export default {
     [KEYS.BUTTON_SelectIdentity]:'Select Identity',
 
     [KEYS.MAINMENU_Identities]:'Identities',
+    [KEYS.MAINMENU_Keys]:'Key Pairs',
     [KEYS.MAINMENU_Permissions]:'Permissions',
     [KEYS.MAINMENU_History]:'History',
     [KEYS.MAINMENU_Lock]:'Lock',
@@ -86,6 +92,10 @@ export default {
     [KEYS.IDENTITY_NameDescription]:`
         Applications may choose to use this name as your username as it is unique across all networks.
         If you are not registered with RIDL you will be assigned a random name.
+    `,
+    [KEYS.IDENTITY_NoKeyPairsHeader]:`No Key Pairs!`,
+    [KEYS.IDENTITY_NoKeyPairsDescription]:`
+        Before you can add blockchain accounts to this Identity you need to add some key pairs. Go to the main menu and select: 
     `,
     [KEYS.IDENTITY_AccountHeader]:`Account`,
     [KEYS.IDENTITY_AccountDescription]:`
@@ -141,6 +151,12 @@ export default {
         file will be your Identity keys.
     `,
 
+    [KEYS.IMPORT_Header]:`Import encrypted backup`,
+    [KEYS.IMPORT_Description]:`
+        Importing your encrypted keychain file will rebuild you Scatter keychain but it will not import your old networks or 
+        accounts. 
+    `,
+
     [KEYS.PASS_Header]:`Enter a new password`,
     [KEYS.PASS_Description]:`
         By changing your password you will be decrypting all of the saved information which is usually always 
@@ -163,8 +179,10 @@ export default {
     `,
 
     [KEYS.LANGUAGE_Header]:`Select your language`,
-    [KEYS.LANGUAGE_Description]:`
-        Auto Lock handles Scatter's locking for you so that you don't have to remember to lock your Scatter when you step away.
+
+    [KEYS.KEYPAIRS_NoKeyPairsHeader]:`You don't have any keypairs.`,
+    [KEYS.KEYPAIRS_NoKeyPairsDescription]:`
+        Click the button on the top right to create/import a keypair.
     `,
 
     [KEYS.KEYPAIR_Header]:`Generate a new Key Pair`,
@@ -207,22 +225,38 @@ export default {
         }
     },
 
+    //2
     [KEYS.ALERT_BadIdentityName]:[
         'Bad Identity Name',
 
         `Identity names must be between 3 and 20 characters long.
          They must also be alphanumeric but may also contain spaces, dashes, and underscores.`
     ],
+    //2
     [KEYS.ALERT_IdentityNameExists]:[
         'Identity Name Exists',
 
         'This Identity name is registered to another Identity.'
     ],
+    //2
+    [KEYS.ALERT_KeyPairExists]:[
+        'Key Pair Exists',
+
+        'This Key Pair is already registered in your keychain.'
+    ],
+    //2
+    [KEYS.ALERT_BadKeyPairName]:[
+        'Bad Key Pair Name',
+
+        'Key Pairs must be named uniquely.'
+    ],
+    //2
     [KEYS.ALERT_InvalidPrivateKey]:[
         'Invalid Private Key',
 
         `The private key you entered seems to be invalid. Please check the key and try again.`
     ],
+    //2
     [KEYS.ALERT_NoAccountsFound]:[
         'No Accounts Found',
 
@@ -231,81 +265,101 @@ export default {
          Scatter you will need to create an account for the key
          before importing it.`
     ],
+    //2
     [KEYS.ALERT_PasswordsDoNotMatch]:[
         'Passwords Do Not Match',
 
         `The password you entered does not match it's confirmation.`
     ],
+    //2
     [KEYS.ALERT_BadPassword]:[
         'Bad Password',
 
         'Passwords must be at least 8 characters long'
     ],
+    //2
     [KEYS.ALERT_WrongPassword]:[
         'Wrong Password',
 
         'The password you entered was incorrect.'
     ],
+    //2
     [KEYS.ALERT_NetworkHostInvalid]:[
         'Network Host Invalid',
 
         `The Network host you entered was invalid. Hosts should be either a domain name
          ( ex: testnet.eos.io ) or an IP ( ex: 192.168.0.1 ).`
     ],
+    //2
     [KEYS.ALERT_NetworkExists]:[
         'Network Already Exists',
 
         'Another Network with this host and port already exists. There is no reason to have a network saved twice.'
     ],
+    //2
     [KEYS.ALERT_RemovingEndorsedNetwork]:[
         'Cannot Remove Endorsed Network',
 
-        `You cannot remove Scatter's endorsed Network. We use this Network to host our contracts.`
+        `You cannot remove Scatter's endorsed Networks.`
     ],
+    //2
     [KEYS.ALERT_NoIdentityWithProperties]:fields => [
         'No Identities Found',
 
         `This application is requesting an Identity with properties you do not have. The properties they want are '${fields.join(', ')}'`
     ],
+    //2
     [KEYS.ALERT_YouMustSelectAnIdentity]:[
         'You Must Select An Identity',
 
         `If you do not wish to expose an Identity you can press the Deny button, otherwise an Identity must be
          selected in order to accept this request.`
     ],
-
+    //2
     [KEYS.PROMPT_DestroyingScatter]:[
         'Destroying Scatter',
 
         'This is your last chance to double check your backups.'
     ],
+    //2
     [KEYS.PROMPT_RevokingIdentity]:domain => [
         'Revoking Identity',
 
         `You are about to revoke an entire Identity from ${domain}. This will remove 
          permissions on the Identity itself and all contracts within it.`
     ],
+    //2
     [KEYS.PROMPT_RevokingContract]:domain => [
         'Revoking Contract',
 
         `You are about to revoke an entire contract from ${domain}. This will remove permissions on all actions within it.`
     ],
+    //2
     [KEYS.PROMPT_RevokingContractAction]:domain => [
         'Revoking Contract Action',
 
         `You are about to revoke an action from ${domain}`
     ],
+    //2
     [KEYS.PROMPT_RemovingIdentity]:name => [
         'Removing Identity',
 
         `You are about to remove an Identity with the name '${name}'. Removing Identities is not reversible and
          all permissions will be . If the Identity is being used on applications perhaps you should just disable it instead.`
     ],
+    //2
+    [KEYS.PROMPT_DeletingKeyPair]:identities => [
+        'Deleting Key Pair',
+
+        identities.length ? `This Key Pair is used in: '${identities.join(', ')}'` : `This keypair is not used in any Identities.`
+    ],
+    //2
     [KEYS.PROMPT_RemovingAccount]:formattedAccountName => [
         'Removing Account',
 
         `You are about to remove the ${formattedAccountName} account from this Identity.`
     ],
+    //2
     [KEYS.PROMPT_RemovingNetwork]:[
         'Removing Network',
 
@@ -314,6 +368,7 @@ export default {
          but nothing is stopping you from re-adding it. Any accounts
          already using this Network will not be modified or removed.`
     ],
+    //2
     [KEYS.PROMPT_WhitelistingContractAction]:[
         'You Are About To Whitelist A Currency Contract',
 
@@ -321,13 +376,14 @@ export default {
          but unless you are absolutely sure this is one of them, you should not be whitelisting this contract action.
          Are you sure you still want to whitelist this?`
     ],
+    //2
     [KEYS.PROMPT_SelectAccount]:[
         'Select Account',
 
         'Select the account and authority you wish to use for this Identity. You can only select one at a time.'
     ],
 
-
+    //3
     [KEYS.REQUEST_AddNetwork]:[
         /*{DOMAIN}*/ 'wants to add their network to your Scatter.',
 
@@ -337,6 +393,7 @@ export default {
          Adding a network through this interface simply saves you
          the effort of manually adding it from your Settings panel.`
     ],
+    //5
     [KEYS.REQUEST_Identity]:[
         /*{DOMAIN}*/ 'is requesting additional information.',
 
@@ -350,18 +407,20 @@ export default {
 
         `The only properties which are always given is the Identity's public key and it's name.`,
 
-        `is not requesting any additional information. The only thing that they are requiring is an Identity hash and name.`
+        /*{DOMAIN}*/ `is not requesting any additional information. The only thing that they are requiring is an Identity hash and name.`
     ],
+    //2
     [KEYS.REQUEST_IdentityNoIdentities]:[
         `You don't have any Identities that match the fields that this application is requiring.`,
 
         `If you would like to use an Identity with this domain, you will need to update that Identity and fulfill the requirements.
          You can see what this domain is requiring on the left panel.`
     ],
+    //4
     [KEYS.REQUEST_SignatureWhitelist]:[
         `Do you want to whitelist this contract action?`,
 
-        `You can whitelist this action so that next time you wont have to manually authorize this.
+        `You can whitelist this action so that next time you won't have to manually authorize this.
          Every property that has a check next to it will become mutable, meaning that you can allow
          certain properties of this transaction to change and only if the other properties are changed will
          it fail to be whitelisted.`,
@@ -370,6 +429,7 @@ export default {
 
         `If you have multiple locations and a transaction requires a location you will always be prompted.`
     ],
+    //4
     [KEYS.REQUEST_ScatterIsLocked]:[
         `Your Scatter is locked!`,
 
@@ -380,6 +440,7 @@ export default {
         `If you see a prompt/popup which is requesting your password, it is a malicious website trying to get your password.
          Always only unlock Scatter from the extension's popup by clicking on the icon in your browser tray.`
     ],
+    //4
     [KEYS.REQUEST_UpdateVersion]:[
         `Your Scatter is out of date!`,
 

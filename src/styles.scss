@@ -73,6 +73,12 @@ main {
   }
 }
 
+
+.copier {
+  position:absolute;
+  top:-9999px;
+}
+
 .panel-box {
   background:#fff;
   border-radius:4px;
@@ -97,13 +103,17 @@ main {
   .panel {
     padding:15px;
 
+    &.inner {
+      padding:15px 0;
+    }
+
     &:not(:last-child){
       border-bottom:1px solid #f6f6f6;
     }
 
     .header {
       font-size:12px;
-      color:#b2b2b2;
+      color: #9d9d9d;
 
       &.big {
         font-size:14px;
@@ -112,7 +122,7 @@ main {
 
       &.small {
         font-size:9px;
-        color:#cecece;
+        color: #a9a9a9;
       }
 
       &.margin {
@@ -135,13 +145,14 @@ main {
         clear: both;
 
         span {
-          font-size:9px;
+          font-size:11px;
           display:block;
           float:left;
           width:50%;
 
           &:nth-child(1){
             color:#a1a1a1;
+            text-transform: capitalize;
           }
           &:nth-child(2){
             color:#666666;
@@ -149,7 +160,7 @@ main {
           }
 
           &.big {
-            font-size:11px;
+            font-size:13px;
 
             &:nth-child(1){ color:#666666; }
           }
@@ -170,7 +181,7 @@ main {
         height:30px;
         line-height:30px;
         text-align:center;
-        background:#a5a5a5;
+        background: #6f6f6f;
         color:#fff;
         font-size:14px;
         float:left;

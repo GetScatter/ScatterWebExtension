@@ -22,6 +22,9 @@ export default class Keychain {
         return p;
     }
 
+    clone(){ return Keychain.fromJson(JSON.parse(JSON.stringify(this))) }
+
+    removePermissionsByKeypair(keypair){ this.permissions = this.permissions.filter(perm => perm.keypair !== keypair.unique()); }
     removePermission(permission){ this.permissions = this.permissions.filter(perm => perm.checksum !== permission.checksum); }
     getPermission(checksum){ return this.permissions.find(permission => permission.checksum === checksum); }
     hasPermission(checksum, fields = []){
@@ -47,12 +50,41 @@ export default class Keychain {
     findIdentity(publicKey){ return this.identities.find(id => id.publicKey === publicKey); }
     findIdentityFromDomain(domain){
         const idFromPermissions =  this.permissions.find(permission => permission.isIdentityOnly() && permission.domain === domain);
-        if(idFromPermissions) return this.findIdentity(idFromPermissions.publicKey);
+        if(idFromPermissions) return this.findIdentity(idFromPermissions.identity);
         else return null;
     }
     updateOrPushIdentity(identity){
         this.identities.find(id => id.publicKey === identity.publicKey)
             ? this.identities = this.identities.map(id => id.publicKey === identity.publicKey ? identity : id)
             : this.identities.unshift(identity);
+    }
+
+    findAccountsWithPublicKey(publicKey){
+        return this.identities.map(id => id.getAccountFromPublicKey(publicKey)).filter(acc => !!acc);
+    }
+
+    forBackup(){
+        const clone = this.clone();
+        clone.keypairs = [];
+        clone.permissions = [];
+        return clone;
+
+    }
+
+    getKeyPair(keypair){
+        return this.getKeyPairByPublicKey(keypair.publicKey);
+        // return this.keypairs.find(key => key.publicKey.toLowerCase() === keypair.publicKey.toLowerCase())
+    }
+
+    getKeyPairByName(name){
+        return this.keypairs.find(key => key.name.toLowerCase() === name.toLowerCase())
+    }
+
+    getKeyPairByPublicKey(publicKey){
+        return this.keypairs.find(key => key.publicKey.toLowerCase() === publicKey.toLowerCase())
+    }
+
+    removeKeyPair(keypair){
+        this.keypairs = this.keypairs.filter(key => key.unique() !== keypair.unique());
     }
 }

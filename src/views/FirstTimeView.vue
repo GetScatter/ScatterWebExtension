@@ -117,10 +117,10 @@
 
             // Imports an EOS account@authority which is bound to the user's new Identity
             importAccount(){
-                AccountService.importFromKey(this.importKey, this.identity.network, this).then(imported => {
-                    this.identity.account = imported.account;
-                    this.addNewIdentity(imported.keypair, this.identity);
-                });
+//                AccountService.importFromKey(this.importKey, this.identity.network, this).then(imported => {
+//                    this.identity.account = imported.account;
+//                    this.addNewIdentity(imported.keypair, this.identity);
+//                });
             },
 
             // Adds the user's first Identity to the keychain and

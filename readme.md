@@ -1,7 +1,6 @@
 # Scatter
 
-Scatter is a browser extension that allows you to sign transactions on the EOS blockchain using your private keys
-from web applications without ever exposing your keys and provide personal information easily and only when you want to.
+Scatter is a browser extension that allows you to sign transactions for multiple blockchains and provide personal information to web applications without ever exposing your keys or filling out forms.
 
 ## Table of Contents
 
@@ -61,19 +60,8 @@ document.addEventListener('scatterLoaded', scatterExtension => {
 })
 ```
 
-#### Using Scatter with [eosjs](https://github.com/EOSIO/eosjs)
 
-All user signature requests will flow through Scatter.
-
-```js
-// Set up the network and options you want to use eosjs and Scatter with. 
-const network = { host:"192.168.56.101", port:8888 };
-const eosOptions = {};
- 
-// Get a reference to an 'Eos.LocalNet' with a Scatter signature provider.
-const eos = scatter.eos( Eos.Localnet, network, eosOptions );
-```
-
+## Identities
 
 #### Requesting an Identity
 
@@ -82,7 +70,7 @@ Once an Identity is provided it will not need to be re-approved every time unles
 
 ```js
 // You can require certain fields
-scatter.getIdentity(['account']).then(identity => {
+scatter.getIdentity().then(identity => {
     //...
 }).catch(error => {
     //...
@@ -95,24 +83,8 @@ The identity can also be accessed on `scatter.identity` so that you don't have t
 to change without notification to applications. Users have complete control over their own data. Do not rely on stale data for 
 sensitive things like shipping physical items.
 
-
-##### Requireable fields
-- **account** ( needs to be required for signature requests )
-- firstname
-- lastname
-- email
-- birthdate
-- phone
-- address
-- city
-- state
-- country
-- zipcode
-
-##### Fields that always return
-- name
-- publicKey
-
+The `getIdentity()` method can also take required fields. See the section about required fields below to 
+find out how to build the object.
 
 #### Authenticating an Identity
 
@@ -125,7 +97,7 @@ If the `authenticate` method does not throw an error then the identity has been 
 scatter.authenticate()
     .then(sig => {
         // This will return your `location.host` 
-        // encrypted with their Identity's private key.
+        // signed with their Identity's private key.
         // It has already been validated, but you can validate it yourself as well using eosjs-ecc.
         
         ecc.verify(sig, location.host, scatter.identity.publicKey);
@@ -149,57 +121,88 @@ scatter.forgetIdentity().then(() => {
 Users can also do this without you providing a way for them to do so from their own permissions panel.
 
 
-#### Requesting a Signature using eosjs
+## Networks
 
-Using Scatter is no different than using `eosjs`.
-```js
-eos.transfer(scatter.identity.account.name, 'youraccount', '100.0000 EOS', '').then(transaction => {
-    //...
-});
-```
-
-However, you can optionally pass in required fields to the eosjs options if you want it to give you back 
-certain user-selected Identity properties such as an address. 
-
-**Do not rely on previously acquired Identity 
-properties, since users might have multiple locations such as Work and Home, and they might have changed other properties 
-since the last time you cached them.**
+Networks are used to connect to blockchain nodes and reference blockchain accounts. 
+They must be formatted like so:
 
 ```js
-const requiredFields = ['address', 'country', 'phone'];
-eos.transfer(scatter.identity.account.name, 'youraccount', '100.0000 EOS', '', {requiredFields}).then(transaction => {
-    //...
-}).catch(error => { 
-    //.. 
-});
-```
-
-The resulting json will include the required fields along with the normal eosjs json if the signing was successful. 
-
-```js
-// transaction result
-{
-    ...
-    returnedFields: {
-        address: '420 Paper St. Wilmington DE 19886',
-        country: { code:'US', name:'United States' },
-        phone: 5555555
-    }
+const network = {
+    blockchain:'eos',
+    host:'127.0.0.1', // ( or null if endorsed chainId )
+    port:8888, // ( or null if defaulting to 80 )
+    chainId:1 || 'abcd', // Or null to fetch automatically ( takes longer )
 }
 ```
-This allows you to request all information needed for a physical sale with one click.
 
-_For instance in this case we could be a shopping website that needs shipping details along with 
-the transfer of digital currency._
+Scatter has a few endorsed networks that is uses for retrieving information such as an 
+`EOS Mainnet ( chainId ? )` and `ETH Mainnet ( chainId 1 )`. If you are using those you can 
+simply leave the `host` and `port` null and it will default to the chainId internally. 
 
-When using the `contract()` method from eosjs you need to put the requirements into the `contract` method and not the 
-action as requirements should fulfill any and all actions within; including multiple atomic transactions and not just per action.
+#### Suggesting a network to the user
+
+You can _suggest_ that the user add a network to their Scatter if you are not using a generic network.
+
 ```js
-eos.contract('eosio.token', {requiredFields}).then(contract => contract.action...)
+scatter.suggestNetwork(network);
+```
+
+This will provide a prompt for them which will display the network they will be adding, and give them a chance
+to accept or deny the addition.
+
+
+
+## Signature Providers
+
+
+#### Using Scatter with [eosjs](https://github.com/EOSIO/eosjs)
+
+```js
+// Set up any extra options you want to use eosjs with. 
+const eosOptions = {};
+ 
+// Get a reference to an 'Eosjs' instance with a Scatter signature provider.
+const eos = scatter.eos( network, Eos.Localnet, eosOptions );
 ```
 
 
-#### Multi-part signatures involving the application AND the identity
+#### Using Scatter with [web3](https://github.com/ethereum/web3.js/)
+
+```js
+// You can pass in either an HTTP or WebSocket provider prefix to the network
+const protocol = 'http' || 'ws';
+
+// Get a reference to a 'Web3' instance with a Scatter signature provider.
+const web3 = scatter.eth(network, Web3, protocol);
+```
+
+#### Requesting a Signature
+
+Using Scatter to provide signatures is no different than using `eosjs` or `web3`.
+It just handles all the signature provision for you.
+
+```js
+// eosjs
+eos.contract('hello').then(contract => {
+    contract.hi(...args)
+});
+ 
+// Web3
+// Basic transaction
+web3.eth.sendTransaction({
+    from: account.publicKey,
+    to: '0x11f4d0.....',
+    value: '1'
+})
+ 
+// Or on a contract method
+const abi = require('some_abi.json');
+contract.methods.hello(...args).send({from:account.publicKey, abi})
+```
+
+#### Multi-part signatures involving the application AND an Identity
+
+_Note: Ethereum does not support multiple signatures within one request_
 
 You may also double-sign signatures using a private key from the application as well as one supplied by 
 the user.
@@ -216,40 +219,156 @@ const signProvider = (buf, sign) => {
     return ecc.sign(buf, 'SOME_PRIVATE_KEY')
 };
  
-eos.contract('yourcontract', { signProvider }).then(contract => {
-    contract.someAction('hello', 'world');
+eos.contract('hello', { signProvider }).then(contract => {
+    contract.hi(...args);
 });
 ```
 
-**Note:** An error will be thrown if you try to pass a `keyProvider` instead of a `signProvider`. The reason for this is that since 
-you are using a proxied version of `eosjs` a malicious actor could mimic Scatter and get your keys. `signProvider` **only** returns signatures, 
-never keys. Signing with your own keys happens on your side, not Scatter's.
 
 
-#### Transactions at the Identity
+##  Requiring Identity Fields
 
-All transactions **at** an identity/account are using solely eosjs. They should not be passed through to Scatter using the 
-`Eos.LocalNet` reference you got before.
+You can optionally pass a `RequiredFields` object into either the `getIdentity()` method or 
+to individual transactions as options. 
+
+**Do not rely on previously acquired Identity 
+properties, since users might have multiple locations such as Work and Home, and they might have changed other properties 
+since the last time you cached them.**
+
+##### Requireable Identity Fields
+- **accounts** `[]` 
+    - accepts an array of networks
+- personal `[]`
+    - firstname
+    - lastname
+    - email
+    - birthdate
+- location `[]`
+    - phone
+    - address
+    - city
+    - state
+    - country
+    - zipcode
+
+##### Fields that always return from `getIdentity()`
+- **name** - The user's unique name.
+- **publicKey** - The public key associated with the Identity.
+- **hash** - A hash of the Identity's public key.
+
+#### The Required Fields Object
 
 ```js
-// Create your own instance of eosjs with your keyProvider and network
-const eosjs = Eos.Localnet(...);
-eosjs.transfer('youraccount', scatter.identity.account.name, '100.0000 EOS', '').then(transaction => {
-    //...
-});
+const requiredFields = {
+    personal:['firstname', 'email'],
+    location:['country'],
+    accounts:[
+        {blockchain:'eos', host:'127.0.0.1', port:8888},
+        {blockchain:'eth', chainId:1}
+    ]
+};
+```
+
+This object can be passed into either the `getIdentity()` method or individual transactions.
+
+```js
+// Get Identity
+scatter.getIdentity(requiredFields)...
+ 
+// eosjs
+const contract = await eos.contract('hello', {requiredFields});
+ 
+// Web3
+// On a regular transaction
+web3.eth.sendTransaction({
+    from: publicKey,
+    to: '0x11f4d......',
+    value: '1',
+    requiredFields,
+    fieldsCallback
+})
+
+const fieldsCallback = fields => console.log('Returned Fields', fields);
+const options = {from:publicKey, abi, requiredFields, fieldsCallback};
+contract.methods.hello(...args).send(options)
+```
+
+It's best practice to not request location fields until they are needed, as user's can have multiple 
+locations inside of an Identity ( work/home ), and can select which one to user per signature request.
+
+This allows you to request all information needed for a physical sale with one click.
+
+_For instance in this case we could be a shopping website that needs shipping details along with 
+the transfer of digital currency._
+
+#### EOS Stipulations
+
+When using requiredFields on EOS transactions you need to put the requirements into the uppermost method and not the 
+action as requirements should fulfill any and all actions within; including multiple atomic transactions and not just per action.
+```js
+//CORRECT
+eos.contract('hello', {requiredFields}).then(contract => contract.hi(...args))
+ 
+//INCORRECT
+eos.contract('hello').then(contract => contract.hi(...args, {requiredFields}))
+```
+
+#### Ethereum Stipulations
+
+When you request signatures for contract methods you **must** supply the abi of the contract. This allows Scatter to 
+display the decoded fields to the user so they can see exactly what they are signing.
+
+**Ethereum support is currently lacking as it is a new development.** Some things are missing, such as the ability for users 
+to change gas price and limit.
+ 
+#### Finding Accounts by Blockchain
+
+```js
+const eosAccount = identity.accounts.find(account => account.blockchain === 'eos');
+const ethAccount = identity.accounts.find(account => account.blockchain === 'eth');
 ```
 
 
-## Translations and localization
+
+
+
+
+## Arbitrary signatures
+
+You can request an arbitrary signature from Scatter on any type of data you wish.
+Signatures on the Identity will always use `eosjs-ecc` as they are EOS keys.
+
+```js
+scatter.getArbitrarySignature(
+    publicKey, 
+    data, 
+    whatfor = 'Login Authentication', 
+    isHash = false
+)
+```
+
+If you need to sign a `sha256` hash be sure to set `isHash` to `true` as this uses a different signing method.
+Otherwise always leave it to false.
+
+**User's will always see the exact data they are signing the same way they see transactions.**
+
+
+
+
+# Translations and localization
 Please refer to the [Localization README.md](https://github.com/EOSEssentials/Scatter/tree/master/src/localization) 
 for more information about how to get involved with translations.
 
 ### Translators
-- <Your Name Here> for being the first to translate a new language!
+- **Your Name Here** - for being the first to translate a new language!
+- [gnumarcelo](https://github.com/gnumarcelo) - [Portuguese](https://github.com/EOSEssentials/Scatter/pull/27)
+- [javierjmc](https://github.com/javierjmc) - [Spanish](https://github.com/EOSEssentials/Scatter/pull/30)
 
 
 
-## Security
+
+
+# Security
 
 There are various measures put into place that contribute to the overall safety of the Scatter extension.
 Let's take a moment to go over each of them separately in order to paint the whole picture.
@@ -340,10 +459,9 @@ The only way for a website to push requests into Scatter and use it's private ke
 ```js
 // An identity must be requested and bound before requesting transactions
 const identity = await scatter.getIdentity();
-scatter.useIdentity(identity)
 -------------------------
 // The object returned here has no network, and no signature or key provider
-const eos = scatter.eos( Eos.Localnet, {host, port} );
+const eos = scatter.eos( Eos.Localnet, {} );
 -------------------------
 // When the transfer method is called the network and signature provider 
 // are bound outside of the website's accessible application scope.
@@ -419,10 +537,11 @@ That is their password verification, nullifying the need for the hash to be stor
 
 Contributions are always welcome. 
 
-If you are not a developer and would simply like to contribute feature requests, user experience suggestions,
-or anything else you can visit our [community Trello board.](https://trello.com/invite/b/9XJfndSc/5ed0679da31231717971cc97edd559c1/scatter-community-board)
+For feature requests, user experience suggestions, or anything else take a look at the
+[existing issues](https://github.com/EOSEssentials/Scatter/issues) and if not already tracked feel free to
+[create a new one](https://github.com/EOSEssentials/Scatter/issues/new) (requires Github account, free to sign up).
 
-If you **are** a developer there's a few stipulations to contributing.
+If you are a developer there's a few stipulations to contributing.
 
 * **Never** use the `npm run build` command if you plan on submitting changes. 
   This will cause a compilation of the zip file and will make it so your branch/pull-request cannot

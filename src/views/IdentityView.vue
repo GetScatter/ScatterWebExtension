@@ -19,21 +19,34 @@
         </section>
 
         <!-- Account -->
-        <section class="panel">
+        <section class="panel" v-if="keypairs.length">
             <figure class="header">{{locale(langKeys.IDENTITY_AccountHeader)}}</figure>
             <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_AccountDescription)}}</figure>
 
             <sel :disabled="importing" :selected="networks[0]" :options="networks" :parser="(network) => network.unique()" v-on:changed="selectNetwork"></sel>
 
             <cin :disabled="importing"
-                 :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)"
-                 :tag="identity.hasAccount(selectedNetwork) ? `${identity.networkedAccount(selectedNetwork).name}@${identity.networkedAccount(selectedNetwork).authority}` : null"
-                 :text="identity.hasAccount(selectedNetwork) ? `${identity.networkedAccount(selectedNetwork).name}@${identity.networkedAccount(selectedNetwork).authority}` : ''"
-                 v-on:untagged="removeAccount"
-                 v-on:changed="changed => bind(changed, 'accountNameOrPrivateKey')"></cin>
+                 v-if="identity.networkedAccount(selectedNetwork)"
+                 :tag="identity.networkedAccount(selectedNetwork).name"
+                 :text="identity.networkedAccount(selectedNetwork).name"
+                 v-on:untagged="removeAccount"></cin>
 
-            <btn :disabled="importing" :text="locale(langKeys.BUTTON_ImportAccount)" v-on:clicked="importAccount" margined="true"></btn>
+            <sel v-if="!identity.networkedAccount(selectedNetwork)"
+                 :disabled="importing"
+                 :selected="noKeypair"
+                 :options="filteredKeypairs()"
+                 :parser="keypair => keypair.name"
+                 v-on:changed="selectKeypair"></sel>
 
+            <btn :disabled="importing || !selectedKeypair || !selectedKeypair.publicKey.length"
+                 :text="locale(langKeys.GENERIC_Import)"
+                 v-on:clicked="importAccount" margined="true"></btn>
+        </section>
+
+        <!-- NO KEY PAIRS -->
+        <section class="panel" v-else>
+            <figure class="header">{{locale(langKeys.IDENTITY_NoKeyPairsHeader)}}</figure>
+            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_NoKeyPairsDescription)}}{{locale(langKeys.SETTINGSMENU_Keypairs)}}</figure>
         </section>
 
         <!-- Personal Information -->
@@ -50,7 +63,7 @@
         <!-- Location Information -->
         <section class="panel">
             <figure class="header">{{locale(langKeys.IDENTITY_LocationHeader)}}</figure>
-            <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_LocationDescription)}}</figure>
+            <figure class="sub-header">{{locale(langKeys.IDENTITY_LocationDescription)}}</figure>
 
             <btn :text="locale(langKeys.BUTTON_AddNewLocation)" v-on:clicked="addNewLocation"></btn>
             <sel :selected="selectedLocation" :options="identity.locations" :parser="(location) => location.name.length ? location.name : langKeys.PLACEHOLDER_DefaultLocationName"
@@ -91,6 +104,7 @@
     import Identity from '../models/Identity'
     import Scatter from '../models/Scatter'
     import Account from '../models/Account'
+    import KeyPair from '../models/KeyPair'
     import {LocationInformation} from '../models/Identity'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
@@ -103,25 +117,27 @@
     export default {
         data(){ return {
             identity:null,
-            keypairs:[],
             accountNameOrPrivateKey:'',
             isNew:false,
             countries: Countries,
             selectedLocation:null,
             selectedNetwork:null,
+            selectedKeypair:null,
 
             importing:false,
+            noKeypair:KeyPair.fromJson({name:'None'})
         }},
         computed: {
             ...mapState([
                 'scatter'
             ]),
             ...mapGetters([
-                'networks'
+                'networks',
+                'keypairs'
             ])
         },
         mounted(){
-            this.selectedNetwork = this.networks[0];
+            this.selectNetwork(this.networks[0]);
             const existing = this.scatter.keychain.identities.find(x => x.publicKey === this.$route.query.publicKey);
             if(existing) this.identity = existing.clone();
             else {
@@ -139,6 +155,9 @@
             this.isNew = !existing;
         },
         methods: {
+            filteredKeypairs(){
+                return [this.noKeypair].concat(this.keypairs.filter(keypair => keypair.blockchain === this.selectedNetwork.blockchain));
+            },
             // This is just a fix for vuejs reusing components and losing uniqueness
             locationKey(index){ return this.identity.locations.indexOf(this.selectedLocation)+index; },
             bind(changed, dotNotation) {
@@ -148,11 +167,14 @@
             },
             selectNetwork(network){
                 this.selectedNetwork = network;
+                this.selectedKeypair = null;
+            },
+            selectKeypair(keypair){
+                this.selectedKeypair = !keypair.publicKey.length ? null : keypair;
             },
             removeAccount(){
                 const account = this.identity.accounts[this.selectedNetwork.unique()];
-                // TODO: EOS Hardcode
-                const formattedAccount = PluginRepository.findPlugin('eos').accountFormatter(account);
+                const formattedAccount = PluginRepository.plugin(this.selectedNetwork.blockchain).accountFormatter(account);
 
                 this[Actions.PUSH_ALERT](AlertMsg.RemovingAccount(formattedAccount)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
@@ -160,10 +182,10 @@
                 })
             },
             importAccount(){
+                if(!this.selectedKeypair || !this.selectedKeypair.publicKey.length) return false;
                 this.importing = true;
-                AccountService.importFromKey(this.accountNameOrPrivateKey, this.selectedNetwork, this).then(imported => {
+                AccountService.importFromKey(this.selectedKeypair, this.selectedNetwork, this).then(imported => {
                     this.identity.setAccount(this.selectedNetwork, imported.account);
-                    this.keypairs.push(imported.keypair);
                     this.importing = false;
                 }).catch(() => this.importing = false);
             },
@@ -185,6 +207,7 @@
                 const index = this.identity.locations.indexOf(this.selectedLocation);
                 this.identity.locations.splice(index, 1);
                 if(wasDefault) this.identity.locations[0].isDefault = true;
+                this.selectedLocation = this.identity.locations[0];
             },
             saveIdentity(){
                 if(!Identity.nameIsValid(this.identity.name)){
@@ -200,11 +223,6 @@
 
 
                 const scatter = this.scatter.clone();
-
-                this.keypairs.map(keypair => {
-                    if(!scatter.keychain.keypairs.find(existingKeyPair => existingKeyPair.publicKey === keypair.publicKey))
-                        scatter.keychain.keypairs.push(keypair);
-                });
 
                 scatter.keychain.updateOrPushIdentity(this.identity);
 

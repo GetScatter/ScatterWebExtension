@@ -5,6 +5,16 @@ The first contributor of every new language gets their name in the main `readme.
 
 ### Adding a new language
 
+-----------
+
+#### Before you do anything, 
+Open a ticket in the `Issues` panel stating that you are adding a language so that multiple people don't work on the same thing. 
+**Use the following format:**
+
+**Adding Language: {LANGUAGE NAME HERE}**
+
+---------
+
 
 ##### First copy the `src/localization/languages/english.js` file into a new `<language>.js` file in the same directory.
 Once you have copied it go to the `src/localization/locales.js` file and add it to the arrays/objects.

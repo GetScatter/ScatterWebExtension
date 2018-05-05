@@ -33,6 +33,20 @@ export default class AlertMsg {
         );
     }
 
+    static BadKeyPairName(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            ...locale(LANG_KEYS.ALERT_BadKeyPairName)
+        );
+    }
+
+    static KeyPairExists(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            ...locale(LANG_KEYS.ALERT_KeyPairExists)
+        );
+    }
+
     static InvalidPrivateKey(){
         return new AlertMsg(
             AlertTypes.Error,
@@ -145,6 +159,12 @@ export default class AlertMsg {
     static RemovingAccount(formattedIdentity){
         return new AlertMsg(AlertTypes.Prompt,
             ...locale(LANG_KEYS.PROMPT_RemovingAccount)(formattedIdentity)
+        );
+    }
+
+    static DeletingKeyPair(identities){
+        return new AlertMsg(AlertTypes.Prompt,
+            ...locale(LANG_KEYS.PROMPT_DeletingKeyPair)(identities)
         );
     }
 

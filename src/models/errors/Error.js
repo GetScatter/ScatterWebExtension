@@ -46,6 +46,14 @@ export default class Error {
         return this.signatureError("account_missing", "Missing required accounts, repull the identity");
     }
 
+    static malformedRequiredFields(){
+        return this.signatureError("malformed_requirements", "The requiredFields you passed in were malformed");
+    }
+
+    static noNetwork(){
+        return this.signatureError("no_network", "You must bind a network first");
+    }
+
     static usedKeyProvider(){
         return new Error(
             ErrorTypes.MALICIOUS,

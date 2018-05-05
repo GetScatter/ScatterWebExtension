@@ -16,10 +16,13 @@ import AutoLockView from '../views/AutoLockView.vue'
 import LanguageView from '../views/LanguageView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import KeyPairView from '../views/KeyPairView.vue'
+import LoadFromBackup from '../views/LoadFromBackup.vue'
+import KeyPairsView from '../views/KeyPairsView.vue'
 
 import * as PromptTypes from '../models/prompts/PromptTypes'
 import RequestIdentityPrompt from '../prompts/RequestIdentityPrompt.vue'
 import RequestSignaturePrompt from '../prompts/RequestSignaturePrompt.vue'
+import RequestArbitrarySignaturePrompt from '../prompts/RequestArbitrarySignaturePrompt.vue'
 import RequestAddNetwork from '../prompts/RequestAddNetwork.vue'
 import RequestUnlock from '../prompts/RequestUnlock.vue'
 import UpdateVersion from '../prompts/UpdateVersion.vue'
@@ -28,6 +31,7 @@ export const promptPrefix = 'prompt_';
 
 export const RouteNames = {
     ENTRY:'entry',
+    LOAD_FROM_BACKUP:'loadFromBackup',
     SHOW_MNEMONIC:'showMnemonic',
     FIRST_TIME:'firstTime',
     MAIN_MENU:'mainMenu',
@@ -36,6 +40,7 @@ export const RouteNames = {
     TRANSFER:'transfer',
     IDENTITIES:'identities',
     IDENTITY:'identity',
+    KEYS:'keys',
     PERMISSIONS:'permissions',
     DOMAIN_PERMISSIONS:'domainPermissions',
     HISTORY:'history',
@@ -51,6 +56,7 @@ export const RouteNames = {
 
     PROMPT_REQUEST_IDENTITY:`${promptPrefix}${PromptTypes.REQUEST_IDENTITY}`,
     PROMPT_REQUEST_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_SIGNATURE}`,
+    PROMPT_REQUEST_ARBITRARY_SIGNATURE:`${promptPrefix}${PromptTypes.REQUEST_ARBITRARY_SIGNATURE}`,
     PROMPT_REQUEST_ADD_NETWORK:`${promptPrefix}${PromptTypes.REQUEST_ADD_NETWORK}`,
     PROMPT_REQUEST_UNLOCK:`${promptPrefix}${PromptTypes.REQUEST_UNLOCK}`,
     PROMPT_UPDATE_VERSION:`${promptPrefix}${PromptTypes.UPDATE_VERSION}`,
@@ -58,6 +64,7 @@ export const RouteNames = {
 
 const RouteViews = {
     [RouteNames.ENTRY]:EntryView,
+    [RouteNames.LOAD_FROM_BACKUP]:LoadFromBackup,
     [RouteNames.SHOW_MNEMONIC]:ShowMnemonicView,
     [RouteNames.FIRST_TIME]:FirstTimeView,
     [RouteNames.MAIN_MENU]:MainMenuView,
@@ -66,6 +73,7 @@ const RouteViews = {
     [RouteNames.TRANSFER]:SettingsView,
     [RouteNames.IDENTITIES]:IdentitiesView,
     [RouteNames.IDENTITY]:IdentityView,
+    [RouteNames.KEYS]:KeyPairsView,
     [RouteNames.PERMISSIONS]:PermissionsView,
     [RouteNames.DOMAIN_PERMISSIONS]:DomainPermissionView,
     [RouteNames.HISTORY]:HistoryView,
@@ -81,6 +89,7 @@ const RouteViews = {
 
     [RouteNames.PROMPT_REQUEST_IDENTITY]:RequestIdentityPrompt,
     [RouteNames.PROMPT_REQUEST_SIGNATURE]:RequestSignaturePrompt,
+    [RouteNames.PROMPT_REQUEST_ARBITRARY_SIGNATURE]:RequestArbitrarySignaturePrompt,
     [RouteNames.PROMPT_REQUEST_ADD_NETWORK]:RequestAddNetwork,
     [RouteNames.PROMPT_REQUEST_UNLOCK]:RequestUnlock,
     [RouteNames.PROMPT_UPDATE_VERSION]:UpdateVersion,
@@ -88,6 +97,7 @@ const RouteViews = {
 
 export const RouteDepth = {
     [RouteNames.ENTRY]:-1,
+    [RouteNames.LOAD_FROM_BACKUP]:1,
     [RouteNames.SHOW_MNEMONIC]:1,
     [RouteNames.FIRST_TIME]:2,
     [RouteNames.MAIN_MENU]:0,
@@ -96,6 +106,8 @@ export const RouteDepth = {
     [RouteNames.TRANSFER]:1,
     [RouteNames.IDENTITIES]:1,
     [RouteNames.IDENTITY]:2,
+    [RouteNames.KEYS]:2,
+    [RouteNames.KEYPAIRS]:3,
     [RouteNames.PERMISSIONS]:1,
     [RouteNames.DOMAIN_PERMISSIONS]:2,
     [RouteNames.HISTORY]:1,
@@ -106,9 +118,7 @@ export const RouteDepth = {
     [RouteNames.AUTO_LOCK]:101,
     [RouteNames.LANGUAGE]:101,
     [RouteNames.BACKUP]:101,
-    [RouteNames.EXPORT_JSON]:102,
     [RouteNames.DESTROY]:101,
-    [RouteNames.KEYPAIRS]:101,
 };
 
 export class Routing {
@@ -136,7 +146,10 @@ export class Routing {
     }
 
     static isRestricted(routeName) {
-        return routeName !== RouteNames.ENTRY
+        return ![
+            RouteNames.ENTRY,
+            RouteNames.LOAD_FROM_BACKUP
+        ].includes(routeName)
     }
 
 }

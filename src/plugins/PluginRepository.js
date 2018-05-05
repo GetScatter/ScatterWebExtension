@@ -1,5 +1,6 @@
 import * as PluginTypes from './PluginTypes';
 import EOS from './defaults/eos';
+import ETH from './defaults/eth';
 
 /***
  * Setting up for plugin based generators,
@@ -16,15 +17,20 @@ class PluginRepositorySingleton {
 
     loadPlugins(){
         this.plugins.push(new EOS());
+        this.plugins.push(new ETH());
 
-        // TODO: Get from store repo
+        // TODO: Get from machine storage repo
     }
 
     signatureProviders(){
         return this.plugins.filter(plugin => plugin.type === PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
-    findPlugin(name){
+    supportedBlockchains(){
+        return this.signatureProviders().map(plugin => name)
+    }
+
+    plugin(name){
         return this.plugins.find(plugin => plugin.name === name);
     }
 

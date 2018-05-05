@@ -14,15 +14,21 @@
 
             <section class="partition">
 
-                <section v-if="identityFields.length">
+                <section v-if="!identityFields.isEmpty()">
                     <section class="description">
                         <b>{{prompt.domain}}</b> {{locale(langKeys.REQUEST_Identity)[0]}}
                     </section>
 
                     <section class="key-value">
                         <figure class="key">{{locale(langKeys.GENERIC_Requires)}}</figure>
-                        <figure class="value">
-                            {{identityFields.join(', ')}}
+                        <figure class="value" v-for="field in identityFields.personal">
+                            {{field}}
+                        </figure>
+                        <figure class="value" v-for="field in identityFields.location">
+                            {{field}}
+                        </figure>
+                        <figure class="value" v-for="account in identityFields.accounts">
+                            {{account.blockchain.toUpperCase()}} {{locale(langKeys.GENERIC_Account)}}
                         </figure>
                     </section>
 
@@ -42,12 +48,12 @@
             <section class="partition scroller" v-if="filteredIdentities().length">
 
 
-                <section v-for="identity in filteredIdentities()" class="panel-box" :class="{'disabled':identity.disabled}">
+                <section v-for="identity in filteredIdentities()" class="panel-box">
 
                     <!-- Header -->
                     <section class="panel">
                         <figure class="header big identity-header">{{identity.name}}</figure>
-                        <figure v-if="!identity.disabled" class="select-identity"
+                        <figure class="select-identity"
                                 v-on:click="selectIdentity(identity)"
                                 :class="{'selected':selectedIdentity && selectedIdentity.publicKey === identity.publicKey}">
                             {{locale(langKeys.BUTTON_SelectIdentity)}}
@@ -55,17 +61,20 @@
                         <!--<figure class="header small margin"><i class="fa fa-globe"></i>{{identity.network.host}}</figure>-->
                     </section>
 
-                    <!-- Matching Requirements / Properties -->
-                    <section class="panel">
+                    <section class="panel" v-if="!identityFields.isEmpty()">
                         <figure class="header small reverse-margin">{{locale(langKeys.GENERIC_RequiredProperties)}}</figure>
-                        <section class="items">
-                            <section class="item" v-for="prop in identityFields">
-                                <figure>
-                                    <span>{{prop}}</span>
-                                    <span>{{formatPropValue(prop, identity.getPropertyValueByName(prop))}}</span>
-                                </figure>
+                        <section class="panel inner" v-for="key in Object.keys(identityFields)" v-if="identityFields[key].length">
+                            <figure class="header small reverse-margin">{{key}}</figure>
+                            <section class="items">
+                                <section class="item" v-for="prop in identityFields[key]">
+                                    <figure>
+                                        <span>{{formatProp(prop)}}</span>
+                                        <span>{{formatPropValue(identity, prop)}}</span>
+                                    </figure>
+                                </section>
                             </section>
                         </section>
+
                     </section>
 
                 </section>
@@ -92,6 +101,8 @@
     import IdentityService from '../services/IdentityService'
     import NotificationService from '../services/NotificationService'
     import Identity from '../models/Identity'
+    import Network from '../models/Network'
+    import PluginRepository from '../plugins/PluginRepository'
 
     export default {
         data(){ return {
@@ -108,22 +119,25 @@
                 'identityFields'
             ])
         },
+        mounted(){
+            console.log('identityFields', this.identityFields);
+        },
         methods: {
             bind(changed, original) { this[original] = changed },
             filteredIdentities(){
                 return this.identities
-                    .filter(id => Object.keys(id.accounts).indexOf(this.prompt.network.unique()) > -1)
-                    .filter(id => id.hasRequiredFields(this.identityFields, this.prompt.network))
+                    .filter(id => id.hasRequiredFields(this.identityFields))
                     .filter(id => JSON.stringify(id).indexOf(this.searchText) !== -1)
-                    .sort((a,b) => !a.disabled || !b.disabled ? 1 : -1)
             },
-            formatPropValue(prop, propValue){
-                switch(prop){
-//                    case 'account': return `${propValue.name}@${propValue.authority}`;
-                    case 'country': return propValue.name;
-                }
-
-                return propValue;
+            formatProp(prop){
+                if(prop instanceof Network) return `${prop.blockchain.toUpperCase()} Account`;
+                return prop;
+            },
+            formatPropValue(identity, prop){
+                const value = identity.getPropertyValueByName(prop);
+                if(prop instanceof Network) return PluginRepository.plugin(prop.blockchain).accountFormatter(value);
+                else if (prop === 'country') return value.name;
+                return value;
             },
             selectIdentity(identity){
                 this.selectedIdentity = identity;

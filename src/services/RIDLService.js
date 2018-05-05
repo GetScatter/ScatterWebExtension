@@ -25,4 +25,7 @@ export default class RIDLService {
         });
     }
 
+    static claimName(){}
+    static registerName(){}
+
 }

@@ -8,8 +8,10 @@
         <section class="panel">
             <figure class="header">{{locale(langKeys.NETWORK_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.NETWORK_Description)}} </figure>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bind(changed, 'host')" :disabled="!isNew"></cin>
-            <cin :placeholder="locale(langKeys.GENERIC_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')" :disabled="!isNew"></cin>
+            <sel :selected="blockchains[0]" :options="blockchains" :parser="blockchain => blockchain.key" v-on:changed="changed => bind(changed.value, 'blockchain')"></sel>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bind(changed, 'host')"></cin>
+            <cin :placeholder="locale(langKeys.GENERIC_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')"></cin>
+            <cin :placeholder="locale(langKeys.GENERIC_ChainID)" :text="network.chainId" v-on:changed="changed => bind(changed, 'chainId')"></cin>
         </section>
 
     </section>
@@ -23,11 +25,12 @@
     import Scatter from '../models/Scatter'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
+    import {BlockchainsArray} from '../models/Blockchains';
 
     export default {
         data(){ return {
+            blockchains:BlockchainsArray,
             network:null,
-            isNew:false,
         }},
         computed: {
             ...mapState([
@@ -38,10 +41,7 @@
             ])
         },
         mounted(){
-            const existing = this.scatter.settings.networks.find(x => x.unique() === this.$route.query.networkunique);
-            if(existing) this.network = existing.clone();
-            else this.network = Network.placeholder();
-            this.isNew = !existing;
+            this.network = Network.placeholder();
         },
         methods: {
             bind(changed, dotNotation) {
@@ -52,12 +52,12 @@
             saveNetwork(){
                 const scatter = this.scatter.clone();
 
-                if(!Network.hostIsValid(this.network.host)){
+                if(this.network.isEmpty()){
                     this[Actions.PUSH_ALERT](AlertMsg.NetworkHostInvalid());
                     return false;
                 }
 
-                if(this.networks.map(x => x.unique()).includes(this.network.unique())){
+                if(this.networks.map(network => network.unique()).includes(this.network.unique())){
                     this[Actions.PUSH_ALERT](AlertMsg.NetworkExists());
                     return false;
                 }

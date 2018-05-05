@@ -43,4 +43,11 @@ export default class Scatter {
         if(typeof this.keychain === 'object')
             this.keychain = AES.encrypt(this.keychain, seed);
     }
+
+    forBackup(){
+        const clone = this.clone();
+        clone.settings.networks = [];
+        clone.histories = [];
+        return clone;
+    }
 }

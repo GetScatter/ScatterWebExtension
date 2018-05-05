@@ -1,7 +1,7 @@
 <template>
     <section class="main-menu">
         <section class="item" v-for="link in links">
-            <router-link :to="{name:link.route}" v-if="link.name != 'Lock'">
+            <router-link :to="{name:link.route}" v-if="link.name != locale(langKeys.MAINMENU_Lock)">
                 <figure class="icon"><i class="fa" :class="'fa-'+link.icon"></i></figure>
                 <figure class="text">{{link.name}}</figure>
             </router-link>
@@ -29,6 +29,7 @@
         data(){ return {
             links:[
                 {route:RouteNames.IDENTITIES, name:this.locale(LANG_KEYS.MAINMENU_Identities), icon:'address-book'},
+                {route:RouteNames.KEYS, name:this.locale(LANG_KEYS.MAINMENU_Keys), icon:'key'},
                 {route:RouteNames.PERMISSIONS, name:this.locale(LANG_KEYS.MAINMENU_Permissions), icon:'shield'},
                 {route:RouteNames.HISTORY, name:this.locale(LANG_KEYS.MAINMENU_History), icon:'history'},
                 {name:this.locale(LANG_KEYS.MAINMENU_Lock), icon:'lock'},
@@ -38,6 +39,9 @@
             ...mapState([
                 'scatter'
             ])
+        },
+        mounted(){
+            console.log('Main Menu123')
         },
         methods: {
             bind(changed, original) { this[original] = changed },

@@ -13,7 +13,8 @@
         <section class="panel" v-else>
             <figure class="header">{{locale(langKeys.BACKUP_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.BACKUP_Description)}}</figure>
-            <a id="PRIVATE_KEY_DOWNLOAD">
+
+            <a id="KEYCHAIN_DOWNLOAD">
                 <btn v-on:clicked="exportBackup" :text="locale(langKeys.BUTTON_ExportScatter)" is-red="true" :margined="true"></btn>
             </a>
         </section>
@@ -31,6 +32,7 @@
     import EOSKeygen from '../util/EOSKeygen'
     import StorageService from '../services/StorageService'
     import AuthenticationService from '../services/AuthenticationService'
+    import AES from 'aes-oop';
 
     export default {
         data(){ return {
@@ -52,18 +54,24 @@
                     this.verified = true;
                 });
             },
-            exportBackup(){
-                alert("not supported yet")
-//                const scatter = this.scatter.clone();
-//                const [mnemonic, seed] = Mnemonic.generateMnemonic(this.password);
-//                scatter.keychain.keypairs.map(keypair => keypair.decrypt(seed));
-//
-//                const filename = `scatter_${scatter.keychain.id}.json`;
-//                const filetext = JSON.stringify(scatter.keychain);
-//                const filelink = document.getElementById('PRIVATE_KEY_DOWNLOAD');
-//                if(!filelink) return false;
-//                filelink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(filetext));
-//                filelink.setAttribute('download', filename);
+            async exportBackup(){
+                const [mnemonic, seed] = await Mnemonic.generateMnemonic(this.password);
+                if(!seed) return false;
+
+                const scatter = this.scatter.forBackup();
+                scatter.keychain = scatter.keychain.forBackup();
+                const filetext = AES.encrypt(scatter, seed);
+                const filename = `scatter_${+new Date()}.keychain`;
+                this.save(filename, filetext);
+            },
+            save(filename, data) {
+                const elem = window.document.createElement('a');
+                elem.target = '_blank';
+                elem.href = window.URL.createObjectURL(new Blob([data], {type: 'text/csv'}));
+                elem.download = filename;
+                document.body.appendChild(elem);
+                elem.click();
+                document.body.removeChild(elem);
             },
             ...mapActions([
                 Actions.PUSH_ALERT,
