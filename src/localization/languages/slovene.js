@@ -20,7 +20,7 @@ export default {
 
     [KEYS.PLACEHOLDER_Name]:'Naziv',
     [KEYS.PLACEHOLDER_PublicKey]:'Javni ključ',
-    [KEYS.PLACEHOLDER_PrivateKey]:'Privatni ključ',
+    [KEYS.PLACEHOLDER_PrivateKey]:'Zasebni ključ',
     [KEYS.PLACEHOLDER_FirstName]:'Ime',
     [KEYS.PLACEHOLDER_LastName]:'Priimek',
     [KEYS.PLACEHOLDER_Email]:'Elektronska pošta',
@@ -159,9 +159,8 @@ export default {
 
     [KEYS.KEYPAIR_Header]:`Generaj javni in privatni ključ`,
     [KEYS.KEYPAIR_Description]:`
-        You can use this panel to generate EOS key pairs. These key pairs are generated locally on your machine 
-        and are never sent anywhere. You can also paste in a keypair and check that the private key matches the public 
-        key. Note that these keys are generated using entropy gathered from your computer and not from any specific seed.
+        Tukaj lahko generirate zasebni in javni EOS ključ. Ključi so generirani lokalno na vašem računalniku in
+        se nikoli nikamor ne pošiljajo.
     `,
     [KEYS.KEYPAIR_Validation_Header]:`Generiraj javni in privatni ključ`,
     [KEYS.KEYPAIR_Validation_Valid]:`Zasebni ključ je ustrezen in javni ključ ustreza podanemu.`,
@@ -297,10 +296,7 @@ export default {
     [KEYS.PROMPT_RemovingNetwork]:[
         'Odstranitev omrežja',
 
-        `You are about to delete a Network. You will not be able 
-         to create new accounts on this Network once you delete it,
-         but nothing is stopping you from re-adding it. Any accounts
-         already using this Network will not be modified or removed.`
+        `Ste pred brisanjem - odstranitvijo omrežja.`
     ],
     [KEYS.PROMPT_WhitelistingContractAction]:[
         'You Are About To Whitelist A Currency Contract',
@@ -317,34 +313,32 @@ export default {
 
 
     [KEYS.REQUEST_AddNetwork]:[
-        /*{DOMAIN}*/ 'wants to add their network to your Scatter.',
+        /*{DOMAIN}*/ 'želi dodati omrežje v vaš Scatter.',
 
-        'Some applications use their own Networks.',
+        'Nekatere aplikacije uporabljajo svoja omrežja.',
 
-        `This in no way gives the application any access to your Scatter. 
-         Adding a network through this interface simply saves you
-         the effort of manually adding it from your Settings panel.`
+        `Akcija ne bo omogočila nikakršnega dostopa do vašega Scatter računa. 
+         Dodajanje omrežja preko te akcije samo olajša vnos omrežja, da ga ni
+         potrebno ročno dodajati preko nastavitvenega panela.`
     ],
     [KEYS.REQUEST_Identity]:[
-        /*{DOMAIN}*/ 'is requesting additional information.',
+        /*{DOMAIN}*/ ' potrebuje dodatne podatke ali informacije.',
 
-        `Sometimes applications ask for some more information such as
-         your email or date of birth. The Identities on the right are ones you own
-         on the network with those specific properties available.`,
+        `Včasih vas nekatere aplikacije povprašajo po dodatnih kot so 
+        elektronska pošta, ime, datum rojstca.`,
 
-        `Even if you provide an Identity with properties that the
-         application is not requesting permissions for, they will never
-         be able to see them, or even know they exist for that Identity.`,
+        `Če tudi posredujete dodatne podatke katere aplikacija ne zahteva,
+        tej ne bodo posredovane iz sistema Scatter.`,
 
-        `The only properties which are always given is the Identity's public key and it's name.`,
+        `Edina lastnost, ki se vedno posreduje je vaša identiteta (javni ključ in njegovo ime).`,
 
-        `is not requesting any additional information. The only thing that they are requiring is an Identity hash and name.`
+        ``
     ],
     [KEYS.REQUEST_IdentityNoIdentities]:[
-        `You don't have any Identities that match the fields that this application is requiring.`,
+        `Nimate nobene identitete (podatka) katerega zahteva aplikacija.`,
 
-        `If you would like to use an Identity with this domain, you will need to update that Identity and fulfill the requirements.
-         You can see what this domain is requiring on the left panel.`
+        `Če želite uporabiti identiteto na tej domeni, potem morate ažurirati lastnosti,
+         ki so zahtevane na levi strani.`
     ],
     [KEYS.REQUEST_SignatureWhitelist]:[
         `Do you want to whitelist this contract action?`,
