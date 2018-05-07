@@ -143,7 +143,7 @@
             else {
                 const identity = Identity.placeholder();
                 this.identity = identity;
-                identity.initialize().then(() => {
+                identity.initialize(this.scatter.hash).then(() => {
                     RIDLService.randomName().then(name => {
                         identity.name = name;
                     });

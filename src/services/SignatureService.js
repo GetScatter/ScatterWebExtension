@@ -49,8 +49,6 @@ export default class SignatureService {
         console.log('payload', payload);
         const {domain, network, requiredFields} = payload;
 
-        // TODO: consolidate functionality and switch based on blockchain type ( EOS, ETH, etc )
-
         // Checking if identity still exists
         const identity = scatter.keychain.findIdentityFromDomain(payload.domain);
         if(!identity || identity.isDisabled){
@@ -90,7 +88,7 @@ export default class SignatureService {
                     identityName:identity.name,
                     publicKey:identity.publicKey,
                     account:account,
-                    transaction:payload.transaction, // TODO: EOS Specific
+                    transaction:payload.transaction,
                     hash:'' // <-- hmmm, what to do with this? There is no hash here to track yet. :(
                 });
 

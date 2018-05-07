@@ -3,6 +3,7 @@
         <section class="panel">
             <figure class="header">{{locale(langKeys.KEYPAIR_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.KEYPAIR_Description)}}</figure>
+            <figure class="sub-header" style="color:red; font-weight:bold; font-size:13px;">{{locale(langKeys.KEYPAIR_Important)}}</figure>
             <sel :selected="keypair.blockchain.toUpperCase()" :options="blockchains" :parser="blockchain => blockchain.key.toUpperCase()" v-on:changed="changed => bind(changed.value, 'blockchain')" :key="1"></sel>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="keypair.name" v-on:changed="changed => bind(changed, 'name')"></cin>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :text="keypair.publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>

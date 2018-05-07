@@ -187,10 +187,10 @@ export default {
 
     [KEYS.KEYPAIR_Header]:`Generate a new Key Pair`,
     [KEYS.KEYPAIR_Description]:`
-        You can use this panel to generate EOS key pairs. These key pairs are generated locally on your machine 
-        and are never sent anywhere. You can also paste in a keypair and check that the private key matches the public 
-        key. Note that these keys are generated using entropy gathered from your computer and not from any specific seed.
+        You can use this panel to generate key pairs. These key pairs are generated locally on your machine 
+        and are never sent anywhere. You can also paste in a private key and it will automatically generate the public key.
     `,
+    [KEYS.KEYPAIR_Important]:`Save your private key elsewhere! You can not take private keys back out of Scatter.`,
     [KEYS.KEYPAIR_Validation_Header]:`Generate a new Key Pair`,
     [KEYS.KEYPAIR_Validation_Valid]:`The private key is valid and the public key generated from it matches the public key provided.`,
     [KEYS.KEYPAIR_Validation_Invalid]:`The public key generated from the private key did not match the public key provided!`,

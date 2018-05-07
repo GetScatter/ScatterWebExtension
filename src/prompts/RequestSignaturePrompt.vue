@@ -56,15 +56,19 @@
                 </section>
                 <section class="partition">
 
-                    <section class="fields-row" v-for="(value, key) in sortedMessageData(message.data)">
-                        <section class="fields">
-                            <figure class="label">{{key}}</figure>
-                            <figure class="value" :class="{'red':value !== '' && !isNaN(value)}">{{value}}</figure>
-                        </section>
-                        <figure class="mutable" v-if="whitelisted">
-                            <input type="checkbox" @click="toggleMutableField(key)" />
-                        </figure>
-                    </section>
+                    <key-value :key-values="sortedMessageData(message.data)"
+                               :whitelisted="whitelisted"
+                               v-on:changed="key => toggleMutableField(key)"></key-value>
+
+                    <!--<section class="fields-row" v-for="(value, key) in sortedMessageData(message.data)">-->
+                        <!--<section class="fields">-->
+                            <!--<figure class="label">{{key}}</figure>-->
+                            <!--<figure class="value" :class="{'red':value !== '' && !isNaN(value)}">{{value}}</figure>-->
+                        <!--</section>-->
+                        <!--<figure class="mutable" v-if="whitelisted">-->
+                            <!--<input type="checkbox" @click="toggleMutableField(key)" />-->
+                        <!--</figure>-->
+                    <!--</section>-->
                 </section>
             </section>
 
@@ -167,9 +171,7 @@
             formattedAccount(){
                 const network = Network.fromJson(this.prompt.data.network);
                 const account = this.identity().networkedAccount(network);
-
-                // TODO: EOS Hardcode
-                return PluginRepository.plugin('eos').accountFormatter(account)
+                return PluginRepository.plugin(network.blockchain).accountFormatter(account)
             },
 
             bind(changed, dotNotation) {
@@ -299,6 +301,10 @@
             .fields-row {
                 .fields {
                     display: inline-block;
+
+                    &:not(:first-child){
+                        padding-right:20px;
+                    }
                 }
 
                 .mutable {
@@ -380,7 +386,7 @@
                 line-height:12px;
                 font-style: italic;
                 font-weight: 600;
-                margin-bottom:15px;
+                margin-bottom:5px;
 
                 &.big {
                     font-size:22px;

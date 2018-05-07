@@ -144,14 +144,17 @@ export default class Identity {
         this.accounts = {};
         this.personal = PersonalInformation.placeholder();
         this.locations = [LocationInformation.placeholder()];
+
+        // KYC
+        this.kyc = false;
     }
 
-    initialize(){
+    initialize(hash){
         return new Promise((resolve, reject) => {
             PrivateKey.randomKey().then(privateKey => {
                 this.privateKey = privateKey.toWif();
                 this.publicKey = privateKey.toPublic().toString();
-                this.hash = Hasher.insecureHash(this.publicKey);
+                this.hash = hash;
                 resolve(true);
             });
         });
@@ -228,7 +231,7 @@ export default class Identity {
         if(!requiredFields.isValid()) return null;
 
 
-        const identity = {hash:this.hash, publicKey:this.publicKey, name:this.name};
+        const identity = {hash:this.hash, publicKey:this.publicKey, name:this.name, kyc:this.kyc};
 
         if(requiredFields.personal.length){
             identity.personal = {};
@@ -265,6 +268,7 @@ export default class Identity {
         delete returnedFields.hash;
         delete returnedFields.name;
         delete returnedFields.publicKey;
+        delete returnedFields.kyc;
         return returnedFields;
     }
 
