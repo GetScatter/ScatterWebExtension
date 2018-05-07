@@ -1,6 +1,5 @@
 import EntryView from '../views/EntryView.vue'
 import ShowMnemonicView from '../views/ShowMnemonicView.vue'
-import FirstTimeView from '../views/FirstTimeView.vue'
 import MainMenuView from '../views/MainMenuView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import IdentitiesView from '../views/IdentitiesView.vue'
@@ -33,7 +32,6 @@ export const RouteNames = {
     ENTRY:'entry',
     LOAD_FROM_BACKUP:'loadFromBackup',
     SHOW_MNEMONIC:'showMnemonic',
-    FIRST_TIME:'firstTime',
     MAIN_MENU:'mainMenu',
     SETTINGS:'settings',
 
@@ -66,7 +64,6 @@ const RouteViews = {
     [RouteNames.ENTRY]:EntryView,
     [RouteNames.LOAD_FROM_BACKUP]:LoadFromBackup,
     [RouteNames.SHOW_MNEMONIC]:ShowMnemonicView,
-    [RouteNames.FIRST_TIME]:FirstTimeView,
     [RouteNames.MAIN_MENU]:MainMenuView,
     [RouteNames.SETTINGS]:SettingsView,
 
@@ -99,7 +96,6 @@ export const RouteDepth = {
     [RouteNames.ENTRY]:-1,
     [RouteNames.LOAD_FROM_BACKUP]:1,
     [RouteNames.SHOW_MNEMONIC]:1,
-    [RouteNames.FIRST_TIME]:2,
     [RouteNames.MAIN_MENU]:0,
     [RouteNames.SETTINGS]:100,
 

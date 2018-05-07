@@ -186,8 +186,8 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             console.log("Destroying");
             seed = '';
-            sendResponse(true);
             apis.storage.local.clear();
+            sendResponse(true);
         })
     }
 

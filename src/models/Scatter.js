@@ -2,6 +2,8 @@ import Meta from './Meta';
 import Keychain from './Keychain';
 import Settings from './Settings';
 import AES from 'aes-oop';
+import Hasher from '../util/Hasher'
+import IdGenerator from '../util/IdGenerator'
 
 export default class Scatter {
 
@@ -10,6 +12,7 @@ export default class Scatter {
         this.keychain = Keychain.placeholder();
         this.settings = Settings.placeholder();
         this.histories = [];
+        this.hash = Hasher.insecureHash(IdGenerator.text(2048));
     }
 
     static placeholder(){ return new Scatter(); }

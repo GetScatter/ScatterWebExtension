@@ -137,6 +137,7 @@ export const KEYPAIRS_NoKeyPairsDescription = 'kps_desc';
 
 export const KEYPAIR_Header = 'kp_head';
 export const KEYPAIR_Description = 'kp_desc';
+export const KEYPAIR_Important = 'kp_imp!';
 export const KEYPAIR_Validation_Header = 'kp_v_head';
 export const KEYPAIR_Validation_Valid = 'kp_v_valid';
 export const KEYPAIR_Validation_Invalid = 'kp_v_invalid';

@@ -55,7 +55,8 @@
             destroy(){
                 this[Actions.PUSH_ALERT](AlertMsg.DestroyingScatter()).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
-                    this[Actions.DESTROY]().then(() => this.$router.push({name:RouteNames.ENTRY}));
+//                    this[Actions.DESTROY]().then(() => this.$router.push({name:RouteNames.ENTRY}));
+                    this[Actions.DESTROY]().then(() => window.close());
                 });
             },
             ...mapActions([

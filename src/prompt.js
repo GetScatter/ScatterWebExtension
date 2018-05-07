@@ -12,6 +12,7 @@ import ButtonComponent from './components/ButtonComponent.vue'
 import SearchComponent from './components/SearchComponent.vue'
 import InputComponent from './components/InputComponent.vue'
 import SelectComponent from './components/SelectComponent.vue'
+import KeyValue from './components/KeyValue.vue'
 
 class PromptWindow {
 
@@ -33,6 +34,7 @@ class PromptWindow {
             {tag:'cin', vue:InputComponent},
             {tag:'sel', vue:SelectComponent},
             {tag:'alert', vue:Alert},
+            {tag:'key-value', vue:KeyValue},
         ];
         const routes = Routing.routes(true);
 
