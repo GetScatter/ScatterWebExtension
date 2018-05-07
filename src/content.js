@@ -40,7 +40,6 @@ class Content {
         stream.onSync(async () => {
             const version = await this.getVersion();
             const identity = await this.identityFromPermissions();
-            console.log('identity', identity);
 
             // Pushing an instance of Scatterdapp to the web application
             stream.send(NetworkMessage.payload(NetworkMessageTypes.PUSH_SCATTER, {version, identity}), PairingTags.INJECTED);

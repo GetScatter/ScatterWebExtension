@@ -223,7 +223,6 @@ export default class Background {
     /********************************************/
 
     static identityFromPermissions(sendResponse, payload){
-        console.log('id from perms', payload)
         if(!seed.length) {
             sendResponse(null);
             return false;
