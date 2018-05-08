@@ -89,12 +89,6 @@ const setupSigProviders = context => {
     })
 };
 
-const useIdentity = (_identityObjectOrPublicKey) => {
-    if(typeof _identityObjectOrPublicKey === 'object') this.identity = _identityObjectOrPublicKey;
-    publicKey = typeof _identityObjectOrPublicKey === 'string' ? _identityObjectOrPublicKey :
-        _identityObjectOrPublicKey.hasOwnProperty('hash') ? _identityObjectOrPublicKey.publicKey : '';
-}
-
 
 /***
  * Scatterdapp is the object injected into the web application that
@@ -105,16 +99,18 @@ export default class Scatterdapp {
 
     constructor(_stream, _options){
         currentVersion = parseFloat(_options.version);
-        publicKey = _options.identity ? _options.identity.publicKey : null;
-        this.identity = _options.identity;
+        this.useIdentity(_options.identity);
         stream = _stream;
         resolvers = [];
 
         setupSigProviders(this);
 
         _subscribe();
+    }
 
-        if(this.identity) useIdentity(publicKey);
+    useIdentity(identity){
+        this.identity = identity;
+        publicKey = identity ? identity.publicKey : '';
     }
 
     /***
@@ -138,7 +134,7 @@ export default class Scatterdapp {
             network:network,
             fields
         }).then(async identity => {
-            useIdentity(identity);
+            this.useIdentity(identity);
             return identity;
         });
     }

@@ -45,13 +45,13 @@
                 reader.readAsText(file);
             },
             async importBackup(){
-                console.log(this.file);
                 let decrypted;
                 let seed;
+                //TODO: Code duplication from actions set seed
                 try {
-                    if(this.password.split(' ').length > 12){
+                    if(this.password.split(' ').length >= 12){
                         // MNEMONIC
-                        seed = Mnemonic.mnemonicToSeed(this.password);
+                        seed = await Mnemonic.mnemonicToSeed(this.password);
                         decrypted = AES.decrypt(this.file, seed);
                     } else {
                         // PASSWORD
@@ -59,9 +59,9 @@
                         seed = s;
                         decrypted = AES.decrypt(this.file, seed);
                     }
-                } catch(e){}
-
-                console.log('decrypted',decrypted);
+                } catch(e){
+                    console.log('err', e);
+                }
 
                 if(typeof decrypted === 'object' && decrypted.hasOwnProperty('keychain')){
                     this[Actions.IMPORT_SCATTER]({imported:decrypted, seed}).then(() => {

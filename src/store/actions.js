@@ -17,7 +17,16 @@ export const actions = {
 
     [Actions.SET_SEED]:({commit}, password) => {
         return new Promise(async (resolve, reject) => {
-            const [mnemonic, seed] = await Mnemonic.generateMnemonic(password);
+            let seed, mnemonic;
+            if(password.split(' ').length >= 12) {
+                seed = await Mnemonic.mnemonicToSeed(password);
+                mnemonic = password;
+            } else {
+                const [m, s] = await Mnemonic.generateMnemonic(password);
+                seed = s;
+                mnemonic = m;
+            }
+
             InternalMessage.payload(InternalMessageTypes.SET_SEED, seed).send().then(() => {
                 resolve(mnemonic)
             })

@@ -75,6 +75,7 @@ export default class SignatureService {
 
 
         const sign = (returnedFields) => {
+            console.log(blockchain, payload, account);
             PluginRepository.plugin(blockchain).signer(context, payload, account.publicKey, signature => {
                 if(!signature){
                     sendResponse(Error.maliciousEvent());
@@ -109,7 +110,6 @@ export default class SignatureService {
         });
 
         const needsLocationAndIdentityHasMultiple = (identity.locations.length > 1 && requiredFields.location.length);
-        console.log('needsLocationAndIdentityHasMultiple', needsLocationAndIdentityHasMultiple);
 
         if(!needsLocationAndIdentityHasMultiple && hasTransactionPermissions) {
             const identityClone = identity.clone();
