@@ -3,17 +3,20 @@ import * as KEYS from './keys';
 import english from './languages/english';
 import portuguese from './languages/portuguese';
 import spanish from './languages/spanish';
-
+import slovene from './languages/slovene'
+  
 export const LANG = {
     ENGLISH:'English',
     PORTUGUESE: 'Português ( Portuguese )',
-    SPANISH: 'Español ( Spanish )'
+    SPANISH: 'Español ( Spanish )',
+    SLOVENE: 'Slovensko ( Slovene )
 };
 
 const languages = {
     [LANG.ENGLISH]:english,
     [LANG.PORTUGUESE]:portuguese,
-    [LANG.SPANISH]:spanish
+    [LANG.SPANISH]:spanish,
+    [LANG.SLOVENE]:slovensko
 };
 
 export const locales = () => {
