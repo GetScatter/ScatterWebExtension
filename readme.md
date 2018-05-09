@@ -23,6 +23,7 @@ Scatter is a browser extension that allows you to sign transactions for multiple
 
 **From The Repository** 
 * Clone repository
+* [In some cases](https://github.com/EOSEssentials/Scatter/pull/43) on a Windows system you will need to run `npm install --global --production windows-build-tools`
 * `npm install` to get dependencies
 * copy the `.env.example` file to `.env`
 * `npm start` to compile a `build` folder.
