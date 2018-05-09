@@ -9,7 +9,7 @@ export const LANG = {
     ENGLISH:'English',
     PORTUGUESE: 'Português ( Portuguese )',
     SPANISH: 'Español ( Spanish )',
-    SLOVENE: 'Slovensko ( Slovene )
+    SLOVENE: 'Slovensko ( Slovene )'
 };
 
 const languages = {
