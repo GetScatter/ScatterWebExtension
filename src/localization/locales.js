@@ -9,14 +9,14 @@ export const LANG = {
     ENGLISH:'English',
     PORTUGUESE: 'Português ( Portuguese )',
     SPANISH: 'Español ( Spanish )',
-    SLOVENE: 'Slovensko ( Slovene )
+    SLOVENE: 'Slovensko ( Slovene )'
 };
 
 const languages = {
     [LANG.ENGLISH]:english,
     [LANG.PORTUGUESE]:portuguese,
     [LANG.SPANISH]:spanish,
-    [LANG.SLOVENE]:slovensko
+    [LANG.SLOVENE]:slovene
 };
 
 export const locales = () => {
