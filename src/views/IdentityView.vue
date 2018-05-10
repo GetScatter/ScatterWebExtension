@@ -15,7 +15,21 @@
         <section class="panel">
             <figure class="header">{{locale(langKeys.IDENTITY_NameHeader)}}</figure>
             <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_NameDescription)}}</figure>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
+            <cin v-if="identity.ridl > 0 || !registeringIdentity" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
+            <cin v-else :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="newName" v-on:changed="changed => bind(changed, 'newName')"></cin>
+            <section v-if="identity.ridl <= 0">
+                <btn v-if="!isNew && !registeringIdentity"
+                     :text="registeringIdentity ? locale(langKeys.BUTTON_RegisterIdentity) : locale(langKeys.BUTTON_ChangeName)"
+                     v-on:clicked="registerIdentity" :is-blue="registeringIdentity" margined="true"></btn>
+
+                <btn v-if="!isNew && registeringIdentity"
+                     :text="locale(langKeys.BUTTON_ClaimIdentity)"
+                     v-on:clicked="claimIdentity" is-blue="true" margined="true"></btn>
+
+                <btn v-if="!isNew && registeringIdentity"
+                     :text="locale(langKeys.BUTTON_Cancel)"
+                     v-on:clicked="registeringIdentity = false" margined="true" :is-red="true"></btn>
+            </section>
         </section>
 
         <!-- Account -->
@@ -111,8 +125,9 @@
     import AccountService from '../services/AccountService'
     import EOSKeygen from '../util/EOSKeygen'
     import {Countries} from '../data/Countries'
-    import RIDLService from '../services/RIDLService'
     import PluginRepository from '../plugins/PluginRepository'
+    import {Blockchains} from '../models/Blockchains'
+    import ridl from 'ridl';
 
     export default {
         data(){ return {
@@ -125,7 +140,9 @@
             selectedKeypair:null,
 
             importing:false,
-            noKeypair:KeyPair.fromJson({name:'None'})
+            noKeypair:KeyPair.fromJson({name:'None'}),
+            registeringIdentity:false,
+            newName:'',
         }},
         computed: {
             ...mapState([
@@ -144,9 +161,7 @@
                 const identity = Identity.placeholder();
                 this.identity = identity;
                 identity.initialize(this.scatter.hash).then(() => {
-                    RIDLService.randomName().then(name => {
-                        identity.name = name;
-                    });
+                    identity.name = `${this.locale(this.langKeys.GENERIC_New)} ${this.locale(this.langKeys.GENERIC_Identity)}`;
                 })
             }
 
@@ -155,6 +170,42 @@
             this.isNew = !existing;
         },
         methods: {
+            registerIdentity(){
+                if(!this.registeringIdentity) return this.registeringIdentity = true;
+            },
+            async claimIdentity(){
+                const newName = this.newName.trim().toLowerCase();
+                if(!newName.length) return false;
+                const hash = await ridl.identity.getHash(newName);
+                if(!hash) return this[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName());
+
+                this[Actions.PUSH_ALERT](AlertMsg.ClaimIdentity(newName)).then(async res => {
+                    if(!res || !res.hasOwnProperty('text')) return false;
+                    const privateKey = res.text;
+                    const signedHash = ridl.sign(hash, privateKey);
+                    const claimed = await ridl.identity.claim(newName, signedHash, this.identity.publicKey);
+                    if(!claimed) return this[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName());
+
+                    // Removing now unused randomized RIDL account
+                    if(!await ridl.identity.registered(this.identity.name)) {
+                        const previousHash = await ridl.identity.getHash(this.identity.name);
+                        const signedStaleHash = previousHash ? await this[Actions.SIGN_RIDL]({hash:previousHash, publicKey:this.identity.publicKey}) : false;
+                        console.log('signedStaleHash', signedStaleHash)
+                        if(signedStaleHash) await ridl.identity.release(this.identity.name, signedStaleHash);
+                    }
+
+                    console.log('here')
+
+
+                    this.identity.name = this.newName;
+                    this.identity.ridl = parseInt(claimed.registered);
+                    const scatter = this.scatter.clone();
+                    scatter.keychain.updateOrPushIdentity(this.identity);
+                    await this[Actions.UPDATE_STORED_SCATTER](scatter);
+                    //5KjbZQLH3EAfgXF3jejYM2WZjzJCUQH7NEkT1mVcBy2xoFdSWro
+
+                })
+            },
             filteredKeypairs(){
                 return [this.noKeypair].concat(this.keypairs.filter(keypair => keypair.blockchain === this.selectedNetwork.blockchain));
             },
@@ -209,11 +260,17 @@
                 if(wasDefault) this.identity.locations[0].isDefault = true;
                 this.selectedLocation = this.identity.locations[0];
             },
-            saveIdentity(){
-                if(!Identity.nameIsValid(this.identity.name)){
-                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
-                    return false;
+            async saveIdentity(){
+//                if(!Identity.nameIsValid(this.identity.name)){
+//                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
+//                    return false;
+//                }
+
+                if(this.isNew) {
+                    this.identity.name = await ridl.identity.randomName();
+                    await ridl.identity.identify(this.identity.name, this.identity.publicKey);
                 }
+
 
                 //TODO: More Error handling
                 // -----
@@ -223,14 +280,12 @@
 
 
                 const scatter = this.scatter.clone();
-
                 scatter.keychain.updateOrPushIdentity(this.identity);
-
-
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
 
             },
             ...mapActions([
+                Actions.SIGN_RIDL,
                 Actions.UPDATE_STORED_SCATTER,
                 Actions.PUSH_ALERT
             ])

@@ -81,6 +81,16 @@ export class IdentityRequiredFields {
         if(this.accounts.length && !this.accounts.every(network => network.isValid())) return false;
         return true;
     }
+
+    toFieldsArray(){
+        let fields = [];
+        Object.keys(this).map(key => {
+            if(key === IdentityBaseFields.account)
+                this[key].map(network => fields.push(`ACCOUNT: ${network.unique()}`));
+            else this[key].map(subKey => fields.push(subKey))
+        });
+        return fields;
+    }
 }
 
 /********************************************/
@@ -147,6 +157,7 @@ export default class Identity {
 
         // KYC
         this.kyc = false;
+        this.ridl = -1;
     }
 
     initialize(hash){
@@ -269,6 +280,7 @@ export default class Identity {
         delete returnedFields.name;
         delete returnedFields.publicKey;
         delete returnedFields.kyc;
+        delete returnedFields.ridl;
         return returnedFields;
     }
 

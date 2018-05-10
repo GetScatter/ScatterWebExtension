@@ -67,6 +67,9 @@ export default {
     [KEYS.BUTTON_No]:'No',
     [KEYS.BUTTON_UseSelectedAccount]:'Use Selected Account',
     [KEYS.BUTTON_SelectIdentity]:'Select Identity',
+    [KEYS.BUTTON_ChangeName]:'Change Name',
+    [KEYS.BUTTON_ClaimIdentity]:'Claim Identity',
+    [KEYS.BUTTON_RegisterIdentity]:'Register Identity',
 
     [KEYS.MAINMENU_Identities]:'Identities',
     [KEYS.MAINMENU_Keys]:'Key Pairs',
@@ -239,6 +242,12 @@ export default {
         'This Identity name is registered to another Identity.'
     ],
     //2
+    [KEYS.ALERT_NoSuchIdentityName]:[
+        'No such Identity name',
+
+        'This Identity name is not reserved in RIDL.'
+    ],
+    //2
     [KEYS.ALERT_KeyPairExists]:[
         'Key Pair Exists',
 
@@ -381,6 +390,12 @@ export default {
         'Select Account',
 
         'Select the account and authority you wish to use for this Identity. You can only select one at a time.'
+    ],
+    //2
+    [KEYS.PROMPT_ClaimIdentity]:[
+        'Claim Identity',
+
+        'Put in the private key that matches the public key on file for your identity name.'
     ],
 
     //3

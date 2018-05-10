@@ -26,6 +26,13 @@ export default class AlertMsg {
         );
     }
 
+    static NoSuchIdentityName(){
+        return new AlertMsg(
+            AlertTypes.Error,
+            ...locale(LANG_KEYS.ALERT_NoSuchIdentityName)
+        );
+    }
+
     static IdentityNameExists(){
         return new AlertMsg(
             AlertTypes.Error,
@@ -104,9 +111,11 @@ export default class AlertMsg {
     }
 
     static NoIdentityWithProperties(fields){
+
+
         return new AlertMsg(
             AlertTypes.Error,
-            ...locale(LANG_KEYS.ALERT_NoIdentityWithProperties)(fields)
+            ...locale(LANG_KEYS.ALERT_NoIdentityWithProperties)(fields.toFieldsArray())
         );
     }
 
@@ -185,6 +194,14 @@ export default class AlertMsg {
             AlertTypes.SelectAccount,
             ...locale(LANG_KEYS.PROMPT_SelectAccount),
             accounts
+        );
+    }
+
+    static ClaimIdentity(name){
+        return new AlertMsg(
+            AlertTypes.ClaimIdentity,
+            ...locale(LANG_KEYS.PROMPT_ClaimIdentity),
+
         );
     }
 

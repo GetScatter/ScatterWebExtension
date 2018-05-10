@@ -7,6 +7,7 @@ import Network from '../models/Network'
 import InternalMessage from '../messages/InternalMessage'
 import * as InternalMessageTypes from '../messages/InternalMessageTypes'
 import PluginRepository from '../plugins/PluginRepository'
+import ridl from 'ridl';
 
 export const actions = {
     [Actions.SET_SCATTER]:({commit}, scatter) => commit(Actions.SET_SCATTER, scatter),
@@ -94,6 +95,16 @@ export const actions = {
                     resolve();
                 })
             })
+        })
+    },
+
+    [Actions.SIGN_RIDL]:({commit}, {hash, publicKey}) => {
+        console.log('pubpriv', hash, publicKey);
+        return new Promise(async (resolve, reject) => {
+            InternalMessage.payload(InternalMessageTypes.PUB_TO_PRIV, publicKey).send().then(privateKey => {
+                if(!privateKey) return resolve(null);
+                resolve(ridl.sign(hash, privateKey));
+            });
         })
     },
 

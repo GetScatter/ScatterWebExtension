@@ -12,7 +12,7 @@ export default class Network {
 
     static fromJson(json){
         const p = Object.assign(Network.placeholder(), json);
-        p.chainId = p.chainId.toString();
+        p.chainId = p.chainId ? p.chainId.toString() : '';
         return p;
     }
 
