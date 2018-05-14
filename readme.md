@@ -364,6 +364,7 @@ for more information about how to get involved with translations.
 - **Your Name Here** - for being the first to translate a new language!
 - [gnumarcelo](https://github.com/gnumarcelo) - [Portuguese](https://github.com/EOSEssentials/Scatter/pull/27)
 - [javierjmc](https://github.com/javierjmc) - [Spanish](https://github.com/EOSEssentials/Scatter/pull/30)
+- [petervalencic](https://github.com/petervalencic) - [Slovene](https://github.com/EOSEssentials/Scatter/pull/42)
 
 
 
