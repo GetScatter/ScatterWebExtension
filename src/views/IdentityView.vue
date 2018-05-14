@@ -15,7 +15,21 @@
         <section class="panel">
             <figure class="header">{{locale(langKeys.IDENTITY_NameHeader)}}</figure>
             <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_NameDescription)}}</figure>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
+            <cin v-if="identity.ridl > 0 || !registeringIdentity" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
+            <cin v-else :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="newName" v-on:changed="changed => bind(changed, 'newName')"></cin>
+            <section v-if="identity.ridl <= 0">
+                <btn v-if="!isNew && !registeringIdentity"
+                     :text="registeringIdentity ? locale(langKeys.BUTTON_RegisterIdentity) : locale(langKeys.BUTTON_ChangeName)"
+                     v-on:clicked="registerIdentity" :is-blue="registeringIdentity" margined="true"></btn>
+
+                <btn v-if="!isNew && registeringIdentity"
+                     :text="locale(langKeys.BUTTON_ClaimIdentity)"
+                     v-on:clicked="claimIdentity" is-blue="true" margined="true"></btn>
+
+                <btn v-if="!isNew && registeringIdentity"
+                     :text="locale(langKeys.BUTTON_Cancel)"
+                     v-on:clicked="registeringIdentity = false" margined="true" :is-red="true"></btn>
+            </section>
         </section>
 
         <!-- Account -->
@@ -109,10 +123,11 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import AccountService from '../services/AccountService'
+    import RIDLService from '../services/RIDLService'
     import EOSKeygen from '../util/EOSKeygen'
     import {Countries} from '../data/Countries'
-    import RIDLService from '../services/RIDLService'
     import PluginRepository from '../plugins/PluginRepository'
+    import {Blockchains} from '../models/Blockchains'
 
     export default {
         data(){ return {
@@ -125,7 +140,9 @@
             selectedKeypair:null,
 
             importing:false,
-            noKeypair:KeyPair.fromJson({name:'None'})
+            noKeypair:KeyPair.fromJson({name:'None'}),
+            registeringIdentity:false,
+            newName:'',
         }},
         computed: {
             ...mapState([
@@ -141,12 +158,9 @@
             const existing = this.scatter.keychain.identities.find(x => x.publicKey === this.$route.query.publicKey);
             if(existing) this.identity = existing.clone();
             else {
-                const identity = Identity.placeholder();
-                this.identity = identity;
-                identity.initialize(this.scatter.hash).then(() => {
-                    RIDLService.randomName().then(name => {
-                        identity.name = name;
-                    });
+                this.identity = Identity.placeholder();
+                this.identity.initialize(this.scatter.hash).then(() => {
+                    this.identity.name = `${this.locale(this.langKeys.GENERIC_New)} ${this.locale(this.langKeys.GENERIC_Identity)}`;
                 })
             }
 
@@ -155,6 +169,19 @@
             this.isNew = !existing;
         },
         methods: {
+            registerIdentity(){
+                if(!this.registeringIdentity) return this.registeringIdentity = true;
+            },
+            async claimIdentity(){
+                const updatedIdentity = await RIDLService.claimIdentity(this.newName, this.identity.clone(), this);
+                if(updatedIdentity) {
+                    const scatter = this.scatter.clone();
+                    this.identity.name = updatedIdentity.name;
+                    scatter.keychain.updateOrPushIdentity(updatedIdentity);
+                    await this[Actions.UPDATE_STORED_SCATTER](scatter);
+                    this.$router.back();
+                }
+            },
             filteredKeypairs(){
                 return [this.noKeypair].concat(this.keypairs.filter(keypair => keypair.blockchain === this.selectedNetwork.blockchain));
             },
@@ -209,11 +236,18 @@
                 if(wasDefault) this.identity.locations[0].isDefault = true;
                 this.selectedLocation = this.identity.locations[0];
             },
-            saveIdentity(){
-                if(!Identity.nameIsValid(this.identity.name)){
-                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
-                    return false;
+            async saveIdentity(){
+//                if(!Identity.nameIsValid(this.identity.name)){
+//                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
+//                    return false;
+//                }
+
+                if(this.isNew) {
+                    const identified = await RIDLService.identify(this.identity.publicKey);
+                    if(!identified) return null;
+                    this.identity.name = identified;
                 }
+
 
                 //TODO: More Error handling
                 // -----
@@ -223,14 +257,12 @@
 
 
                 const scatter = this.scatter.clone();
-
                 scatter.keychain.updateOrPushIdentity(this.identity);
-
-
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
 
             },
             ...mapActions([
+                Actions.SIGN_RIDL,
                 Actions.UPDATE_STORED_SCATTER,
                 Actions.PUSH_ALERT
             ])

@@ -10,6 +10,7 @@ export const SET_SEED = 'setSeed';
 export const SET_AUTO_LOCK = 'setAutoLock';
 export const LOCK = 'lock';
 export const DESTROY = 'destroy';
+export const SIGN_RIDL = 'signRIDL';
 
 export const PUSH_ALERT = 'pushAlert';
 export const PULL_ALERT = 'pullAlert';

@@ -42,6 +42,15 @@
                 <btn :text="locale(langKeys.BUTTON_UseSelectedAccount)" is-blue="true" v-on:clicked="returnSelectedItem"></btn>
             </section>
 
+            <!-- Select Account -->
+            <section style="padding:10px;" v-if="alerts[0].type === alertTypes.ClaimIdentity">
+                <cin :text="selectedItem" :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" v-on:changed="changed => bind(changed, 'returnedText')"></cin>
+            </section>
+            <section class="actions" v-if="alerts[0].type === alertTypes.ClaimIdentity">
+                <btn :text="locale(langKeys.BUTTON_Cancel)" v-on:clicked="cancel"></btn>
+                <btn :text="locale(langKeys.BUTTON_Accept)" is-blue="true" v-on:clicked="returnText"></btn>
+            </section>
+
         </section>
 
     </section>
@@ -56,6 +65,8 @@
             alertTypes:AlertTypes,
             selectedItem:null,
             selectionError:null,
+            returnedText:'',
+            returnedTextError:null,
         }},
         computed: {
             ...mapState([
@@ -63,6 +74,7 @@
             ])
         },
         methods: {
+            bind(changed, item) { this[item] = changed; },
             accept(){
                 this[Actions.PULL_ALERT]();
                 this[Actions.PUSH_ALERT_RESULT]({accepted:true});
@@ -80,6 +92,11 @@
 
                 this[Actions.PULL_ALERT]();
                 this[Actions.PUSH_ALERT_RESULT]({selected:this.selectedItem});
+            },
+            returnText(){
+                if(!this.returnedText.length) return false;
+                this[Actions.PULL_ALERT]();
+                this[Actions.PUSH_ALERT_RESULT]({text:this.returnedText});
             },
             ...mapActions([
                 Actions.PULL_ALERT,

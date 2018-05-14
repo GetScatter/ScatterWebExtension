@@ -70,6 +70,9 @@ export const BUTTON_Yes = 'btn_yes';
 export const BUTTON_No = 'btn_no';
 export const BUTTON_UseSelectedAccount = 'btn_use_sel_acc';
 export const BUTTON_SelectIdentity = 'btn_sel_id';
+export const BUTTON_ChangeName = 'btn_change_name';
+export const BUTTON_ClaimIdentity = 'btn_claim_id';
+export const BUTTON_RegisterIdentity = 'btn_reg_id';
 
 export const IDENTITIES_Header = 'ids_head';
 export const IDENTITIES_Description = 'ids_fields';
@@ -158,6 +161,7 @@ export const ERROR_MustSelectItem = 'err_mst_sel_item';
 export const ALERT_Type = 'alert_type';
 export const ALERT_BadIdentityName = 'alert_bad_id_name';
 export const ALERT_IdentityNameExists = 'alert_id_name_exists';
+export const ALERT_NoSuchIdentityName = 'alert_no_such_id';
 export const ALERT_BadKeyPairName = 'alert_bad_kp_name';
 export const ALERT_KeyPairExists = 'alert_keypair_exists';
 export const ALERT_InvalidPrivateKey = 'alert_inv_priv_key';
@@ -181,6 +185,7 @@ export const PROMPT_RemovingNetwork = 'prompt_rm_net';
 export const PROMPT_DeletingKeyPair = 'alert_del_kp';
 export const PROMPT_WhitelistingContractAction = 'prompt_white_act';
 export const PROMPT_SelectAccount = 'prompt_sel_acc';
+export const PROMPT_ClaimIdentity = 'prompt_claim_id';
 
 
 

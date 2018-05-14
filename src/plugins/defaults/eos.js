@@ -25,7 +25,7 @@ export default class EOS extends Plugin {
 
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
-            resolve(new Network('mainnet.eos.io', 8080, Blockchains.EOS));
+            resolve(new Network('192.168.56.101', 8888, Blockchains.EOS));
         });
     }
 

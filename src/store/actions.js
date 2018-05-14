@@ -2,11 +2,14 @@ import * as Actions from './constants'
 import Hasher from '../util/Hasher'
 import Mnemonic from '../util/Mnemonic'
 import Scatter from '../models/Scatter'
+import Identity from '../models/Identity'
 import Meta from '../models/Meta'
 import Network from '../models/Network'
 import InternalMessage from '../messages/InternalMessage'
 import * as InternalMessageTypes from '../messages/InternalMessageTypes'
 import PluginRepository from '../plugins/PluginRepository'
+import RIDLService from '../services/RIDLService'
+import ridl from 'ridl';
 
 export const actions = {
     [Actions.SET_SCATTER]:({commit}, scatter) => commit(Actions.SET_SCATTER, scatter),
@@ -87,6 +90,15 @@ export const actions = {
                 scatter.settings.networks.push(network);
             }));
 
+
+            const firstIdentity = Identity.placeholder();
+            await firstIdentity.initialize(scatter.hash);
+            const identified = await RIDLService.identify(firstIdentity.publicKey);
+            if(identified) {
+                firstIdentity.name = identified;
+                scatter.keychain.updateOrPushIdentity(firstIdentity);
+            }
+
             dispatch(Actions.SET_SEED, password).then(mnemonic => {
                 dispatch(Actions.UPDATE_STORED_SCATTER, scatter).then(_scatter => {
                     dispatch(Actions.SET_MNEMONIC, mnemonic);
@@ -94,6 +106,16 @@ export const actions = {
                     resolve();
                 })
             })
+        })
+    },
+
+    [Actions.SIGN_RIDL]:({commit}, {hash, publicKey}) => {
+        console.log('pubpriv', hash, publicKey);
+        return new Promise(async (resolve, reject) => {
+            InternalMessage.payload(InternalMessageTypes.PUB_TO_PRIV, publicKey).send().then(privateKey => {
+                if(!privateKey) return resolve(null);
+                resolve(ridl.sign(hash, privateKey));
+            });
         })
     },
 
