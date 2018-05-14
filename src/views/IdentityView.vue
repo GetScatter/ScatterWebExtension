@@ -123,11 +123,11 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import AccountService from '../services/AccountService'
+    import RIDLService from '../services/RIDLService'
     import EOSKeygen from '../util/EOSKeygen'
     import {Countries} from '../data/Countries'
     import PluginRepository from '../plugins/PluginRepository'
     import {Blockchains} from '../models/Blockchains'
-    import ridl from 'ridl';
 
     export default {
         data(){ return {
@@ -158,10 +158,9 @@
             const existing = this.scatter.keychain.identities.find(x => x.publicKey === this.$route.query.publicKey);
             if(existing) this.identity = existing.clone();
             else {
-                const identity = Identity.placeholder();
-                this.identity = identity;
-                identity.initialize(this.scatter.hash).then(() => {
-                    identity.name = `${this.locale(this.langKeys.GENERIC_New)} ${this.locale(this.langKeys.GENERIC_Identity)}`;
+                this.identity = Identity.placeholder();
+                this.identity.initialize(this.scatter.hash).then(() => {
+                    this.identity.name = `${this.locale(this.langKeys.GENERIC_New)} ${this.locale(this.langKeys.GENERIC_Identity)}`;
                 })
             }
 
@@ -174,37 +173,14 @@
                 if(!this.registeringIdentity) return this.registeringIdentity = true;
             },
             async claimIdentity(){
-                const newName = this.newName.trim().toLowerCase();
-                if(!newName.length) return false;
-                const hash = await ridl.identity.getHash(newName);
-                if(!hash) return this[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName());
-
-                this[Actions.PUSH_ALERT](AlertMsg.ClaimIdentity(newName)).then(async res => {
-                    if(!res || !res.hasOwnProperty('text')) return false;
-                    const privateKey = res.text;
-                    const signedHash = ridl.sign(hash, privateKey);
-                    const claimed = await ridl.identity.claim(newName, signedHash, this.identity.publicKey);
-                    if(!claimed) return this[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName());
-
-                    // Removing now unused randomized RIDL account
-                    if(!await ridl.identity.registered(this.identity.name)) {
-                        const previousHash = await ridl.identity.getHash(this.identity.name);
-                        const signedStaleHash = previousHash ? await this[Actions.SIGN_RIDL]({hash:previousHash, publicKey:this.identity.publicKey}) : false;
-                        console.log('signedStaleHash', signedStaleHash)
-                        if(signedStaleHash) await ridl.identity.release(this.identity.name, signedStaleHash);
-                    }
-
-                    console.log('here')
-
-
-                    this.identity.name = this.newName;
-                    this.identity.ridl = parseInt(claimed.registered);
+                const updatedIdentity = await RIDLService.claimIdentity(this.newName, this.identity.clone(), this);
+                if(updatedIdentity) {
                     const scatter = this.scatter.clone();
-                    scatter.keychain.updateOrPushIdentity(this.identity);
+                    this.identity.name = updatedIdentity.name;
+                    scatter.keychain.updateOrPushIdentity(updatedIdentity);
                     await this[Actions.UPDATE_STORED_SCATTER](scatter);
-                    //5KjbZQLH3EAfgXF3jejYM2WZjzJCUQH7NEkT1mVcBy2xoFdSWro
-
-                })
+                    this.$router.back();
+                }
             },
             filteredKeypairs(){
                 return [this.noKeypair].concat(this.keypairs.filter(keypair => keypair.blockchain === this.selectedNetwork.blockchain));
@@ -267,8 +243,9 @@
 //                }
 
                 if(this.isNew) {
-                    this.identity.name = await ridl.identity.randomName();
-                    await ridl.identity.identify(this.identity.name, this.identity.publicKey);
+                    const identified = await RIDLService.identify(this.identity.publicKey);
+                    if(!identified) return null;
+                    this.identity.name = identified;
                 }
 
 
