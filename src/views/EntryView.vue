@@ -66,7 +66,6 @@
                 }, 200)
             },
             importKeychain(){
-                console.log('importing');
                 this.$router.push({name:RouteNames.LOAD_FROM_BACKUP})
             },
             next(){

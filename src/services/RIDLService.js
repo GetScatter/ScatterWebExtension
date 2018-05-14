@@ -6,9 +6,7 @@ import {Blockchains} from '../models/Blockchains'
 
 const enabled = false;
 
-PluginRepository.plugin(Blockchains.EOS).getEndorsedNetwork().then(network => {
-   ridl.setNetwork(network);
-});
+PluginRepository.plugin(Blockchains.EOS).getEndorsedNetwork().then(network => ridl.setNetwork(network));
 
 export default class RIDLService {
 
@@ -53,7 +51,6 @@ export default class RIDLService {
 
     static async identify(publicKey){
         if(!enabled) return ridl.identity.randomName();
-        console.log('enabled', enabled);
         const name = await ridl.identity.randomUniqueName();
         if(!await ridl.identity.identify(name, publicKey)) return null;
         return name;

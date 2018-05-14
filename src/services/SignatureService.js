@@ -17,6 +17,7 @@ export default class SignatureService {
 
     static requestArbitrarySignature(payload, scatter, context, sendResponse){
         const {publicKey, domain, data} = payload;
+
         const identitySigner = scatter.keychain.identities.find(id => id.publicKey === publicKey);
         const accountSigners = scatter.keychain.findAccountsWithPublicKey(publicKey);
         if(!identitySigner && !accountSigners.length) {
@@ -46,7 +47,6 @@ export default class SignatureService {
     }
 
     static requestSignature(payload, scatter, context, sendResponse){
-        console.log('payload', payload);
         const {domain, network, requiredFields} = payload;
 
         // Checking if identity still exists
@@ -75,7 +75,6 @@ export default class SignatureService {
 
 
         const sign = (returnedFields) => {
-            console.log(blockchain, payload, account);
             PluginRepository.plugin(blockchain).signer(context, payload, account.publicKey, signature => {
                 if(!signature){
                     sendResponse(Error.maliciousEvent());

@@ -58,17 +58,7 @@
 
                     <key-value :key-values="sortedMessageData(message.data)"
                                :whitelisted="whitelisted"
-                               v-on:changed="key => toggleMutableField(key)"></key-value>
-
-                    <!--<section class="fields-row" v-for="(value, key) in sortedMessageData(message.data)">-->
-                        <!--<section class="fields">-->
-                            <!--<figure class="label">{{key}}</figure>-->
-                            <!--<figure class="value" :class="{'red':value !== '' && !isNaN(value)}">{{value}}</figure>-->
-                        <!--</section>-->
-                        <!--<figure class="mutable" v-if="whitelisted">-->
-                            <!--<input type="checkbox" @click="toggleMutableField(key)" />-->
-                        <!--</figure>-->
-                    <!--</section>-->
+                               v-on:toggled="key => toggleMutableField(key)"></key-value>
                 </section>
             </section>
 
@@ -209,8 +199,6 @@
             },
             accepted(){
                 const returnedFields = Identity.asReturnedFields(this.requiredFields, this.returnedFields, this.selectedLocation);
-
-
                 this.prompt.responder({accepted:true, whitelisted:this.whitelisted, returnedFields, mutableFields:this.mutableFields});
                 NotificationService.close();
             },

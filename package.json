@@ -1,6 +1,6 @@
 {
   "name": "scatter",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "ethereumjs-util": "^5.2.0",
     "extension-streams": "^1.0.7",
     "fcbuffer": "^2.1.5",
-    "ridl": "^0.0.8",
+    "ridl": "^0.0.9",
     "scrypt-async": "^2.0.0",
     "vue": "^2.5.16",
     "vue-moment": "^3.2.0",
@@ -41,7 +41,6 @@
     "css-loader": "^0.28.11",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.11",
-    "hard-source-webpack-plugin": "^0.6.7",
     "ignore-emit-webpack-plugin": "^0.2.1",
     "jsdom": "^11.10.0",
     "jsdom-global": "^3.0.2",

@@ -31,6 +31,7 @@ export default class Keychain {
         const fieldKeys = () => Array.isArray(fields) ? fields : Object.keys(fields);
 
         const permission = this.getPermission(checksum);
+        console.log('checksum', checksum, permission);
         if(!permission) return false;
 
         // If no fields are supplied but permission exists | valid.

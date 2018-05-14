@@ -94,7 +94,6 @@ export default class EOS extends Plugin {
 
                             // Friendly formatting
                             signargs.messages = await messagesBuilder(_eos, signargs, httpEndpoint, args[0]);
-                            console.log(signargs.messages);
 
                             const payload = Object.assign(signargs, { domain:location.host.replace('www.',''), network, requiredFields });
                             const result = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);

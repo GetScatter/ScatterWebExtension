@@ -7,7 +7,6 @@ const ZipPlugin = require('zip-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const nodeExternals = require('webpack-node-externals')
 const Dotenv = require('dotenv-webpack');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 console.log(process.env.SCATTER_ENV);
 
@@ -77,7 +76,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new HardSourceWebpackPlugin(),
         new ExtractTextPlugin({ filename: '[name]', allChunks: true }),
         new IgnoreEmitPlugin(/\.omit$/),
         new CopyWebpackPlugin([`./src/copied`]),

@@ -44,9 +44,6 @@
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => {
                     this.$router.back();
                 });
-//                this[Actions.SET_AUTO_LOCK](this.selectedTimeout.minutes).then(() => {
-//                    this.$router.back();
-//                });
             },
             ...mapActions([
                 Actions.PUSH_ALERT,

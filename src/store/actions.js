@@ -110,7 +110,6 @@ export const actions = {
     },
 
     [Actions.SIGN_RIDL]:({commit}, {hash, publicKey}) => {
-        console.log('pubpriv', hash, publicKey);
         return new Promise(async (resolve, reject) => {
             InternalMessage.payload(InternalMessageTypes.PUB_TO_PRIV, publicKey).send().then(privateKey => {
                 if(!privateKey) return resolve(null);

@@ -18,17 +18,17 @@
             <cin v-if="identity.ridl > 0 || !registeringIdentity" :text="identity.name" v-on:changed="changed => bind(changed, 'identity.name')" :disabled="true"></cin>
             <cin v-else :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="newName" v-on:changed="changed => bind(changed, 'newName')"></cin>
             <section v-if="identity.ridl <= 0">
-                <btn v-if="!isNew && !registeringIdentity"
-                     :text="registeringIdentity ? locale(langKeys.BUTTON_RegisterIdentity) : locale(langKeys.BUTTON_ChangeName)"
-                     v-on:clicked="registerIdentity" :is-blue="registeringIdentity" margined="true"></btn>
+                <!--<btn v-if="!isNew && !registeringIdentity"-->
+                     <!--:text="registeringIdentity ? locale(langKeys.BUTTON_RegisterIdentity) : locale(langKeys.BUTTON_ChangeName)"-->
+                     <!--v-on:clicked="registerIdentity" :is-blue="registeringIdentity" margined="true"></btn>-->
 
-                <btn v-if="!isNew && registeringIdentity"
-                     :text="locale(langKeys.BUTTON_ClaimIdentity)"
-                     v-on:clicked="claimIdentity" is-blue="true" margined="true"></btn>
+                <!--<btn v-if="!isNew && registeringIdentity"-->
+                     <!--:text="locale(langKeys.BUTTON_ClaimIdentity)"-->
+                     <!--v-on:clicked="claimIdentity" is-blue="true" margined="true"></btn>-->
 
-                <btn v-if="!isNew && registeringIdentity"
-                     :text="locale(langKeys.BUTTON_Cancel)"
-                     v-on:clicked="registeringIdentity = false" margined="true" :is-red="true"></btn>
+                <!--<btn v-if="!isNew && registeringIdentity"-->
+                     <!--:text="locale(langKeys.BUTTON_Cancel)"-->
+                     <!--v-on:clicked="registeringIdentity = false" margined="true" :is-red="true"></btn>-->
             </section>
         </section>
 

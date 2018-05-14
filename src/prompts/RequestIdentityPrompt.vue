@@ -120,7 +120,6 @@
             ])
         },
         mounted(){
-            console.log('identityFields', this.identityFields);
         },
         methods: {
             bind(changed, original) { this[original] = changed },
