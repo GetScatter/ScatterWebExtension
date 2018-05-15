@@ -29,13 +29,16 @@ export default class Scatter {
 
     clone(){ return Scatter.fromJson(JSON.parse(JSON.stringify(this))) }
 
+    isEncrypted(){
+        return typeof this.keychain !== 'object'
+    }
+
     /***
      * Encrypts the entire keychain
      * @param seed - The seed to encrypt with
      */
     decrypt(seed){
-        if(typeof this.keychain === 'string')
-            this.keychain = Keychain.fromJson(AES.decrypt(this.keychain, seed));
+        if(this.isEncrypted()) this.keychain = Keychain.fromJson(AES.decrypt(this.keychain, seed));
     }
 
     /***
@@ -43,8 +46,7 @@ export default class Scatter {
      * @param seed - The seed to decrypt with
      */
     encrypt(seed){
-        if(typeof this.keychain === 'object')
-            this.keychain = AES.encrypt(this.keychain, seed);
+        if(!this.isEncrypted()) this.keychain = AES.encrypt(this.keychain, seed);
     }
 
     forBackup(){

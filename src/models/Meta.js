@@ -6,6 +6,11 @@ export default class Meta {
         const extension = (apis && apis.app && typeof apis.app.getDetails === 'function') ? apis.app.getDetails() : {};
         this.version = extension.version || '';
         this.extensionId = extension.id || '';
+        this.lastVersion = '0';
+    }
+
+    needsUpdating(){
+        return this.version !== this.lastVersion;
     }
 
     static placeholder(){ return new Meta(); }

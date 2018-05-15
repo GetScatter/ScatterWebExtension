@@ -6,21 +6,19 @@ import StorageService from './services/StorageService'
 import SignatureService from './services/SignatureService'
 import Scatter from './models/Scatter'
 import Network from './models/Network'
-import Identity from './models/Identity'
 import IdentityService from './services/IdentityService'
 import NotificationService from './services/NotificationService'
 import HistoricEvent from './models/histories/HistoricEvent'
 import * as HistoricEventTypes from './models/histories/HistoricEventTypes'
 import Prompt from './models/prompts/Prompt';
 import * as PromptTypes from './models/prompts/PromptTypes'
-import ObjectHelpers from './util/ObjectHelpers'
 import Permission from './models/Permission'
 import TimingHelpers from './util/TimingHelpers';
 import Error from './models/errors/Error'
-import ContractHelpers from './util/ContractHelpers'
-const ecc = require('eosjs-ecc');
+import PluginRepository from './plugins/PluginRepository'
+import {Blockchains} from './models/Blockchains'
 import {apis} from './util/BrowserApis';
-
+import migrate from './migrations/migrator'
 // Gets bound when a user logs into scatter
 // and unbound when they log out
 // Is not on the Background's scope to keep it private
@@ -110,7 +108,7 @@ export default class Background {
         if(seed.length) StorageService.get().then(scatter => {
             try {
                 scatter.decrypt(seed);
-                sendResponse(typeof scatter.keychain === 'object');
+                sendResponse(!scatter.isEncrypted());
             } catch(e) {
                 seed = '';
                 sendResponse(false);
@@ -127,11 +125,14 @@ export default class Background {
      */
     static load(sendResponse){
         StorageService.get().then(scatter => {
-
             // sync the timeout inactivity interval
             inactivityInterval = scatter.settings.inactivityInterval;
 
-            if(seed.length) scatter.decrypt(seed);
+            if(!seed.length) return sendResponse(scatter);
+
+            scatter.decrypt(seed);
+            const migrated = migrate(scatter);
+            if(migrated) this.update(() => {}, scatter);
             sendResponse(scatter)
         })
     }
@@ -308,18 +309,11 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
                 const identity = scatter.keychain.findIdentity(payload.publicKey);
-                if(!identity){
-                    sendResponse(Error.identityMissing());
-                    return;
-                }
-
+                if(!identity) return sendResponse(Error.identityMissing());
                 identity.decrypt(seed);
-                if(!ecc.isValidPrivate(identity.privateKey)){
-                    sendResponse(Error.maliciousEvent());
-                    return;
-                }
 
-                sendResponse(ecc.sign(payload.domain, identity.privateKey));
+                const plugin = PluginRepository.plugin(Blockchains.EOS);
+                plugin.signer(this, {data:payload.domain}, identity.publicKey, sendResponse, true);
             })
         })
     }
