@@ -1,12 +1,16 @@
 import {apis} from '../util/BrowserApis';
 
+const extension = (apis && apis.app && typeof apis.app.getDetails === 'function') ? apis.app.getDetails() : {};
 export default class Meta {
 
     constructor(){
-        const extension = (apis && apis.app && typeof apis.app.getDetails === 'function') ? apis.app.getDetails() : {};
         this.version = extension.version || '';
         this.extensionId = extension.id || '';
         this.lastVersion = '0';
+    }
+
+    regenerateVersion(){
+        this.version = extension.version || '';
     }
 
     needsUpdating(){

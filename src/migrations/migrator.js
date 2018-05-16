@@ -11,6 +11,7 @@ const mathematicalVersion = version => {
 const fnToVersion = fnName => fnName.replace(/[m]/g, '').replace(/[_]/g,'.');
 
 export default scatter => {
+    scatter.meta.regenerateVersion();
     if(scatter.isEncrypted())           return false;
     if(!scatter.meta.needsUpdating())   return false;
 

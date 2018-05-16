@@ -55,6 +55,7 @@
             display:inline-block;
             font-size:14px;
             margin-left:6px;
+            vertical-align: top;
         }
 
         &:not(:first-child){
