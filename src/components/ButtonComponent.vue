@@ -34,7 +34,7 @@
             display:inline-block;
             font-size:14px;
 
-            &:last-child {
+            &:nth-child(odd) {
                 margin-left:6px;
             }
         }

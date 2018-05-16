@@ -136,6 +136,9 @@ export default class ETH extends Plugin {
             resolve(privateKey.toString('hex'));
         })
     }
+    convertsTo(){
+        return [Blockchains.EOS];
+    }
 
     actionParticipants(payload){
         return ObjectHelpers.flatten(

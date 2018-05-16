@@ -4,7 +4,7 @@
             <figure class="header">{{locale(langKeys.KEYPAIR_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.KEYPAIR_Description)}}</figure>
             <figure class="sub-header" style="color:red; font-weight:bold; font-size:13px;">{{locale(langKeys.KEYPAIR_Important)}}</figure>
-            <sel :selected="keypair.blockchain.toUpperCase()" :options="blockchains" :parser="blockchain => blockchain.key.toUpperCase()" v-on:changed="changed => bind(changed.value, 'blockchain')" :key="1"></sel>
+            <sel :selected="keypair.blockchain.toUpperCase()" :options="blockchains" :parser="blockchain => blockchain.key.toUpperCase()" v-on:changed="blockchainChanged" :key="1"></sel>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="keypair.name" v-on:changed="changed => bind(changed, 'name')"></cin>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :text="keypair.publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" @changed="makePublicKey" :text="keypair.privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
@@ -28,7 +28,7 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import * as AlertTypes from '../models/alerts/AlertTypes'
     import IdentityService from '../services/IdentityService'
-    import {BlockchainsArray} from '../models/Blockchains';
+    import {BlockchainsArray, Blockchains} from '../models/Blockchains';
     import KeyPair from '../models/KeyPair';
     import ecc from 'eosjs-ecc';
     import PluginRepository from '../plugins/PluginRepository'
@@ -49,6 +49,21 @@
         },
         methods: {
             bind(changed, field) { this.keypair[field] = changed },
+            blockchainChanged(blockchainObject){
+                const blockchain = blockchainObject.value;
+                const clearAndChange = () => {
+                    this.keypair.blockchain = blockchain;
+                    this.keypair.privateKey = '';
+                    this.keypair.publicKey = '';
+                };
+                if(this.keypair.privateKey.length){
+                    if(PluginRepository.plugin(this.keypair.blockchain).convertsTo().includes(blockchain)){
+                        this.keypair.privateKey =
+                            PluginRepository.plugin(blockchain)
+                                ['from_'+this.keypair.blockchain](this.keypair.privateKey);
+                    } else clearAndChange();
+                } else clearAndChange();
+            },
             copyKeyPair(){
                 const copier = this.$refs.copier;
                 copier.value = `Private Key: ${this.keypair.privateKey} Public Key: ${this.keypair.publicKey}`;
@@ -60,7 +75,6 @@
                 setTimeout(() => {
                     this.isValid = false;
                     if(!this.keypair.privateKey.length) return false;
-
                     let publicKey = '';
 
                     BlockchainsArray.map(blockchainKV => {
@@ -82,7 +96,7 @@
                         this.isValid = true;
                     }
                     else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
-                },1)
+                },100)
             },
             generateKeyPair(){
                 const plugin = PluginRepository.plugin(this.keypair.blockchain);

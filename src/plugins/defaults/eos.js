@@ -39,6 +39,12 @@ export default class EOS extends Plugin {
     validPrivateKey(privateKey){ return ecc.isValidPrivate(privateKey); }
     validPublicKey(publicKey){   return ecc.isValidPublic(publicKey); }
     randomPrivateKey(){ return ecc.randomKey(); }
+    convertsTo(){
+        return [];
+    }
+    from_eth(privateKey){
+        return ecc.PrivateKey.fromHex(Buffer.from(privateKey, 'hex')).toString();
+    }
 
     actionParticipants(payload){
         return ObjectHelpers.flatten(
