@@ -10,30 +10,33 @@ import utils from 'ethereumjs-util';
 
 describe('Ethereum key to EOS key', () => {
 
-    // Private Key: 5JtFoHqGeR7GD7i73uJvqBYfn6h2ChELZGrppKJosxg4nL6moGC
-    // Public Key: EOS6aMw6j5JcUaPNuzGB2fs9VyHepxKHvDjuhpHYm7FMF8BA3qpW4
-
     const eth = PluginRepository.plugin(Blockchains.ETH);
     const eos = PluginRepository.plugin(Blockchains.EOS);
 
-    const ethPrivateKey = eth.randomPrivateKey();
-    const ethPublicKey = '0x'+utils.privateToPublic(utils.toBuffer(utils.addHexPrefix(ethPrivateKey))).toString('hex');
-    console.log('eth', ethPrivateKey, ethPublicKey)
+    let ethPrivateKey = '';
+    let ethPublicKey = '';
     let eosPublicKey = '';
 
-    console.log('test');
+    it('should generate base keys', done => {
+        new Promise(async(resolve, reject) => {
+            ethPrivateKey = await eth.randomPrivateKey();
+            ethPublicKey = '0x'+utils.privateToPublic(utils.toBuffer(utils.addHexPrefix(ethPrivateKey))).toString('hex')
+            done();
+        });
+    });
 
     it('should convert publicKeys', () => {
         let buffer    =         Buffer.from(ethPublicKey.slice(2), 'hex'),
             converted =         secp256k1.publicKeyConvert(Buffer.concat([ Buffer.from([4]), buffer ]), true);
-        eosPublicKey =      ecc.PublicKey.fromBuffer(converted).toString();
-    })
+        eosPublicKey =          ecc.PublicKey.fromBuffer(converted).toString();
+        assert(eos.validPublicKey(eosPublicKey), "Eos public key was not valid")
+    });
 
     it('should convert keys', () => {
-        let ethBuffer = Buffer.from(ethPrivateKey, 'hex');
-        const p = ecc.PrivateKey.fromHex(ethBuffer);
-        const pk = ecc.privateToPublic(p);
-        console.log('private',eosPublicKey, pk);
+        let ethBuffer =     Buffer.from(ethPrivateKey, 'hex');
+        const p =           ecc.PrivateKey.fromHex(ethBuffer);
+        const pk =          ecc.privateToPublic(p);
+        assert(eosPublicKey === pk, "Converted public and converted private -> public key does not match");
     })
 
 });

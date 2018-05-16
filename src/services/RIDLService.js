@@ -4,7 +4,7 @@ import AlertMsg from '../models/alerts/AlertMsg'
 import PluginRepository from '../plugins/PluginRepository'
 import {Blockchains} from '../models/Blockchains'
 
-const enabled = false;
+const enabled = true;
 
 PluginRepository.plugin(Blockchains.EOS).getEndorsedNetwork().then(network => ridl.setNetwork(network));
 
@@ -15,21 +15,21 @@ export default class RIDLService {
     static async claimIdentity(newName, identity, context){
         return new Promise(async(resolve,reject) => {
 
-            if(!newName.length) return resolve(null);
+            if(!newName.length) return reject(null);
             const hash = await ridl.identity.getHash(newName);
-            if(!hash) return resolve(context[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName()));
+            if(!hash) return reject(context[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName()));
 
             context[Actions.PUSH_ALERT](AlertMsg.ClaimIdentity(newName)).then(async res => {
-                if(!res || !res.hasOwnProperty('text')) return resolve(null);
+                if(!res || !res.hasOwnProperty('text')) return reject(null);
 
                 if(!PluginRepository.plugin(Blockchains.EOS).validPrivateKey(res.text))
-                    return resolve(context[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey()));
+                    return reject(context[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey()));
 
                 const signedHash = ridl.sign(hash, res.text);
                 delete res.text;
 
                 const claimed = await ridl.identity.claim(newName, signedHash, identity.publicKey);
-                if(!claimed) return resolve(context[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName()));
+                if(!claimed) return reject(context[Actions.PUSH_ALERT](AlertMsg.NoSuchIdentityName()));
 
                 // Removing now unused randomized RIDL account
                 if(!await ridl.identity.registered(identity.name)) {

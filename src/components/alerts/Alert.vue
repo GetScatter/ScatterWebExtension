@@ -42,11 +42,19 @@
                 <btn :text="locale(langKeys.BUTTON_UseSelectedAccount)" is-blue="true" v-on:clicked="returnSelectedItem"></btn>
             </section>
 
-            <!-- Select Account -->
-            <section style="padding:10px;" v-if="alerts[0].type === alertTypes.ClaimIdentity">
-                <cin :text="selectedItem" :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" v-on:changed="changed => bind(changed, 'returnedText')"></cin>
+            <!-- Named Account -->
+            <section style="padding:10px;" v-if="alerts[0].type === alertTypes.NamedAccount">
+                <cin :placeholder="`${locale(langKeys.GENERIC_Account)} ${locale(langKeys.GENERIC_Name)}`" v-on:changed="changed => bind(changed, 'returnedText')"></cin>
             </section>
-            <section class="actions" v-if="alerts[0].type === alertTypes.ClaimIdentity">
+
+            <!-- Claim Identity -->
+            <section style="padding:10px;" v-if="alerts[0].type === alertTypes.ClaimIdentity">
+                <cin :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" v-on:changed="changed => bind(changed, 'returnedText')"></cin>
+            </section>
+
+
+            <!-- Returned Text -->
+            <section class="actions" v-if="returnsText()">
                 <btn :text="locale(langKeys.BUTTON_Cancel)" v-on:clicked="cancel"></btn>
                 <btn :text="locale(langKeys.BUTTON_Accept)" is-blue="true" v-on:clicked="returnText"></btn>
             </section>
@@ -92,6 +100,11 @@
 
                 this[Actions.PULL_ALERT]();
                 this[Actions.PUSH_ALERT_RESULT]({selected:this.selectedItem});
+            },
+            returnsText(){
+                console.log('this.alerts[0].type', this.alerts[0].type);
+                return this.alerts[0].type === AlertTypes.ClaimIdentity
+                    || this.alerts[0].type === AlertTypes.NamedAccount
             },
             returnText(){
                 if(!this.returnedText.length) return false;

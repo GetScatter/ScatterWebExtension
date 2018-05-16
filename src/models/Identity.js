@@ -191,7 +191,7 @@ export default class Identity {
     defaultLocation(){ return this.locations.find(location => location.isDefault) || this.locations[0]; }
     setAccount(network, account){ this.accounts[network.unique()] = account; }
     hasAccount(network){ return this.accounts.hasOwnProperty(network.unique()) }
-    networkedAccount(network) { return this.accounts[network.unique()] }
+    networkedAccount(network) { return this.accounts[network.unique()]  }
     removeAccount(network){
         const unique = typeof network === 'string' ? network : network.unique();
         this.accounts[unique] = null;

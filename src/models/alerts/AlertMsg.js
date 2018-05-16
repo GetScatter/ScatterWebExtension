@@ -197,6 +197,13 @@ export default class AlertMsg {
         );
     }
 
+    static NamedAccount(){
+        return new AlertMsg(
+            AlertTypes.NamedAccount,
+            ...locale(LANG_KEYS.PROMPT_SelectAccount)
+        );
+    }
+
     static ClaimIdentity(name){
         return new AlertMsg(
             AlertTypes.ClaimIdentity,
