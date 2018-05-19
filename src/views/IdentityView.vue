@@ -3,7 +3,7 @@
 
         <nav-actions :actions="[
             {event:'submit', text:locale(langKeys.GENERIC_Save)}
-        ]" v-on:submit="saveIdentity"></nav-actions>
+        ]" v-if="!saving" v-on:submit="saveIdentity"></nav-actions>
 
         <!-- Disabling -->
         <section class="panel" style="background:#fff;" v-if="!isNew">
@@ -143,6 +143,7 @@
             noKeypair:KeyPair.fromJson({name:'None'}),
             registeringIdentity:false,
             newName:'',
+            saving:false,
         }},
         computed: {
             ...mapState([
@@ -240,6 +241,7 @@
                 this.selectedLocation = this.identity.locations[0];
             },
             async saveIdentity(){
+                this.saving = true;
 //                if(!Identity.nameIsValid(this.identity.name)){
 //                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
 //                    return false;

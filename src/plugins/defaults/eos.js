@@ -46,6 +46,18 @@ export default class EOS extends Plugin {
         return ecc.PrivateKey.fromHex(Buffer.from(privateKey, 'hex')).toString();
     }
 
+    async getBalances(account, network, code = 'eosio.token', table = 'accounts'){
+        const eos = Eos.Localnet({httpEndpoint:`http://${network.hostport()}`});
+        const contract = await eos.contract(code);
+        return await eos.getTableRows({
+            json: true,
+            code,
+            scope: account.name,
+            table,
+            limit: 5000
+        }).then(res => res.rows.map(row => row.balance.split(' ').reverse()));
+    }
+
     actionParticipants(payload){
         return ObjectHelpers.flatten(
             payload.messages

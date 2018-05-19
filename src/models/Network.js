@@ -16,6 +16,15 @@ export default class Network {
         return p;
     }
 
+    static fromUnique(netString){
+        const blockchain = netString.split(':')[0];
+        if(netString.indexOf(':chain:') > -1)
+            return new Network('','',blockchain, netString.replace(`${blockchain}:chain:`,''));
+
+        const splits = netString.replace(`${blockchain}:`, '').split(':');
+        return new Network(splits[0], parseInt(splits[1] || 80), blockchain)
+    }
+
     unique(){ return `${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`); }
     hostport(){ return `${this.host}${this.port ? ':' : ''}${this.port}` }
     clone(){ return Network.fromJson(JSON.parse(JSON.stringify(this))) }

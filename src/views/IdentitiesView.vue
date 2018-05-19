@@ -34,7 +34,19 @@
                         <section class="item">
                             <span>{{network}}</span>
                             <span>{{identity.accounts[network].formatted()}}</span>
-                            <!--<span class="big">{{getBalanceFor(identities.accounts[account])}}</span>-->
+                            <section class="items token-balances" v-if="loadingTokenBalances">
+                                <section class="item">
+                                    Loading token balances
+                                </section>
+                            </section>
+                            <section class="items token-balances" v-else v-for="balances in balancesFor(network)">
+                                <section class="items" v-for="balance in balances">
+                                    <section class="item">
+                                        <span>{{balance[0]}}</span>
+                                        <span>{{balance[1]}}</span>
+                                    </section>
+                                </section>
+                            </section>
                         </section>
                     </section>
                 </section>
@@ -68,6 +80,8 @@
                 <section class="panel">
                     <section class="actions">
                         <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil"></i></figure>
+                        <figure class="action" @click="showingTokens = identity" v-if="!showingTokensFor(identity)"><i class="fa fa-circle-thin"></i></figure>
+                        <figure class="action" @click="showingTokens = null" v-else><i class="fa fa-times-circle"></i></figure>
                         <figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>
                     </section>
                 </section>
@@ -83,15 +97,19 @@
     import * as Actions from '../store/constants';
     import {RouteNames} from '../vue/Routing'
     import Identity from '../models/Identity'
+    import Network from '../models/Network'
     import Scatter from '../models/Scatter'
     import AlertMsg from '../models/alerts/AlertMsg'
     import ObjectHelpers from '../util/ObjectHelpers'
     import AccountService from '../services/AccountService'
+    import PluginRepository from '../plugins/PluginRepository'
 
     export default {
         data(){ return {
             searchText:'',
-            balances:{}
+            balances:[],
+            showingTokens:null,
+            loadingTokenBalances:false,
         }},
         computed: {
             ...mapState([
@@ -100,9 +118,6 @@
             ...mapGetters([
                 'identities',
             ])
-        },
-        mounted(){
-            this.bindBalances();
         },
         methods: {
             bind(changed, original) { this[original] = changed },
@@ -114,31 +129,33 @@
                 }
 //                return (typeof obj[key] === 'string') ? obj[key].length : obj[key][Object.keys(obj[key])[0]].length
             }) },
-            bindBalances(){
-                //TODO: Fix for network account map
-//                const identityAccountMap = ObjectHelpers.distinctObjectArray(
-//                    this.identities.filter(id => Object.keys(id.accounts).length).map(network => {
-//
-//                        return {account:id.account.name, network:id.network.unique()}
-//                    })
-//                );
-//
-//                const _balances = {};
-//
-//                Promise.all(identityAccountMap.map(id => {
-//                    return AccountService.getBalance(id.account, id.network).then(balance => {
-//                        if(!_balances.hasOwnProperty(id.network)) _balances[id.network] = {};
-//                        _balances[id.network][id.account] = balance;
-//                        return _balances;
-//                    })
-//                }))
-//                    // Vue will not update semi-ticks
-//                    .then(balanceMap => this.balances = balanceMap[0])
+            showingTokensFor(identity){
+                return this.showingTokens && (identity.publicKey === this.showingTokens.publicKey);
             },
-            getBalanceFor(identity){
-                if(!this.balances.hasOwnProperty(identity.network.unique())) return 'Network is down';
-                if(!this.balances[identity.network.unique()].hasOwnProperty(identity.account.name)) return "Can't find account";
-                return this.balances[identity.network.unique()][identity.account.name];
+            async bindBalances(identity){
+                this.loadingTokenBalances = true;
+                let netAccountMap = [];
+//                this.identities.map(identity => {
+                    Object.keys(identity.accounts).map(netString =>
+                        netAccountMap.push({account:identity.accounts[netString], netString}))
+//                });
+
+                netAccountMap = ObjectHelpers.distinct(netAccountMap);
+
+                await Promise.all(netAccountMap.map(async netAccount => {
+                    await this.accountBalances(netAccount);
+                }));
+                this.loadingTokenBalances = false;
+            },
+            async accountBalances({account, netString}){
+                const network = Network.fromUnique(netString);
+                await PluginRepository.plugin(account.blockchain()).getBalances(account, network).then(balances => {
+                    this.balances.push({network:netString, balances});
+                    return true;
+                });
+            },
+            balancesFor(network){
+                return this.balances.filter(b => b.network === network).map(b => b.balances);
             },
             filterBySearch(){ return this.identities.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
             removeIdentity(identity){
@@ -166,14 +183,28 @@
                 Actions.UPDATE_STORED_SCATTER,
                 Actions.PUSH_ALERT,
             ])
+        },
+        watch:{
+            showingTokens(){
+                this.balances = [];
+                if(this.showingTokens)
+                    this.bindBalances(this.showingTokens)
+            }
         }
     }
 </script>
 
 <style lang="scss">
 
-    .identities {
+    .token-balances {
+        display: inline-block;
+        border-left: 10px solid rgba(0,0,0,0.1);
+        width: 100%;
+        padding: 0 0 0 5px;
 
+        .items {
+            margin-top:0 !important;
+        }
     }
 
 </style>
