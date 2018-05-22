@@ -3,20 +3,23 @@ import * as KEYS from './keys';
 import english from './languages/english';
 import portuguese from './languages/portuguese';
 import spanish from './languages/spanish';
-import slovene from './languages/slovene'
-  
+import slovene from './languages/slovene';
+import german from './languages/german';
+
 export const LANG = {
     ENGLISH:'English',
     PORTUGUESE: 'Português ( Portuguese )',
     SPANISH: 'Español ( Spanish )',
-    SLOVENE: 'Slovensko ( Slovene )'
+    SLOVENE: 'Slovensko ( Slovene )',
+    GERMAN: 'Deutsch ( German )',
 };
 
 const languages = {
     [LANG.ENGLISH]:english,
     [LANG.PORTUGUESE]:portuguese,
     [LANG.SPANISH]:spanish,
-    [LANG.SLOVENE]:slovene
+    [LANG.SLOVENE]:slovene,
+    [LANG.GERMAN]:german,
 };
 
 export const locales = () => {
