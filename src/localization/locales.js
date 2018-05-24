@@ -4,19 +4,22 @@ import english from './languages/english';
 import portuguese from './languages/portuguese';
 import spanish from './languages/spanish';
 import slovene from './languages/slovene'
-  
+import hebrew from './languages/hebrew'
+
 export const LANG = {
     ENGLISH:'English',
     PORTUGUESE: 'Português ( Portuguese )',
     SPANISH: 'Español ( Spanish )',
-    SLOVENE: 'Slovensko ( Slovene )'
+    SLOVENE: 'Slovensko ( Slovene )',
+    HEBREW: 'עברית ( Hebrew )'
 };
 
 const languages = {
     [LANG.ENGLISH]:english,
     [LANG.PORTUGUESE]:portuguese,
     [LANG.SPANISH]:spanish,
-    [LANG.SLOVENE]:slovene
+    [LANG.SLOVENE]:slovene,
+    [LANG.HEBREW]:hebrew
 };
 
 export const locales = () => {
