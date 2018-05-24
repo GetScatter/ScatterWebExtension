@@ -1,12 +1,14 @@
 import * as KEYS from './keys';
 
 import english from './languages/english';
+import french from './languages/french';
 import portuguese from './languages/portuguese';
 import spanish from './languages/spanish';
 import slovene from './languages/slovene'
   
 export const LANG = {
-    ENGLISH:'English',
+    ENGLISH: 'English',
+    FRENCH: 'Français ( French )',
     PORTUGUESE: 'Português ( Portuguese )',
     SPANISH: 'Español ( Spanish )',
     SLOVENE: 'Slovensko ( Slovene )'
@@ -14,6 +16,7 @@ export const LANG = {
 
 const languages = {
     [LANG.ENGLISH]:english,
+    [LANG.FRENCH]:french,
     [LANG.PORTUGUESE]:portuguese,
     [LANG.SPANISH]:spanish,
     [LANG.SLOVENE]:slovene
