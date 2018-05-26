@@ -144,6 +144,7 @@ export default class Background {
      * @returns {boolean}
      */
     static update(sendResponse, scatter){
+        console.log('updated', scatter);
         this.lockGuard(sendResponse, () => {
             scatter = Scatter.fromJson(scatter);
 
@@ -421,8 +422,8 @@ export default class Background {
      */
     static addHistory(type, data){
         this.load(scatter => {
-            scatter.histories.unshift(new HistoricEvent(type, data));
-            this.update(() => {}, scatter);
+            // scatter.histories.unshift(new HistoricEvent(type, data));
+            // this.update(() => {}, scatter);
         })
     }
 

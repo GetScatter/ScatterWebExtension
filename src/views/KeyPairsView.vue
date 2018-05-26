@@ -80,7 +80,8 @@
 
                     const scatter = this.scatter.clone();
                     if(usedInIdentities.length){
-                        usedInIdentities.map(id => {
+                        usedInIdentities.map(_id => {
+                            const id = scatter.keychain.identities.find(x => x.publicKey === _id.publicKey)
                             // Remove account from identities
                             Object.keys(id.accounts).map(network => {
                                 if(id.accounts[network].publicKey === keypair.publicKey)

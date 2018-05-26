@@ -102,7 +102,6 @@
                 this[Actions.PUSH_ALERT_RESULT]({selected:this.selectedItem});
             },
             returnsText(){
-                console.log('this.alerts[0].type', this.alerts[0].type);
                 return this.alerts[0].type === AlertTypes.ClaimIdentity
                     || this.alerts[0].type === AlertTypes.NamedAccount
             },

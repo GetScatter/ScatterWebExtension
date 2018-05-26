@@ -4,7 +4,7 @@ import AlertMsg from '../models/alerts/AlertMsg'
 import PluginRepository from '../plugins/PluginRepository'
 import {Blockchains} from '../models/Blockchains'
 
-const enabled = true;
+const enabled = false;
 
 PluginRepository.plugin(Blockchains.EOS).getEndorsedNetwork().then(network => ridl.setNetwork(network));
 
