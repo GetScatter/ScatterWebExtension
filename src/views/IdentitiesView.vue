@@ -80,8 +80,10 @@
                 <section class="panel">
                     <section class="actions">
                         <figure v-on:click="goToIdentity(identity)" class="action"><i class="fa fa-pencil"></i></figure>
-                        <figure class="action" @click="showingTokens = identity" v-if="!showingTokensFor(identity)"><i class="fa fa-circle-thin"></i></figure>
-                        <figure class="action" @click="showingTokens = null" v-else><i class="fa fa-times-circle"></i></figure>
+                        <section v-if="Object.keys(identity.accounts).length">
+                            <figure class="action" @click="showingTokens = identity" v-if="!showingTokensFor(identity)"><i class="fa fa-circle-thin"></i></figure>
+                            <figure class="action" @click="showingTokens = null" v-else><i class="fa fa-times-circle"></i></figure>
+                        </section>
                         <figure class="action red right" v-on:click="removeIdentity(identity)"><i class="fa fa-minus-square"></i></figure>
                     </section>
                 </section>

@@ -123,11 +123,11 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import AccountService from '../services/AccountService'
-    import RIDLService from '../services/RIDLService'
     import EOSKeygen from '../util/EOSKeygen'
     import {Countries} from '../data/Countries'
     import PluginRepository from '../plugins/PluginRepository'
     import {Blockchains} from '../models/Blockchains'
+    import RIDLService from '../services/RIDLService'
 
     export default {
         data(){ return {

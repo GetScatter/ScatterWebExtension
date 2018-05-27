@@ -144,7 +144,6 @@ export default class Background {
      * @returns {boolean}
      */
     static update(sendResponse, scatter){
-        console.log('updated', scatter);
         this.lockGuard(sendResponse, () => {
             scatter = Scatter.fromJson(scatter);
 

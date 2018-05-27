@@ -6,7 +6,11 @@ import {Blockchains} from '../models/Blockchains'
 
 const enabled = false;
 
-PluginRepository.plugin(Blockchains.EOS).getEndorsedNetwork().then(network => ridl.setNetwork(network));
+setTimeout(() => {
+    PluginRepository.plugin(Blockchains.EOS)
+        .getEndorsedNetwork()
+        .then(network => ridl.setNetwork(network));
+}, 50);
 
 export default class RIDLService {
 
