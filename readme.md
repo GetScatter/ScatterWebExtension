@@ -362,10 +362,12 @@ for more information about how to get involved with translations.
 
 ### Translators
 - **Your Name Here** - for being the first to translate a new language!
-- [gnumarcelo](https://github.com/gnumarcelo) - [Portuguese](https://github.com/EOSEssentials/Scatter/pull/27)
-- [javierjmc](https://github.com/javierjmc) - [Spanish](https://github.com/EOSEssentials/Scatter/pull/30)
-- [petervalencic](https://github.com/petervalencic) - [Slovene](https://github.com/EOSEssentials/Scatter/pull/42)
-- [amiheines](https://github.com/amih) - [Hebrew](https://github.com/EOSEssentials/Scatter/pull/)
+- [Portuguese](https://github.com/EOSEssentials/Scatter/pull/27) - [gnumarcelo](https://github.com/gnumarcelo)
+- [Spanish](https://github.com/EOSEssentials/Scatter/pull/30) - [javierjmc](https://github.com/javierjmc)
+- [Slovene](https://github.com/EOSEssentials/Scatter/pull/42) - [petervalencic](https://github.com/petervalencic)
+- [Hebrew](https://github.com/EOSEssentials/Scatter/pull/58) - [amiheines](https://github.com/amih)
+- [French](https://github.com/EOSEssentials/Scatter/pull/56) - [lambi9891](https://github.com/lambi9891)
+- [German](https://github.com/EOSEssentials/Scatter/pull/40) - [Soleone](https://github.com/Soleone) AND [cmadh](https://github.com/cmadh)
 
 
 
