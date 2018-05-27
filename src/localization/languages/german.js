@@ -395,7 +395,7 @@ export default {
 
         `Du kannst diese Aktion auf deine Whitelist setzen, sodass du diese beim nächsten Mal nicht mehr manuell autorisieren musst.
          Jede Eigenschaft, mit einem Häkchen daneben ist änderbar, d.h. du kannst zulassen, dass sich bestimmte Eigenschaften dieser Transaktion ändern dürfen,
-         wenn aber sich andere Eigenschaften ändern wird die automatische Autorisierung verworfen.`
+         wenn aber sich andere Eigenschaften ändern wird die automatische Autorisierung verworfen.`,
 
         `Dies beinhaltet auch die erforderlichen persönlichen Informationen. Änderungen an der Identität selbst entfernen keine Berechtigungen`,
 
