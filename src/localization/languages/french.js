@@ -152,7 +152,7 @@ export default {
     [KEYS.SETTINGSMENU_Networks]:'Réseaux',
     [KEYS.SETTINGSMENU_Keypairs]:'Paires de Clés',
     [KEYS.SETTINGSMENU_Language]:'Langues',
-    [KEYS.SETTINGSMENU_AutoLock]:'Verrouillage automatique',
+    [KEYS.SETTINGSMENU_AutoLock]:'Verrouillage',
     [KEYS.SETTINGSMENU_Password]:'Mot de Passe',
     [KEYS.SETTINGSMENU_Backup]:'Sauvegarde',
     [KEYS.SETTINGSMENU_Destroy]:'Détruire',
@@ -398,7 +398,7 @@ export default {
     ],
     //2
     [KEYS.PROMPT_WhitelistingContractAction]:[
-        'Vous êtes sur le point d\'inscrire un contrat de devise sur liste blanche'
+        'Vous êtes sur le point d\'inscrire un contrat de devise sur liste blanche',
 
         ` Inscrire un contrat de devise sur liste blanche est dangereux et ne devrait jamais avoir lieu. Il existe des cas très
          particuliers où une telle action est tolérée mais à moins que vous ne soyez absolument sûr qu'il s'agit présentement d'un
