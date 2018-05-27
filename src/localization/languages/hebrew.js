@@ -105,334 +105,321 @@ export default {
         חשבונות מכילים את המטבעות שלך ומאפשרים לך אינטראקציה עם חוזים על הבלוקצ'יין.
         בהקשר של זהויות, חשוב עליהם כעל חשבונות בנק המקושרים לדרכון שלך, ניתן להחליפם בכל שלב.
     `,
-    [KEYS.IDENTITY_PersonalHeader]:`Personal Information`,
+    [KEYS.IDENTITY_PersonalHeader]:`מידע אישי`,
     [KEYS.IDENTITY_PersonalDescription]:`
-        Personal information can be added to an account for applications that require it. For instance a shopping
-        website might need your full name in order to know who to send your purchased goods to.
+        ניתן להוסיף מידע אישי עבור תכנות שדורשות זאת. למשל אתר קניות יצטרך שם מלא כדי לדעת למי לשלוח את המוצרים.
     `,
-    [KEYS.IDENTITY_LocationHeader]:`Location Information`,
+    [KEYS.IDENTITY_LocationHeader]:`מידע על מיקום`,
     [KEYS.IDENTITY_LocationDescription]:`
-        Location information can be added to an account for applications that require it.
-        For instance a shopping website might need your shipping address in order to know where to send
-        your purchased goods to.
+        ניתן להוסיף מידע על מיקום לחשבון עבור תכנות שדורשות זאת. למשל אתר קניות יצטרך את הכתובת למשלוח עבור המוצרים.
     `,
 
-    [KEYS.PERMISSIONS_Header]:`You don't have any permissions to display.`,
+    [KEYS.PERMISSIONS_Header]:`אין לך הרשאות להצגה.`,
     [KEYS.PERMISSIONS_Description]:`
-        Permissions are set when you either provide an Identity for an application to use, or when you whitelist
-        a contract action to be signed without authorization prompts.
+        הרשאות ניתנות במקרה שאתה נותן זהות לשימוש בתכנה או כשאתה מאפשר חתימה על פעולה חוזית ללא הודעת אישור הרשאה
     `,
-    [KEYS.PERMISSION_RevokeIdentity]:`Revoke Identity`,
-    [KEYS.PERMISSION_RevokeContract]:`Revoke Contract`,
-    [KEYS.PERMISSION_RevokeAction]:`Revoke Action`,
+    [KEYS.PERMISSION_RevokeIdentity]:`ביטול זהות`,
+    [KEYS.PERMISSION_RevokeContract]:`ביטול חוזה`,
+    [KEYS.PERMISSION_RevokeAction]:`ביטול פעולה`,
 
-    [KEYS.HISTORIES_Header]:`You don't have any historic events to display.`,
+    [KEYS.HISTORIES_Header]:`אין לך אירועים להצגה בהיסטוריה .`,
     [KEYS.HISTORIES_Description]:`
-        Once you have them, you will be able to see a list of all of the events that pass through your Scatter.
-        What you will not see is events that occurred on your accounts outside of scatter.
+        ברגע שיהיו לך, תראה רשימה של כל האירועים שעברו דרך הסְקַטֵר שלך.
+        מה שלא תראה זה אירועים שקרו בחשבונות שלך מחוץ לסְקַטֵר
      `,
+
     [KEYS.HISTORIES_Note]:`
-        Note: Exporting your Scatter data from the backup option in the settings panel does not save these events.
-        When you import that Scatter instance again your histories will be empty. If you would like to export your histories
-        in the future you can do so using the action buttons on the navbar within this panel.
+        הערה: יצוא נתונים של סְקַטֵר באמצעות אפשרות גיבוי בתפריט ההגדרות לא שומר את הארועים הללו.
+        כשמיבאים את הסְקַטֵר הזה בחזרה, ההיסטוריה שלך תהיה ריקה. אם תרצה ליצא את ההיסטוריות שלך בעתיד,
+        תוכל לעשות זאת בעזרת כפתורי הפעולות בתפריט בפנל הזה.
     `,
 
-    [KEYS.SETTINGSMENU_Networks]:'Networks',
-    [KEYS.SETTINGSMENU_Keypairs]:'Key Pairs',
-    [KEYS.SETTINGSMENU_Language]:'Language',
-    [KEYS.SETTINGSMENU_AutoLock]:'Auto Lock',
-    [KEYS.SETTINGSMENU_Password]:'Password',
-    [KEYS.SETTINGSMENU_Backup]:'Backup',
-    [KEYS.SETTINGSMENU_Destroy]:'Destroy',
+    [KEYS.SETTINGSMENU_Networks]:'רשתות',
+    [KEYS.SETTINGSMENU_Keypairs]:'זוגות מפתחות',
+    [KEYS.SETTINGSMENU_Language]:'שפה',
+    [KEYS.SETTINGSMENU_AutoLock]:'נעילה אוטומטית',
+    [KEYS.SETTINGSMENU_Password]:'סיסמה',
+    [KEYS.SETTINGSMENU_Backup]:'גיבוי',
+    [KEYS.SETTINGSMENU_Destroy]:'השמד',
 
-    [KEYS.BACKUP_Header]:`Export encrypted backup`,
+    [KEYS.BACKUP_Header]:`יצא גיבוי מוצפן`,
     [KEYS.BACKUP_Description]:`
-        Exporting your Scatter allows you to import it into other devices. The file will still be encrypted when it is
-        exported so make sure you have either your mnemonic or your password, otherwise it will be useless. The private keys
-        from your accounts will also be removed before exporting, the only private keys that will remain within the exported
-        file will be your Identity keys.
+        יצוא של הסְקַטֵר שלך מאפשר לך ליבא אותו למכשיר אחר. הקובץ ימשיך להיות מוצפן כשהוא מיוצא כך שעליך לוודא שיש ברשותך
+        את הסיסמה או את המילים לשחזור, אחרת היצוא חסר ערך. המפתחות הפרטיים מהחשבונות שלך יוסרו לפני היצוא, המפתחות
+        הפרטיים היחידים שישארו בקובץ המיוצא יהיו מפתחות הזהויות שלך.
     `,
 
-    [KEYS.IMPORT_Header]:`Import encrypted backup`,
+    [KEYS.IMPORT_Header]:`יבא גיבוי מוצפן`,
     [KEYS.IMPORT_Description]:`
-        Importing your encrypted keychain file will rebuild you Scatter keychain but it will not import your old networks or
-        accounts.
+        יבוא של קובץ צרור המפתחות המוצפן יבנה מחדש את צרור המפתחות של הסְקַטֵר שלך אבל לא ייבא את הרשתות הישנות או החשבונות שלך.
     `,
 
-    [KEYS.PASS_Header]:`Enter a new password`,
+    [KEYS.PASS_Header]:`הכנס סיסמה חדשה`,
     [KEYS.PASS_Description]:`
-        By changing your password you will be decrypting all of the saved information which is usually always
-        encrypted, and then re-encrypting it with a seed from the new password.
+        בשינוי סיסמה המערכת תפענח את כל הנתונים השמורים שבדרך כלל מוצפנים ואז תצפין אותם מחדש בעזרת גרעין
+        המבוסס על הסיסמה החדשה.
     `,
 
-    [KEYS.NETWORK_Header]:`Add a new network`,
+    [KEYS.NETWORK_Header]:`הוסף רשת חדשה`,
     [KEYS.NETWORK_Description]:`
-        Applications usually run on a specific network, but they might not all run on
-        the same network. For instance an application can have a testing network
-        that has new features which are not yet released. In order to interact with
-        that network you will need to have an account there as well.
+        תכנות רצות בדרך כלל על רשת ספציפית, אך יתכן ולא כולן רצות על אותה רשת.
+        למשל תכנה אחת יכולה לרוץ על רשת לבדיקות ויכול להיות שיש לה אפשרויות חדשות
+        שעדיין לא שוחררו. כדי להשתמש ברשת החדשה תצטרך שיהיה לך חשבון גם בה.
     `,
 
-    [KEYS.DESTROY_Header]:`Destroying Scatter`,
+    [KEYS.DESTROY_Header]:`השמד את סְקַטֵר`,
     [KEYS.DESTROY_Description]:`
-        You are about to destroy your entire Scatter keychain. The only way to get this exact Scatter back is by
-        importing an exported Scatter JSON. You will not be able to claim your identities otherwise. Make sure you
-        have exported your Scatter from the backup settings panel before hand.
+        אתה עומד להשמיד את כל צרור המפתחות שלך בסְקַטֵר. הדרך היחידה לשחזר את הסְקַטֵר הזה היא על ידי יבוא
+        של קובץ סְקַטֵר שיוצא בפורמט JSON. לא תוכל להשתמש בזהויות שלך באף דרך אחרת. אנא ודא שייצאת את
+        הסְקַטֵר שלך בהגדרות הגיבוי לפני כן.
     `,
 
-    [KEYS.LANGUAGE_Header]:`Select your language`,
+    [KEYS.LANGUAGE_Header]:`בחר שפה`,
 
-    [KEYS.KEYPAIRS_NoKeyPairsHeader]:`You don't have any keypairs.`,
+    [KEYS.KEYPAIRS_NoKeyPairsHeader]:`אין לך אף זוג מפתחות.`,
     [KEYS.KEYPAIRS_NoKeyPairsDescription]:`
-        Click the button on the top right to create/import a keypair.
+        לחץ על הכפתור למעלה כדי ליצור/ליבא זוג מפתחות.
     `,
 
-    [KEYS.KEYPAIR_Header]:`Generate a new Key Pair`,
+    [KEYS.KEYPAIR_Header]:`צור זוג מפתחות חדש`,
     [KEYS.KEYPAIR_Description]:`
-        You can use this panel to generate key pairs. These key pairs are generated locally on your machine
-        and are never sent anywhere. You can also paste in a private key and it will automatically generate the public key.
+        תוכל להשתמש בדף זה כדי ליצור זוג מפתחות. זוגות מפתחות נוצרים מקומית על המכונה שלך ולעולם אינם נשלחים לשום מקום.
+        אתה יכול גם להדביק מפתח פרטי והוא ייצור את המפתח הציבורי אוטומטית.
     `,
-    [KEYS.KEYPAIR_Important]:`Save your private key elsewhere! You can not take private keys back out of Scatter.`,
-    [KEYS.KEYPAIR_Validation_Header]:`Generate a new Key Pair`,
-    [KEYS.KEYPAIR_Validation_Valid]:`The private key is valid and the public key generated from it matches the public key provided.`,
-    [KEYS.KEYPAIR_Validation_Invalid]:`The public key generated from the private key did not match the public key provided!`,
+    [KEYS.KEYPAIR_Important]:`שמור את המפתח הפרטי במקום אחר! לא ניתן להוציא מפתחות פרטיים מסְקַטֵר בהמשך.`,
+    [KEYS.KEYPAIR_Validation_Header]:`צור זוג מפתחות חדש`,
+    [KEYS.KEYPAIR_Validation_Valid]:`המפתח הפרטי חוקי והמפתח הציבורי שנוצר ממנו מתאים למפתח הציבורי שנתת.`,
+    [KEYS.KEYPAIR_Validation_Invalid]:`המפתח הציבורי שנוצר לא תואם למפתח הציבורי שנתת!`,
 
 
-    [KEYS.LOCK_Header]:`Auto Lock Timer`,
+    [KEYS.LOCK_Header]:`שעון נעילה אוטומטית`,
     [KEYS.LOCK_Description]:`
-        Auto Lock handles Scatter's locking for you so that you don't have to
-        remember to lock your Scatter when you step away.
+        נעילה אוטומטית נועלת את סְקַטֵר עבורך כך שלא צריך לזכור לנעול את הסְקַטֵר כשאתה
+        הולך.
     `,
-    [KEYS.LOCK_Minute]:`Minute`,
-    [KEYS.LOCK_Minutes]:`Minutes`,
-    [KEYS.LOCK_Hour]:`Hour`,
-    [KEYS.LOCK_Hours]:`Hours`,
-    [KEYS.LOCK_NeverLock]:`Never Lock`,
+    [KEYS.LOCK_Minute]:`דקה`,
+    [KEYS.LOCK_Minutes]:`דקות`,
+    [KEYS.LOCK_Hour]:`שעה`,
+    [KEYS.LOCK_Hours]:`שעות`,
+    [KEYS.LOCK_NeverLock]:`אל תנעל לעולם`,
 
 
-    [KEYS.MNEMONIC_Header]:`Mnemonic`,
-    [KEYS.MNEMONIC_Description]:`Mnemonics are a set of words that translate into a cryptographic seed.`,
+    [KEYS.MNEMONIC_Header]:`מילות שינון`,
+    [KEYS.MNEMONIC_Description]:`מילות שינון הן קבוצת מילים שמתורגמת לגרעין הצפנה.`,
     [KEYS.MNEMONIC_Note]:`
-        Be sure to save yours somewhere safe. It is the only way to regain access to your
-        Scatter and decrypt your private information if you forget your password.
+        אנא ודא שמירתן במקום בטוח. זו הדרך היחידה לשחזר גישה לסְקַטֵר שלך ולפענח מידע
+        פרטי מוצפן במקרה ששכחת את הסיסמה שלך.
     `,
 
-    [KEYS.ERROR_MustSelectItem]:`You must select an item.`,
+    [KEYS.ERROR_MustSelectItem]:`חובה לבחור אפשרות.`,
 
     [KEYS.ALERT_Type]:(type) => {
         switch(type){
-            case AlertTypes.Error:              return 'Error';
-            case AlertTypes.Prompt:             return 'Prompt';
-            case AlertTypes.SelectAccount:      return 'Select Account';
+            case AlertTypes.Error:              return 'שגיאה';
+            case AlertTypes.Prompt:             return 'שאלה';
+            case AlertTypes.SelectAccount:      return 'בחר חשבון';
         }
     },
 
     //2
     [KEYS.ALERT_BadIdentityName]:[
-        'Bad Identity Name',
+        'שם זהות לא חוקי',
 
-        `Identity names must be between 3 and 20 characters long.
-         They must also be alphanumeric but may also contain spaces, dashes, and underscores.`
+        `שם זהות צריך להיות בן 3 עד 20 תווים באורכו.
+        עליו להכיל תווים של אותיות או ספרות והוא יכול להכיל גם רווחים, מקפים וקווים תחתונים.`
     ],
     //2
     [KEYS.ALERT_IdentityNameExists]:[
-        'Identity Name Exists',
+        'שם זהות קיים',
 
-        'This Identity name is registered to another Identity.'
+        'שם זהות זה רשום כבר עבור זהות אחרת.'
     ],
     //2
     [KEYS.ALERT_NoSuchIdentityName]:[
-        'No such Identity name',
+        'שם זהות לא קיים',
 
-        'This Identity name is not reserved in RIDL.'
+        'שם זהות זה לא שמור ב-RIDL.'
     ],
     //2
     [KEYS.ALERT_KeyPairExists]:[
-        'Key Pair Exists',
+        'זוג מפתחות קיים',
 
-        'This Key Pair is already registered in your keychain.'
+        'זוג מפתחות זה כבר רשום בצרור המפתחות שלך.'
     ],
     //2
     [KEYS.ALERT_BadKeyPairName]:[
-        'Bad Key Pair Name',
+        'שם לא חוקי לזוג מפתחות',
 
-        'Key Pairs must be named uniquely.'
+        'זוג מפתחות חייב לקבל שם ייחודי.'
     ],
     //2
     [KEYS.ALERT_InvalidPrivateKey]:[
-        'Invalid Private Key',
+        'מפתח פרטי לא חוקי',
 
-        `The private key you entered seems to be invalid. Please check the key and try again.`
+        `המפתח הפרטי לא תקין, אנא בדוק והקלד מחדש.`
     ],
     //2
     [KEYS.ALERT_NoAccountsFound]:[
-        'No Accounts Found',
+        'לא נמצאו חשבונות',
 
-        `No accounts were found connected to this private key.
-         If you want to import a key which is not generated by
-         Scatter you will need to create an account for the key
-         before importing it.`
+        `לא נמצאו חשבונות הקשורים למפתח הפרטי הזה. אם ברצונך ליבא
+         מפתח שלא נוצר על ידי סְקַטֵר צתטרך ליצור חשבון עבורו לפני היבוא שלו.`
     ],
     //2
     [KEYS.ALERT_PasswordsDoNotMatch]:[
-        'Passwords Do Not Match',
+        'סיסמאות לא תואמות',
 
-        `The password you entered does not match it's confirmation.`
+        `הסיסמא והוידוא שלה לא תואמים.`
     ],
     //2
     [KEYS.ALERT_BadPassword]:[
-        'Bad Password',
+        'סיסמה לא חוקית',
 
-        'Passwords must be at least 8 characters long'
+        'הסיסמה חייבת להיות בת 8 תווים לפחות'
     ],
     //2
     [KEYS.ALERT_WrongPassword]:[
-        'Wrong Password',
+        'סיסמה לא נכונה',
 
-        'The password you entered was incorrect.'
+        'הסיסמה שהזנת לא נכונה.'
     ],
     //2
     [KEYS.ALERT_NetworkHostInvalid]:[
-        'Network Host Invalid',
+        'שרת רשת לא תקין',
 
-        `The Network host you entered was invalid. Hosts should be either a domain name
-         ( ex: testnet.eos.io ) or an IP ( ex: 192.168.0.1 ).`
+        `שרת הרשת שהזנת לא תקין. שרת צריך להיות כתובת אינטרנט
+         ( למשל: testnet.eos.io ) או כתובת IP ( למשל: 192.168.0.1 ).`
     ],
     //2
     [KEYS.ALERT_NetworkExists]:[
-        'Network Already Exists',
+        'רשת קיימת כבר',
 
-        'Another Network with this host and port already exists. There is no reason to have a network saved twice.'
+        'רשת אחרת עם אותו שרת ואותו פורט כבר קיימת. אין סיבה לשמור את אותה רשת פעמיים.'
     ],
     //2
     [KEYS.ALERT_RemovingEndorsedNetwork]:[
-        'Cannot Remove Endorsed Network',
+        'לא ניתן להסיר רשת מאושרת',
 
-        `You cannot remove Scatter's endorsed Networks.`
+        `לא ניתן להסיר רשתות מאושרות של סְקַטֵר.`
     ],
     //2
     [KEYS.ALERT_NoIdentityWithProperties]:fields => [
-        'No Identities Found',
+        'לא נמצאו זהויות',
 
-        `This application is requesting an Identity with properties you do not have. The properties they want are '${fields.join(', ')}'`
+        `תכנה זו מבקשת זהות עם שדות שאין לך. השדות שהם מבקשים הם '${fields.join(', ')}'`
     ],
     //2
     [KEYS.ALERT_YouMustSelectAnIdentity]:[
-        'You Must Select An Identity',
+        'חובה לבחור זהות',
 
-        `If you do not wish to expose an Identity you can press the Deny button, otherwise an Identity must be
-         selected in order to accept this request.`
+        `אם אתה לא רוצה לחשוף זהות אתה יכול ללחוץ על כפתור הדחיה, אחרת חובה עליך לבחור זהות כדי
+         לאשר את הבקשה הזו.`
     ],
     //2
     [KEYS.PROMPT_DestroyingScatter]:[
-        'Destroying Scatter',
-
-        'This is your last chance to double check your backups.'
+        'משמיד את סְקַטֵר',
+        'זו ההזדמנות האחרונה שלך לוודא שיש לך גיבויים מתאימים.'
     ],
     //2
     [KEYS.PROMPT_RevokingIdentity]:domain => [
-        'Revoking Identity',
+        'מבטל זהות',
 
-        `You are about to revoke an entire Identity from ${domain}. This will remove
-         permissions on the Identity itself and all contracts within it.`
+        `אתה עומד לבטל זהות שלמה מ ${domain}. זה יסיר הרשאות מהזהות עצמה
+        ומכל החוזים שבתוכה.`
     ],
     //2
     [KEYS.PROMPT_RevokingContract]:domain => [
-        'Revoking Contract',
+        'ביטול חוזה',
 
-        `You are about to revoke an entire contract from ${domain}. This will remove permissions on all actions within it.`
+        `אתה עומד לבטל חוזה שלם מ ${domain}. זה יסיר את כל ההרשאות מפעולות בחוזה זה.`
     ],
     //2
     [KEYS.PROMPT_RevokingContractAction]:domain => [
-        'Revoking Contract Action',
+        'ביטול פעולה בחוזה',
 
-        `You are about to revoke an action from ${domain}`
+        `אתה עומד לבטל פעולה מ ${domain}`
     ],
     //2
     [KEYS.PROMPT_RemovingIdentity]:name => [
-        'Removing Identity',
+        'הסרת זהות',
 
-        `You are about to remove an Identity with the name '${name}'. Removing Identities is not reversible and
-         all permissions will be . If the Identity is being used on applications perhaps you should just disable it instead.`
+        `אתה עומד להסיר זהות בשם '${name}'. הסרת זהות היא פעולה בלתי הפיכה כולל ההרשאות שלה.
+         אם הזהות בשימוש בתכנות אולי כדאי להשבית אותה במקום זה.`
     ],
     //2
     [KEYS.PROMPT_DeletingKeyPair]:identities => [
-        'Deleting Key Pair',
+        'מוחק זוג מפתחות',
 
-        identities.length ? `This Key Pair is used in: '${identities.join(', ')}'` : `This keypair is not used in any Identities.`
+        identities.length ? `זוג מפתחות זה נמצא בשימוש ב: '${identities.join(', ')}'` : `זוג מפתחות זה לא נמצא בשימוש.`
     ],
     //2
     [KEYS.PROMPT_RemovingAccount]:formattedAccountName => [
-        'Removing Account',
+        'מוחק חשבון',
 
-        `You are about to remove the ${formattedAccountName} account from this Identity.`
+        `אתה עומד למחוק את החשבון ${formattedAccountName} מהזהות הזו.`
     ],
     //2
     [KEYS.PROMPT_RemovingNetwork]:[
-        'Removing Network',
+        'מחיקת רשת',
 
-        `You are about to delete a Network. You will not be able
-         to create new accounts on this Network once you delete it,
-         but nothing is stopping you from re-adding it. Any accounts
-         already using this Network will not be modified or removed.`
+        `אתה עומד למחוק רשת. לא תוכל ליצור חשבונות חדשים ברשת זו
+         אחרי מחיקתה, אך תוכל להוסיף אותה מחדש. חשבונות קיימים
+         שמשתמשים ברשת זו לא ימחקו ולא ישתנו.`
     ],
     //2
     [KEYS.PROMPT_WhitelistingContractAction]:[
-        'You Are About To Whitelist A Currency Contract',
+        'אתה עומד להוסיף חוזה מטבע לרשימת ההיתרים',
 
-        `Whitelisting currency based contracts is dangerous, and should never be done. There are specific cases where this is okay,
-         but unless you are absolutely sure this is one of them, you should not be whitelisting this contract action.
-         Are you sure you still want to whitelist this?`
+        `הוספת חוזה מטבע לרשימת ההיתרים מסוכנת, ומומלץ לא לעשות זאת. יש מקרים מיוחדים בהם זה בסדר,
+         אם אתה לא בטוח לגמרי שזה אחד מהמקרים הללו, אתה לא אמור להוסיף פעולות בחוזה זה לרשימת ההיתרים.
+         האם אתה עדיין בטוח שאתה רוצה להוסיף את זה לרשימת ההיתרים?`
     ],
     //2
     [KEYS.PROMPT_SelectAccount]:[
-        'Select Account',
+        'בחר חשבון',
 
-        'Select the account and authority you wish to use for this Identity. You can only select one at a time.'
+        'בחר את החשבון ואת הסמכות שברצונך להשתמש עבור זהות זאת. ניתן לבחור אחד בכל פעם.'
     ],
     //2
     [KEYS.PROMPT_ClaimIdentity]:[
-        'Claim Identity',
+        'תביעת זהות',
 
-        'Put in the private key that matches the public key on file for your identity name.'
+        'הכנס את המפתח הפרטי המתאים למפתח הציבורי הרשום עבור שם הזהות שלך.'
     ],
 
     //3
     [KEYS.REQUEST_AddNetwork]:[
-        /*{DOMAIN}*/ 'wants to add their network to your Scatter.',
+        /*{DOMAIN}*/ 'רוצים להוסיף את הרשת שלהם לסְקַטֵר שלך.',
 
-        'Some applications use their own Networks.',
+        'יש תכנות שמשתמשות ברשת משלהן.',
 
-        `This in no way gives the application any access to your Scatter.
-         Adding a network through this interface simply saves you
-         the effort of manually adding it from your Settings panel.`
+        `דבר זה לא מאפשר לתכנות גישה לסְקַטֵר שלך. הוספת רשת בממשק זה
+        פשוט חוסכת ממך את הצורך בהוספה של רשת זו במסך ההגדרות.`
     ],
     //5
     [KEYS.REQUEST_Identity]:[
-        /*{DOMAIN}*/ 'is requesting additional information.',
+        /*{DOMAIN}*/ 'מבקש מידע נוסף.',
 
-        `Sometimes applications ask for some more information such as
-         your email or date of birth. The Identities on the right are ones you own
-         on the network with those specific properties available.`,
+        `לפעמים תכנות מבקשות מידע נוסף כגון כתובת הדוא"ל שלך או תאריך לידה.
+        הזהויות בצד הן זהויות בבעלותך שבהן יש את הנתונים הנדרשים.`,
 
-        `Even if you provide an Identity with properties that the
-         application is not requesting permissions for, they will never
-         be able to see them, or even know they exist for that Identity.`,
+        `אפילו אם אתה מספק זהות עם נתונים שהתכנה לא מבקשת הרשאות עבורן,
+         הם לא יוכלו לראות אותם כלל, ואפילו לא ידעו על קיומם בזהות זו.`,
 
-        `The only properties which are always given is the Identity's public key and it's name.`,
+        `הנתונים היחידים שתמיד ניתנים הם המפתח הציבורי של הזהות ושמה.`,
 
-        /*{DOMAIN}*/ `is not requesting any additional information. The only thing that they are requiring is an Identity hash and name.`
+        /*{DOMAIN}*/ `לא מבקשים מידע נוסף. הדבר היחיד שהם צריכים הוא שם הזהות וhash של הזהות.`
     ],
     //2
     [KEYS.REQUEST_IdentityNoIdentities]:[
-        `You don't have any Identities that match the fields that this application is requiring.`,
+        `אין לך זהות שמתאימה לנתונים שהתכנה הזו מבקשת.`,
 
-        `If you would like to use an Identity with this domain, you will need to update that Identity and fulfill the requirements.
-         You can see what this domain is requiring on the left panel.`
+        `אם ברצונך להשתמש בזהות עם אתר זה, תצטרך לעדכן זהות זו ולמלא את דרישותיה.
+         תוכל לראות מה אתר זה דורש בצד השמאלי של המסך.`
     ],
     //4
     [KEYS.REQUEST_SignatureWhitelist]:[
-        `Do you want to whitelist this contract action?`,
+        `האם תרצה להוסיף לרשימת ההיתרים את הפעולה הזו בחוזה?`,
 
         `You can whitelist this action so that next time you won't have to manually authorize this.
          Every property that has a check next to it will become mutable, meaning that you can allow
@@ -443,6 +430,7 @@ export default {
 
         `If you have multiple locations and a transaction requires a location you will always be prompted.`
     ],
+    // סְקַטֵר
     //4
     [KEYS.REQUEST_ScatterIsLocked]:[
         `Your Scatter is locked!`,
