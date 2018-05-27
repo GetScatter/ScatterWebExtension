@@ -72,7 +72,7 @@ export default {
     [KEYS.BUTTON_RegisterIdentity]:'רשום זהות',
 
     [KEYS.MAINMENU_Identities]:'זהויות',
-    [KEYS.MAINMENU_Keys]:'זוגות של מפתחות',
+    [KEYS.MAINMENU_Keys]:'מפתחות',
     [KEYS.MAINMENU_Permissions]:'הרשאות',
     [KEYS.MAINMENU_History]:'היסטוריה',
     [KEYS.MAINMENU_Lock]:'נעל',
