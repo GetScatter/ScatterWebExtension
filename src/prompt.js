@@ -13,11 +13,14 @@ import SearchComponent from './components/SearchComponent.vue'
 import InputComponent from './components/InputComponent.vue'
 import SelectComponent from './components/SelectComponent.vue'
 import KeyValue from './components/KeyValue.vue'
+import InternalMessage from './messages/InternalMessage'
+import * as InternalMessageTypes from './messages/InternalMessageTypes'
+import {apis} from './util/BrowserApis';
 
 class PromptWindow {
 
     constructor(){
-        let prompt = window.data || null;
+        let prompt = window.data || apis.extension.getBackgroundPage().notification || null;
 
         // TODO: Pair prompt with a checksum from the state store so that
         // even if an attacker manages to open a clickjack/malicious prompt
@@ -36,16 +39,12 @@ class PromptWindow {
             {tag:'alert', vue:Alert},
             {tag:'key-value', vue:KeyValue},
         ];
-        const routes = Routing.routes(true);
 
-        // TODO: Request unlock for prompt
-        const middleware = (to, next, store) => {
-            next();
-            // store.dispatch(Actions.IS_UNLOCKED)
-            //     .then(unlocked => (unlocked) ? next() : next({name:RouteNames.PROMPT_REQUEST_UNLOCK}));
-        };
+        const routes = Routing.routes(true);
+        const middleware = (to, next, store) => next();
 
         new VueInitializer(routes, components, middleware, (router, store) => {
+            console.log('store', store);
             store.dispatch(Actions.PUSH_PROMPT, prompt);
             router.push({name:prompt.routeName()});
         });

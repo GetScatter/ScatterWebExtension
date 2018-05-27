@@ -7,7 +7,8 @@ class ApiGenerator {
         'app',
         'storage',
         'extension',
-        'runtime'
+        'runtime',
+        'windows'
         ]
         .map(api => {
             if(typeof chrome !== 'undefined') swallow(() => {if(chrome[api]) this[api] = chrome[api]});

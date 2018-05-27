@@ -27,6 +27,8 @@ let seed = '';
 let inactivityInterval = 0;
 let timeoutLocker = null;
 
+let prompt = null;
+
 // This is the script that runs in the extension's background ( singleton )
 export default class Background {
 
@@ -72,6 +74,8 @@ export default class Background {
             case InternalMessageTypes.REQUEST_GET_VERSION:              Background.requestGetVersion(sendResponse); break;
             case InternalMessageTypes.REQUEST_VERSION_UPDATE:           Background.requestVersionUpdate(sendResponse, message.payload); break;
             case InternalMessageTypes.AUTHENTICATE:                     Background.authenticate(sendResponse, message.payload); break;
+            case InternalMessageTypes.SET_PROMPT:                       Background.setPrompt(sendResponse, message.payload); break;
+            case InternalMessageTypes.GET_PROMPT:                       Background.getPrompt(sendResponse); break;
         }
     }
 
@@ -83,6 +87,17 @@ export default class Background {
     }
 
 
+    static setPrompt(sendResponse, notification){
+        console.log('setting prompt');
+        console.log('noti', notification);
+        prompt = notification;
+        sendResponse(true);
+    }
+
+    static getPrompt(sendResponse){
+        console.log('send res', prompt);
+        sendResponse(prompt);
+    }
 
     /********************************************/
     /*                 Handlers                 */
