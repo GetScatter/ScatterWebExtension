@@ -4,8 +4,9 @@ import english from './languages/english';
 import french from './languages/french';
 import portuguese from './languages/portuguese';
 import spanish from './languages/spanish';
-import slovene from './languages/slovene'
-import hebrew from './languages/hebrew'
+import hebrew from './languages/hebrew';
+import slovene from './languages/slovene';
+import german from './languages/german';
 
 export const LANG = {
     ENGLISH: 'English',
@@ -13,7 +14,8 @@ export const LANG = {
     PORTUGUESE: 'Português ( Portuguese )',
     SPANISH: 'Español ( Spanish )',
     SLOVENE: 'Slovensko ( Slovene )',
-    HEBREW: 'עברית ( Hebrew )'
+    HEBREW: 'עברית ( Hebrew )',
+    GERMAN: 'Deutsch ( German )',
 };
 
 const languages = {
@@ -22,7 +24,8 @@ const languages = {
     [LANG.PORTUGUESE]:portuguese,
     [LANG.SPANISH]:spanish,
     [LANG.SLOVENE]:slovene,
-    [LANG.HEBREW]:hebrew
+    [LANG.HEBREW]:hebrew,
+    [LANG.GERMAN]:german,
 };
 
 export const locales = () => {
