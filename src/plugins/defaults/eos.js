@@ -5,7 +5,10 @@ import * as NetworkMessageTypes from '../../messages/NetworkMessageTypes'
 import StringHelpers from '../../util/StringHelpers'
 import Error from '../../models/errors/Error'
 import Network from '../../models/Network'
+import Account from '../../models/Account'
 // const ecc = require('eosjs-ecc');
+import AlertMsg from '../../models/alerts/AlertMsg'
+import * as Actions from '../../store/constants';
 import Eos from 'eosjs'
 let {ecc} = Eos.modules;
 import {IdentityRequiredFields} from '../../models/Identity';
@@ -35,6 +38,40 @@ export default class EOS extends Plugin {
     }
 
     accountsAreImported(){ return true; }
+    importAccount(keypair, network, context, accountSelected){
+        const getAccountsFromPublicKey = (publicKey, network) => {
+            return new Promise((resolve, reject) => {
+                const eos = Eos.Localnet({httpEndpoint:`http://${network.hostport()}`});
+                eos.getKeyAccounts(publicKey).then(res => {
+                    if(!res || !res.hasOwnProperty('account_names')){ resolve([]); return false; }
+
+                    Promise.all(res.account_names.map(name => eos.getAccount(name).catch(e => resolve([])))).then(multires => {
+                        let accounts = [];
+                        multires.map(account => {
+                            account.permissions.map(permission => {
+                                accounts.push({name:account.account_name, authority:permission.perm_name});
+                            });
+                        });
+                        resolve(accounts)
+                    }).catch(e => resolve([]));
+                });
+            })
+        }
+
+        getAccountsFromPublicKey(keypair.publicKey, network).then(accounts => {
+            switch(accounts.length){
+                case 0: context[Actions.PUSH_ALERT](AlertMsg.NoAccountsFound()); reject(); return false;
+                // Only one account, so returning it
+                case 1: accountSelected(Account.fromJson({name:accounts[0].name, authority:accounts[0].authority, publicKey:keypair.publicKey, keypairUnique:keypair.unique() })); break;
+                // More than one account, prompting account selection
+                default: context[Actions.PUSH_ALERT](AlertMsg.SelectAccount(accounts)).then(res => {
+                    if(!res || !res.hasOwnProperty('selected')) { reject(); return false; }
+                    accountSelected(Account.fromJson(Object.assign(res.selected, {publicKey:keypair.publicKey, keypairUnique:keypair.unique()})));
+                })
+            }
+        });
+    }
+
     privateToPublic(privateKey){ return ecc.privateToPublic(privateKey); }
     validPrivateKey(privateKey){ return ecc.isValidPrivate(privateKey); }
     validPublicKey(publicKey){   return ecc.isValidPublic(publicKey); }
