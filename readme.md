@@ -365,6 +365,7 @@ for more information about how to get involved with translations.
 - [gnumarcelo](https://github.com/gnumarcelo) - [Portuguese](https://github.com/EOSEssentials/Scatter/pull/27)
 - [javierjmc](https://github.com/javierjmc) - [Spanish](https://github.com/EOSEssentials/Scatter/pull/30)
 - [petervalencic](https://github.com/petervalencic) - [Slovene](https://github.com/EOSEssentials/Scatter/pull/42)
+- [amiheines](https://github.com/amih) - [Hebrew](https://github.com/EOSEssentials/Scatter/pull/)
 
 
 
