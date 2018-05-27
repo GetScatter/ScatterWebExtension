@@ -34,13 +34,20 @@
             ])
         },
         mounted(){
+            console.log('lang', this.language)
             this.selectedLanguage = this.language;
         },
         methods: {
-            bind(changed, original) { this[original] = changed },
+            bind(changed, property) {
+                console.log('changed', changed, property);
+
+                this[property] = getLangKey(changed) },
             changeLanguage(){
                 const scatter = this.scatter.clone();
-                scatter.settings.language = getLangKey(this.selectedLanguage);
+                scatter.settings.language = this.selectedLanguage.toUpperCase() === this.selectedLanguage
+                    ? this.selectedLanguage
+                    : getLangKey(this.selectedLanguage);
+
                 this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => {
                     this.$router.back();
                 });
