@@ -421,38 +421,37 @@ export default {
     [KEYS.REQUEST_SignatureWhitelist]:[
         `האם תרצה להוסיף לרשימת ההיתרים את הפעולה הזו בחוזה?`,
 
-        `You can whitelist this action so that next time you won't have to manually authorize this.
-         Every property that has a check next to it will become mutable, meaning that you can allow
-         certain properties of this transaction to change and only if the other properties are changed will
-         it fail to be whitelisted.`,
+        `אתה יכול להוסיף היתר לפעולה זו כך שלא תצטרך לאשר אותה ידנית בפעם הבאה.
+         כל נתון שיש תיבת סימון לידו הופף למשתנה, המשמעות היא שתוכל לאפשר שינויים בנתונים אלו
+         ורק אם נתונים אחרים ישתנו ההיתר יכשל.`,
 
-        `This includes required personal information, and changes to your Identity do not remove permissions.`,
+        `זה כולל נתונים אישיים נדרשים, ושינויים לזהות שלך לא יסירו הרשאות.`,
 
-        `If you have multiple locations and a transaction requires a location you will always be prompted.`
+        `אם יש לך מיקומים מרובים וטרנזקציה דורשת מיקום, תמיד תיתבקש לבחור.`
     ],
     // סְקַטֵר
     //4
     [KEYS.REQUEST_ScatterIsLocked]:[
-        `Your Scatter is locked!`,
+        `הסְקַטֵר שלך נעול!`,
 
-        `Before you can do anything with your Scatter you will need to unlock it.`,
+        `לפני שתוכל להשתמש בסְקַטֵר שלך תצטרך לשחרר את הנעילה.`,
 
-        `We will purposely never show a prompt/popup which requires you to log in.`,
+        `לעולם לא נציג בפניך הודעה קופצת או תיבת דו שיח שדורשת ממך להתחבר.`,
 
-        `If you see a prompt/popup which is requesting your password, it is a malicious website trying to get your password.
-         Always only unlock Scatter from the extension's popup by clicking on the icon in your browser tray.`
+        `אם אתה מקבל הודעה קופצת או תיבת דו שיח שדורשת סיסמה, זהו אתר זדוני שמנסה להשיג את הסיסמה שלך.
+         תמיד תבצע כניסה לסְקַטֵר על ידי לחיצה על הכפתור של ההרחבה לדפדפן מסרגל הכלים של הדפדפן.`
     ],
     //4
     [KEYS.REQUEST_UpdateVersion]:[
-        `Your Scatter is out of date!`,
+        `הסְקַטֵר שלך לא מעודכן!`,
 
-        /*{DOMAIN}*/ `is requiring you have a version of Scatter that is newer than the one installed.`,
+        /*{DOMAIN}*/ `דורש גירסה עדכנית יותר של סְקַטֵר ממספר הגירסה שמותקנת אצלך.`,
 
-        `This usually means that new functionality was released and an application is trying to use it but it's not
-         currently included in the build you have installed.`,
+        `המשמעות של זה בדרך כלל היא שיש יכולות חדשות ששוחררו ותכנה מנסה להשתמש בהן אך יכולות אלו
+         לא קיימות בגירסה שמותקנת אצלך.`,
 
-        `Please Note, we leave version checking up to the applications themselves. They could be maliciously trying to
-         get you to download something. Make sure you always download Scatter from the proper location.`
+        `לידיעתך, אנו מאפשרים לתכנות לבדוק התאמה למספר הגירסה. יש אפשרות שהן זדוניות ומנסות לגרום לך להוריד
+          משהו. אנא ודא שאתה מוריד תמיד את סְקַטֵר מהמיקום הנכון.`
     ],
 
 }
