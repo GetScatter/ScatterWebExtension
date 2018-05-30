@@ -178,12 +178,18 @@ export default {
 
     [KEYS.LANGUAGE_Header]:`Wähle deine Sprache aus`,
 
+    [KEYS.KEYPAIRS_NoKeyPairsHeader]:`Du hast noch keine Schlüsselpaare.`,
+    [KEYS.KEYPAIRS_NoKeyPairsDescription]:`
+        Drücke den Button oben rechts um ein Schlüsselpaar zu erstellen/importieren.
+    `,
+
     [KEYS.KEYPAIR_Header]:`Erstelle ein neues Schlüsselpaar`,
     [KEYS.KEYPAIR_Description]:`
         Hier kannst du EOS-Schlüsselpaare erzeugen. Die erzeugten Schlüsselpaare werden lokal auf deinem Rechner erzeugt und werden nie versendet.
         Du kannst auch ein Schlüsselpaar hinzufügen und überprüfen, ob der private Schlüssel mit dem öffentlichen Schlüssel übereinstimmt.
         Beachte, dass diese Schlüssel durch Entropie erzeugt werden, die von deinem Computer und nicht von einem bestimmten Seed stammen.
     `,
+    [KEYS.KEYPAIR_Important]:`Bewahre deinen privaten Schlüssel sicher irgendwo auf! Du kannst ihn aus Scatter nicht mehr exportieren.`,
     [KEYS.KEYPAIR_Validation_Header]:`Erstelle ein neues Schlüsselpaar`,
     [KEYS.KEYPAIR_Validation_Valid]:`Der private Schlüssel ist gültig und der daraus generierte öffentliche Schlüssel entspricht dem bereitgestellten öffentlichen Schlüssel.`,
     [KEYS.KEYPAIR_Validation_Invalid]:`Der aus dem privaten Schlüssel generierte öffentliche Schlüssel stimmt nicht mit dem bereitgestellten öffentlichen Schlüssel überein!`,
