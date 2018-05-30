@@ -23,8 +23,8 @@ export default {
     [KEYS.GENERIC_Account]:'Account',
 
     [KEYS.PLACEHOLDER_Name]:'Name',
-    [KEYS.PLACEHOLDER_PublicKey]:'Public Key',
-    [KEYS.PLACEHOLDER_PrivateKey]:'Private Key',
+    [KEYS.PLACEHOLDER_PublicKey]:'Öffentlicher Schlüssel',
+    [KEYS.PLACEHOLDER_PrivateKey]:'Privater Schlüssel',
     [KEYS.PLACEHOLDER_FirstName]:'Vorname',
     [KEYS.PLACEHOLDER_LastName]:'Nachname',
     [KEYS.PLACEHOLDER_Email]:'E-Mail',
