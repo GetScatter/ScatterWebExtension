@@ -369,6 +369,7 @@ for more information about how to get involved with translations.
 - [French](https://github.com/EOSEssentials/Scatter/pull/56) - [lambi9891](https://github.com/lambi9891)
 - [German](https://github.com/EOSEssentials/Scatter/pull/40) - [Soleone](https://github.com/Soleone) AND [cmadh](https://github.com/cmadh)
 - Korean - [indend007](https://github.com/indend007)
+- [Chinese](https://github.com/EOSEssentials/Scatter/pull/69) - [oscnet](https://github.com/oscnet)
 
 
 

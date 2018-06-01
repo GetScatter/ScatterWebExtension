@@ -8,6 +8,7 @@ import hebrew from './languages/hebrew';
 import slovene from './languages/slovene';
 import german from './languages/german';
 import korean from './languages/korean';
+import chinese from './languages/chinese';
 
 export const LANG = {
     ENGLISH: 'English',
@@ -18,6 +19,7 @@ export const LANG = {
     HEBREW: 'עברית ( Hebrew )',
     GERMAN: 'Deutsch ( German )',
     KOREAN: '한국어 ( Korean )',
+    CHINESE: '中文 ( Chinese )',
 };
 
 const languages = {
@@ -29,6 +31,7 @@ const languages = {
     [LANG.HEBREW]:hebrew,
     [LANG.GERMAN]:german,
     [LANG.KOREAN]:korean,
+    [LANG.CHINESE]:chinese,
 };
 
 export const locales = () => {
