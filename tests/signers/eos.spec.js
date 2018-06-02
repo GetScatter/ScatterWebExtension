@@ -82,7 +82,7 @@ describe('Signature Request', async testDone => {
         ]
     };
 
-    const eos = Eos.Localnet({
+    const eos = Eos({
         keyProvider: [keypair.privateKey],
         mockTransactions: () => 'pass',
         broadcast: false,

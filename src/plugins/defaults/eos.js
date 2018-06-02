@@ -41,7 +41,7 @@ export default class EOS extends Plugin {
     importAccount(keypair, network, context, accountSelected){
         const getAccountsFromPublicKey = (publicKey, network) => {
             return new Promise((resolve, reject) => {
-                const eos = Eos.Localnet({httpEndpoint:`http://${network.hostport()}`});
+                const eos = Eos({httpEndpoint:`http://${network.hostport()}`});
                 eos.getKeyAccounts(publicKey).then(res => {
                     if(!res || !res.hasOwnProperty('account_names')){ resolve([]); return false; }
 
@@ -69,7 +69,10 @@ export default class EOS extends Plugin {
                     accountSelected(Account.fromJson(Object.assign(res.selected, {publicKey:keypair.publicKey, keypairUnique:keypair.unique()})));
                 })
             }
-        }).catch(e => reject());
+        }).catch(e => {
+            console.log('error', e);
+            return false;
+        });
     }
 
     privateToPublic(privateKey){ return ecc.privateToPublic(privateKey); }
@@ -84,7 +87,7 @@ export default class EOS extends Plugin {
     }
 
     async getBalances(account, network, code = 'eosio.token', table = 'accounts'){
-        const eos = Eos.Localnet({httpEndpoint:`http://${network.hostport()}`});
+        const eos = Eos({httpEndpoint:`http://${network.hostport()}`});
         const contract = await eos.contract(code);
         return await eos.getTableRows({
             json: true,
@@ -133,7 +136,7 @@ export default class EOS extends Plugin {
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions
-            return proxy(_eos(), {
+            return proxy(_eos({httpEndpoint, chainId:_options.chainId}), {
                 get(eosInstance, method) {
 
                     let returnedFields = null;
