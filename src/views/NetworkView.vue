@@ -9,6 +9,7 @@
             <figure class="header">{{locale(langKeys.NETWORK_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.NETWORK_Description)}} </figure>
             <sel :selected="blockchains[0]" :options="blockchains" :parser="blockchain => blockchain.key" v-on:changed="changed => bind(changed.value, 'blockchain')"></sel>
+            <sel :selected="protocols[0]" :options="protocols" :parser="protocol => protocol.key" v-on:changed="changed => bind(changed.value, 'protocol')" v-if="network.blockchain===eos"></sel>
             <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bind(changed, 'host')"></cin>
             <cin :placeholder="locale(langKeys.GENERIC_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')"></cin>
             <cin :placeholder="locale(langKeys.GENERIC_ChainID)" :text="network.chainId" v-on:changed="changed => bind(changed, 'chainId')"></cin>
@@ -25,11 +26,14 @@
     import Scatter from '../models/Scatter'
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
-    import {BlockchainsArray} from '../models/Blockchains';
+    import {BlockchainsArray, Blockchains} from '../models/Blockchains';
+    import {ProtocolsArray} from '../models/Protocols';
 
     export default {
         data(){ return {
             blockchains:BlockchainsArray,
+            eos: Blockchains.EOS,
+            protocols:ProtocolsArray,
             network:null,
         }},
         computed: {
