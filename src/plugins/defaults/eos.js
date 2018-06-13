@@ -132,6 +132,7 @@ export default class EOS extends Plugin {
         throwIfNoIdentity = args[1];
 
         return (network, _eos, _options = {}, protocol = 'http') => {
+            console.log('protocol', protocol);
             if(!['http', 'https', 'ws'].includes(protocol))
                 throw new Error('Protocol must be either http, https, or ws');
 

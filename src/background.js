@@ -88,14 +88,11 @@ export default class Background {
 
 
     static setPrompt(sendResponse, notification){
-        console.log('setting prompt');
-        console.log('noti', notification);
         prompt = notification;
         sendResponse(true);
     }
 
     static getPrompt(sendResponse){
-        console.log('send res', prompt);
         sendResponse(prompt);
     }
 
@@ -139,14 +136,14 @@ export default class Background {
      * @returns {Scatter}
      */
     static load(sendResponse){
-        StorageService.get().then(scatter => {
+        StorageService.get().then(async scatter => {
             // sync the timeout inactivity interval
             inactivityInterval = scatter.settings.inactivityInterval;
 
             if(!seed.length) return sendResponse(scatter);
 
             scatter.decrypt(seed);
-            const migrated = migrate(scatter);
+            const migrated = await migrate(scatter);
             if(migrated) this.update(() => {}, scatter);
             sendResponse(scatter)
         })

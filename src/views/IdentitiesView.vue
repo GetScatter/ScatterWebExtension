@@ -137,20 +137,26 @@
             async bindBalances(identity){
                 this.loadingTokenBalances = true;
                 let netAccountMap = [];
-//                this.identities.map(identity => {
-                    Object.keys(identity.accounts).map(netString =>
-                        netAccountMap.push({account:identity.accounts[netString], netString}))
-//                });
+                Object.keys(identity.accounts).map(netString =>
+                    netAccountMap.push({account:identity.accounts[netString], netString}))
 
                 netAccountMap = ObjectHelpers.distinct(netAccountMap);
 
                 await Promise.all(netAccountMap.map(async netAccount => {
                     await this.accountBalances(netAccount);
                 }));
+
                 this.loadingTokenBalances = false;
             },
             async accountBalances({account, netString}){
-                const network = Network.fromUnique(netString);
+                let network = Network.fromUnique(netString);
+
+                if(!network.host){
+                    const hostedNetwork = this.scatter.settings.networks.find(n => n.chainId === network.chainId && n.host !== '');
+                    if(!hostedNetwork) return false;
+                    network = hostedNetwork;
+                }
+
                 await PluginRepository.plugin(account.blockchain()).getBalances(account, network).then(balances => {
                     this.balances.push({network:netString, balances});
                     return true;
