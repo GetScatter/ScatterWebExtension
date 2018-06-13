@@ -32,7 +32,7 @@
                     <figure class="header small reverse-margin">accounts</figure>
                     <section class="items" v-for="network in Object.keys(identity.accounts)">
                         <section class="item">
-                            <span>{{network}}</span>
+                            <span>{{network.substr(0,22)}}...</span>
                             <span>{{identity.accounts[network].formatted()}}</span>
                             <section class="items token-balances" v-if="loadingTokenBalances">
                                 <section class="item">

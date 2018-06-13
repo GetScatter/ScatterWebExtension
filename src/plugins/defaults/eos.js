@@ -28,7 +28,12 @@ export default class EOS extends Plugin {
 
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
-            resolve(new Network('159.65.161.242', 8888, Blockchains.EOS));
+            resolve(new Network(
+                'nodes.get-scatter.com',
+                80,
+                Blockchains.EOS,
+                'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+            ));
         });
     }
 
