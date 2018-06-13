@@ -46,7 +46,7 @@ export default class EOS extends Plugin {
     importAccount(keypair, network, context, accountSelected){
         const getAccountsFromPublicKey = (publicKey, network) => {
             return new Promise((resolve, reject) => {
-                const eos = Eos({httpEndpoint:`http://${network.hostport()}`});
+                const eos = Eos({httpEndpoint:`${network.hostport()}`});
                 eos.getKeyAccounts(publicKey).then(res => {
                     if(!res || !res.hasOwnProperty('account_names')){ resolve([]); return false; }
 
@@ -92,7 +92,7 @@ export default class EOS extends Plugin {
     }
 
     async getBalances(account, network, code = 'eosio.token', table = 'accounts'){
-        const eos = Eos({httpEndpoint:`http://${network.hostport()}`});
+        const eos = Eos({httpEndpoint: network.hostport()});
         const contract = await eos.contract(code);
         return await eos.getTableRows({
             json: true,
@@ -131,13 +131,13 @@ export default class EOS extends Plugin {
         messageSender = args[0];
         throwIfNoIdentity = args[1];
 
-        return (network, _eos, _options = {}, protocol = 'http') => {
-            if(!['http', 'https', 'ws'].includes(protocol))
-                throw new Error('Protocol must be either http, https, or ws');
+        return (network, _eos, _options = {}/*, protocol = 'http'*/) => {
+            //if(!['http', 'https', 'ws'].includes(protocol))
+            //    throw new Error('Protocol must be either http, https, or ws');
 
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
-            const httpEndpoint = `${protocol}://${network.hostport()}`;
+            const httpEndpoint = network.hostport();
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions

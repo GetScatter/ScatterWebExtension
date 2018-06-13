@@ -13,6 +13,7 @@
                 <!-- Header -->
                 <section class="panel">
                     <figure class="header big"><i class="fa fa-globe"></i>{{network.host}}</figure>
+                    <figure class="header small margin"><i class="fa fa-lock"></i>{{network.protocol}}</figure>
                     <figure class="header small margin"><i class="fa fa-plug"></i>{{network.port}}</figure>
                     <figure class="header small margin"><i class="fa fa-chain"></i>{{network.blockchain.toUpperCase()}}</figure>
                 </section>

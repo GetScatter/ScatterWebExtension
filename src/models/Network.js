@@ -1,9 +1,10 @@
 import {Blockchains} from './Blockchains';
 
 export default class Network {
-    constructor(_host = '', _port = 0, blockchain = Blockchains.EOS, chainId = ''){
+    constructor(_host = '', _port = 0, blockchain = Blockchains.EOS, chainId = '', _protocol='http'){
         this.host = _host;
         this.port = _port;
+        this.protocol = _protocol;
         this.blockchain = blockchain;
         this.chainId = chainId.toString();
     }
@@ -22,11 +23,20 @@ export default class Network {
             return new Network('','',blockchain, netString.replace(`${blockchain}:chain:`,''));
 
         const splits = netString.replace(`${blockchain}:`, '').split(':');
-        return new Network(splits[0], parseInt(splits[1] || 80), blockchain)
+        var ret = new Network(splits[1], parseInt(splits[2] || 80), blockchain, '', splits[0]);
+        return ret;
     }
 
-    unique(){ return `${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`); }
-    hostport(){ return `${this.host}${this.port ? ':' : ''}${this.port}` }
+    unique(){ 
+        return `${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.protocol}:${this.host}:${this.port}`); 
+    }
+    hostport(){ 
+        if (this.blockchain === Blockchains.EOS) {
+            // EOS needs to a protocol as well.
+            return `${this.protocol}://${this.host}${this.port ? ':' : ''}${this.port}` 
+        } else 
+            return `${this.host}${this.port ? ':' : ''}${this.port}` 
+    }
     clone(){ return Network.fromJson(JSON.parse(JSON.stringify(this))) }
     isEmpty(){ return !this.host.length; }
     isValid(){ return (this.host.length && this.port) || this.chainId.length }
