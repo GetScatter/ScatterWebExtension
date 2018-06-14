@@ -3,6 +3,7 @@ import {EncryptedStream} from 'extension-streams';
 import * as PairingTags from './messages/PairingTags'
 import * as NetworkMessageTypes from './messages/NetworkMessageTypes'
 import Scatterdapp from './scatterdapp'
+global._babelPolyfill = false;
 
 /***
  * This is the javascript which gets injected into
