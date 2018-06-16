@@ -242,10 +242,6 @@
             },
             async saveIdentity(){
                 this.saving = true;
-//                if(!Identity.nameIsValid(this.identity.name)){
-//                    this[Actions.PUSH_ALERT](AlertMsg.BadIdentityName());
-//                    return false;
-//                }
 
                 if(this.isNew) {
                     const identified = await RIDLService.identify(this.identity.publicKey);
@@ -253,13 +249,11 @@
                     this.identity.name = identified;
                 }
 
-
                 //TODO: More Error handling
                 // -----
                 // Location names must not be empty
                 // * Email
                 // * State ( if exists, only 2 characters )
-
 
                 const scatter = this.scatter.clone();
                 scatter.keychain.updateOrPushIdentity(this.identity);

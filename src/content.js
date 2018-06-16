@@ -24,8 +24,8 @@ let isReady = false;
 class Content {
 
     constructor(){
-        this.setupEncryptedStream();
-        this.injectInteractionScript();
+        // this.setupEncryptedStream();
+        // this.injectInteractionScript();
     }
 
 

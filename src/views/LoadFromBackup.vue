@@ -3,11 +3,10 @@
         <figure class="header">{{locale(langKeys.IMPORT_Header)}}</figure>
         <figure class="sub-header">{{locale(langKeys.IMPORT_Description)}}</figure>
 
-        <btn v-on:clicked="selectFile" v-if="!file" :text="locale(langKeys.BUTTON_SelectFile)" :is-blue="!file" :margined="true"></btn>
-        <cin icon="fa-lock" v-if="file" :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
-        <btn v-on:clicked="importBackup" :text="locale(langKeys.BUTTON_ImportKeychain)" :disabled="!file || password.length < 8" :is-blue="file && password.length >= 8" :margined="true"></btn>
+        <cin :placeholder="locale(langKeys.PLACEHOLDER_PasteYourBackup)" :text="encryptedJson" v-on:changed="changed => bind(changed, 'encryptedJson')"></cin>
 
-        <input @change="fileChanged($event.target.files)" id="FILE_INPUT" type="file" style="display:none;" accept=".keychain" />
+        <cin icon="fa-lock" v-if="encryptedJson" :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
+        <btn v-on:clicked="importBackup" v-if="encryptedJson" :text="locale(langKeys.GENERIC_Import)" :is-blue="encryptedJson" :margined="true"></btn>
     </section>
 </template>
 
@@ -22,8 +21,8 @@
 
     export default {
         data(){ return {
-            file:null,
             password:'',
+            encryptedJson:'',
         }},
         computed: {
             ...mapState([
@@ -33,31 +32,24 @@
         },
         methods: {
             bind(changed, original) { this[original] = changed },
-            selectFile(){
-                const elem = document.getElementById('FILE_INPUT');
-                elem.click();
-            },
-            fileChanged(files){
-                const file = files[0];
-                if(file.name.indexOf('.keychain') === -1) return false;
-                const reader = new FileReader();
-                reader.onload = (e) => this.file = e.target.result;
-                reader.readAsText(file);
+            async importBackup(){
+                console.log('importing', this.encryptedJson)
             },
             async importBackup(){
                 let decrypted;
                 let seed;
+
                 //TODO: Code duplication from actions set seed
                 try {
                     if(this.password.split(' ').length >= 12){
                         // MNEMONIC
                         seed = await Mnemonic.mnemonicToSeed(this.password);
-                        decrypted = AES.decrypt(this.file, seed);
+                        decrypted = AES.decrypt(this.encryptedJson, seed);
                     } else {
                         // PASSWORD
                         const [m, s] = await Mnemonic.generateMnemonic(this.password);
                         seed = s;
-                        decrypted = AES.decrypt(this.file, seed);
+                        decrypted = AES.decrypt(this.encryptedJson, seed);
                     }
                 } catch(e){
                     console.log('err', e);

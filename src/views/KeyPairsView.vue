@@ -70,7 +70,6 @@
             filterBySearch(){ return this.keypairs.filter(keypair => JSON.stringify(keypair).indexOf(this.searchText) > -1) },
             deleteKeypair(keypair){
                 const usedInIdentities = [];
-                const identityPublicKeys = [];
                 this.identities.map(id => {
                     if(id.getAccountFromPublicKey(keypair.publicKey))
                         usedInIdentities.push(id);

@@ -87,6 +87,7 @@
             color:#888;
             opacity:0.3;
             transition:opacity 0.2s ease;
+            pointer-events: none;
         }
 
         .selected-option {

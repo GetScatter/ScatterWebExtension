@@ -67,12 +67,12 @@ export default class SignatureService {
 
         // Checking if Identity still has all the necessary accounts
         const requiredAccounts = PluginRepository.plugin(blockchain).actionParticipants(payload);
+        console.log('requiredAccounts', requiredAccounts);
         const formattedName = PluginRepository.plugin(blockchain).accountFormatter(account);
         if(!requiredAccounts.includes(formattedName) && !requiredAccounts.includes(account.publicKey)){
             sendResponse(Error.signatureAccountMissing());
             return false;
         }
-
 
         const sign = (returnedFields) => {
             PluginRepository.plugin(blockchain).signer(context, payload, account.publicKey, signature => {

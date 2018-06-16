@@ -37,11 +37,12 @@ export default {
     [KEYS.PLACEHOLDER_Postal]:'Postal Code',
     [KEYS.PLACEHOLDER_Country]:'Country',
     [KEYS.PLACEHOLDER_State]:'State',
-    [KEYS.PLACEHOLDER_Password]:'Password',
+    [KEYS.PLACEHOLDER_Password]:'Password or Mnemonic',
     [KEYS.PLACEHOLDER_ConfirmPassword]:'Confirm Password',
     [KEYS.PLACEHOLDER_NewPassword]:'New Password',
     [KEYS.PLACEHOLDER_ConfirmNewPassword]:'Confirm New Password',
     [KEYS.PLACEHOLDER_DomainOrIP]:'Domain or IP',
+    [KEYS.PLACEHOLDER_PasteYourBackup]:'Paste your Backup',
 
     [KEYS.BUTTON_CreateIdentity]:'Create Identity',
     [KEYS.BUTTON_ImportAccount]:'Import Account',

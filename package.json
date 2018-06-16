@@ -14,9 +14,9 @@
   "dependencies": {
     "aes-oop": "^1.0.4",
     "bip39": "^2.5.0",
-    "dotenv-webpack": "^1.5.5",
-    "eosjs": "^14.1.0",
-    "eosjs-api": "^6.1.3",
+    "dotenv-webpack": "^1.5.7",
+    "eosjs": "^15.0.0",
+    "eosjs-api": "^6.2.1",
     "eosjs-ecc": "^4.0.1",
     "ethereumjs-abi": "^0.6.5",
     "ethereumjs-tx": "^1.3.4",
@@ -31,11 +31,12 @@
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "web3": "^1.0.0-beta2",
-    "web3-provider-engine": "^14.0.5"
+    "web3-provider-engine": "^14.0.6"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
     "chai": "^4.1.2",

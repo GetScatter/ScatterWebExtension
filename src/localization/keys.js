@@ -45,6 +45,7 @@ export const PLACEHOLDER_ConfirmPassword = 'plc_conf_pass';
 export const PLACEHOLDER_NewPassword = 'plc_new_pass';
 export const PLACEHOLDER_ConfirmNewPassword = 'plc_conf_new_pass';
 export const PLACEHOLDER_DomainOrIP = 'plc_dom_or_ip';
+export const PLACEHOLDER_PasteYourBackup = 'plc_pst_backup';
 
 export const BUTTON_CreateIdentity = 'btn_new_id';
 export const BUTTON_ImportAccount = 'btn_import_acc';
