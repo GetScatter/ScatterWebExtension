@@ -130,6 +130,7 @@ They must be formatted like so:
 
 ```js
 const network = {
+    protocol:'http', // Defaults to https
     blockchain:'eos',
     host:'127.0.0.1', // ( or null if endorsed chainId )
     port:8888, // ( or null if defaulting to 80 )
