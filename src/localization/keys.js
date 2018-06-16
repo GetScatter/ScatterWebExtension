@@ -18,6 +18,7 @@ export const GENERIC_Ignored = 'gen_ignored';
 export const GENERIC_Search = 'gen_search';
 export const GENERIC_Host = 'gen_host';
 export const GENERIC_Port = 'gen_port';
+export const GENERIC_Protocol = 'gen_protocol';
 export const GENERIC_Requires = 'gen_requires';
 export const GENERIC_RequiredProperties = 'gen_required_props';
 export const GENERIC_Import = 'gen_import';

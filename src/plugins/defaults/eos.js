@@ -29,8 +29,9 @@ export default class EOS extends Plugin {
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
             resolve(new Network(
+                'EOS Mainnet', 'https',
                 'nodes.get-scatter.com',
-                80,
+                443,
                 Blockchains.EOS,
                 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
             ));
@@ -46,7 +47,7 @@ export default class EOS extends Plugin {
     importAccount(keypair, network, context, accountSelected){
         const getAccountsFromPublicKey = (publicKey, network) => {
             return new Promise((resolve, reject) => {
-                const eos = Eos({httpEndpoint:`http://${network.hostport()}`});
+                const eos = Eos({httpEndpoint:`${network.protocol}://${network.hostport()}`});
                 eos.getKeyAccounts(publicKey).then(res => {
                     if(!res || !res.hasOwnProperty('account_names')){ resolve([]); return false; }
 
@@ -76,7 +77,7 @@ export default class EOS extends Plugin {
             }
         }).catch(e => {
             console.log('error', e);
-            return false;
+            accountSelected(null);
         });
     }
 
@@ -92,7 +93,7 @@ export default class EOS extends Plugin {
     }
 
     async getBalances(account, network, code = 'eosio.token', table = 'accounts'){
-        const eos = Eos({httpEndpoint:`http://${network.hostport()}`});
+        const eos = Eos({httpEndpoint:`${network.protocol}://${network.hostport()}`});
         const contract = await eos.contract(code);
         return await eos.getTableRows({
             json: true,
@@ -131,14 +132,18 @@ export default class EOS extends Plugin {
         messageSender = args[0];
         throwIfNoIdentity = args[1];
 
+        // Protocol will be deprecated.
         return (network, _eos, _options = {}, protocol = 'http') => {
-            console.log('protocol', protocol);
             if(!['http', 'https', 'ws'].includes(protocol))
                 throw new Error('Protocol must be either http, https, or ws');
 
+            // Backwards compatibility: Networks now have protocols, but some older dapps still use the argument
+            if(!network.hasOwnProperty('protocol') || !network.protocol.length)
+                network.protocol = protocol;
+
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
-            const httpEndpoint = `${protocol}://${network.hostport()}`;
+            const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions

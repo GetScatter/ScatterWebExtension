@@ -1,7 +1,9 @@
 import {Blockchains} from './Blockchains';
 
 export default class Network {
-    constructor(_host = '', _port = 0, blockchain = Blockchains.EOS, chainId = ''){
+    constructor(_name = '', _protocol = 'https', _host = '', _port = 0, blockchain = Blockchains.EOS, chainId = ''){
+        this.name = _name;
+        this.protocol = _protocol;
         this.host = _host;
         this.port = _port;
         this.blockchain = blockchain;
@@ -19,10 +21,10 @@ export default class Network {
     static fromUnique(netString){
         const blockchain = netString.split(':')[0];
         if(netString.indexOf(':chain:') > -1)
-            return new Network('','',blockchain, netString.replace(`${blockchain}:chain:`,''));
+            return new Network('', '', '','',blockchain, netString.replace(`${blockchain}:chain:`,''));
 
         const splits = netString.replace(`${blockchain}:`, '').split(':');
-        return new Network(splits[0], parseInt(splits[1] || 80), blockchain)
+        return new Network('', '', splits[0], parseInt(splits[1] || 80), blockchain)
     }
 
     unique(){ return `${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`); }

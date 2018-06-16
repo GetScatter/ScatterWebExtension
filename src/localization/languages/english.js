@@ -15,6 +15,7 @@ export default {
     [KEYS.GENERIC_VerifyPassword_Description]:`You need to verify your current password before you can do this.`,
     [KEYS.GENERIC_Host]:'Host',
     [KEYS.GENERIC_Port]:'Port',
+    [KEYS.GENERIC_Protocol]:'Protocol',
     [KEYS.GENERIC_Requires]:'Requires',
     [KEYS.GENERIC_RequiredProperties]:'Required Properties',
     [KEYS.GENERIC_Import]:'Import',

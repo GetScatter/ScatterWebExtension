@@ -116,7 +116,7 @@ export default class ETH extends Plugin {
 
     async getEndorsedNetwork(){
         return new Promise((resolve, reject) => {
-            resolve(new Network('ethereum.com', 8080, Blockchains.ETH));
+            resolve(new Network('ETH Mainnet', 'https', 'ethereum.com', 8080, Blockchains.ETH, '1'));
         });
     }
 

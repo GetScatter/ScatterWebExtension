@@ -15,14 +15,14 @@ export default class NotificationService {
         if(openWindow){
             // For now we're just going to close the window to get rid of the error
             // that is caused by already open windows swallowing all further requests
-            // openWindow.close();
-            // openWindow = null;
+            openWindow.close();
+            openWindow = null;
 
             // Alternatively we could focus the old window, but this would cause
             // urgent 1-time messages to be lost, such as after dying in a game and
             // uploading a high-score. That message will be lost.
-            openWindow.focus();
-            return false;
+            // openWindow.focus();
+            // return false;
 
             // A third option would be to add a queue, but this could cause
             // virus-like behavior as apps overflow the queue causing the user

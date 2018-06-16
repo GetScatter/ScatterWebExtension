@@ -37,7 +37,8 @@
             <figure class="header">{{locale(langKeys.IDENTITY_AccountHeader)}}</figure>
             <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_AccountDescription)}}</figure>
 
-            <sel :disabled="importing" :selected="networks[0]" :options="networks" :parser="(network) => network.unique()" v-on:changed="selectNetwork"></sel>
+            <sel :disabled="importing" :selected="networks[0]" :options="networks"
+                 :parser="(network) => network.name.length ? network.name : network.unique()" v-on:changed="selectNetwork"></sel>
 
             <cin :disabled="importing"
                  v-if="identity.networkedAccount(selectedNetwork)"

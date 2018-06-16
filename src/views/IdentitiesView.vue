@@ -32,7 +32,7 @@
                     <figure class="header small reverse-margin">accounts</figure>
                     <section class="items" v-for="network in Object.keys(identity.accounts)">
                         <section class="item">
-                            <span>{{network.substr(0,22)}}...</span>
+                            <span>{{networkToName(network)}}</span>
                             <span>{{identity.accounts[network].formatted()}}</span>
                             <section class="items token-balances" v-if="loadingTokenBalances">
                                 <section class="item">
@@ -186,6 +186,10 @@
             },
             createIdentity(){
                 this.$router.push({ name:RouteNames.IDENTITY, query: { publicKey: 'create' } })
+            },
+            networkToName(_network){
+                const network = this.scatter.settings.networks.find(network => network.unique() === _network);
+                return network.name.length ? network.name : network.unique();
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,

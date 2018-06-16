@@ -11,6 +11,9 @@
             <section v-for="network in filterBySearch()" class="panel-box">
 
                 <!-- Header -->
+                <section class="panel" v-if="network.name">
+                    <figure class="header big">{{network.name}}</figure>
+                </section>
                 <section class="panel">
                     <figure class="header big"><i class="fa fa-globe"></i>{{network.host}}</figure>
                     <figure class="header small margin"><i class="fa fa-plug"></i>{{network.port}}</figure>

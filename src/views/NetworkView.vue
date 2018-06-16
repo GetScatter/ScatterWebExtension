@@ -9,8 +9,14 @@
             <figure class="header">{{locale(langKeys.NETWORK_Header)}}</figure>
             <figure class="sub-header">{{locale(langKeys.NETWORK_Description)}} </figure>
             <sel :selected="blockchains[0]" :options="blockchains" :parser="blockchain => blockchain.key" v-on:changed="changed => bind(changed.value, 'blockchain')"></sel>
-            <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bind(changed, 'host')"></cin>
-            <cin :placeholder="locale(langKeys.GENERIC_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')"></cin>
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="network.name" v-on:changed="changed => bind(changed, 'name')"></cin>
+            <!--<cin :placeholder="locale(langKeys.GENERIC_Protocol)" :text="network.protocol" v-on:changed="changed => bind(changed, 'protocol')"></cin>-->
+            <sel :options="['http', 'https']"
+                 :selected="network.protocol"
+                 v-on:changed="changed => bind(changed, 'protocol')"></sel>
+
+            <cin :placeholder="locale(langKeys.PLACEHOLDER_DomainOrIP)" :text="network.host" v-on:changed="changed => bindHost(changed)"></cin>
+            <cin type="number" :placeholder="locale(langKeys.GENERIC_Port)" :text="network.port" v-on:changed="changed => bind(changed, 'port')"></cin>
             <cin :placeholder="locale(langKeys.GENERIC_ChainID)" :text="network.chainId" v-on:changed="changed => bind(changed, 'chainId')"></cin>
         </section>
 
@@ -49,8 +55,16 @@
                 const lastKey = props.pop();
                 props.reduce((obj,key)=> obj[key], this.network)[lastKey] = changed.trim();
             },
+            bindHost(newHost){
+                if(newHost.indexOf('://') > -1) newHost = newHost.split('://')[1];
+                if(newHost.indexOf('/') > -1) newHost = newHost.split('/')[0];
+                this.network.host = newHost;
+            },
             saveNetwork(){
                 const scatter = this.scatter.clone();
+
+                if(!this.network.port)
+                    this.network.port = this.network.protocol === 'http' ? 80 : 443;
 
                 if(this.network.isEmpty()){
                     this[Actions.PUSH_ALERT](AlertMsg.NetworkHostInvalid());
