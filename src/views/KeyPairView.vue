@@ -48,7 +48,7 @@
             ])
         },
         methods: {
-            bind(changed, field) { this.keypair[field] = changed },
+            bind(changed, field) { this.keypair[field] = changed.trim() },
             blockchainChanged(blockchainObject){
                 const blockchain = blockchainObject.value;
                 const clearAndChange = () => {

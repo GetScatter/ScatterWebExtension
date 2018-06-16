@@ -47,7 +47,7 @@
             bind(changed, dotNotation) {
                 let props = dotNotation.split(".");
                 const lastKey = props.pop();
-                props.reduce((obj,key)=> obj[key], this.network)[lastKey] = changed;
+                props.reduce((obj,key)=> obj[key], this.network)[lastKey] = changed.trim();
             },
             saveNetwork(){
                 const scatter = this.scatter.clone();
