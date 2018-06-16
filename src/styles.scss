@@ -145,12 +145,13 @@ main {
         clear: both;
 
         span {
-          font-size:11px;
+          font-size:13px;
           display:block;
           float:left;
           width:50%;
 
           &:nth-child(1){
+            font-size:11px;
             color: rgba(0,0,0,0.6);
             text-transform: capitalize;
 
