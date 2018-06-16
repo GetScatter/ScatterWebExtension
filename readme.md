@@ -9,6 +9,7 @@ Scatter is a browser extension that allows you to sign transactions for multiple
 - [Translations and Localization](https://github.com/EOSEssentials/Scatter#translations-and-localization)
 - [Understanding Scatter's Security](https://github.com/EOSEssentials/Scatter#security)
 - [Contributing to Scatter](https://github.com/EOSEssentials/Scatter#contributing)
+- [Responsible Disclosure and Bug Bounties](https://github.com/EOSEssentials/Scatter#responsible-disclosure-and-bug-bounties)
 
 
 
@@ -569,6 +570,13 @@ the lack of complete functionality in the future.
   
 __If you have any questions or would like to chat with the Scatter team or others who are involved in
 the project you can join us on [Telegram](https://t.me/Scatter)__
+
+
+## Responsible Disclosure and Bug Bounties
+
+Please do not post security centric bugs inside of issues. Send them directly to scatter.eos@gmail.com and they will be handled promptly. 
+
+Bug bounties will be valued and paid out on a case-to-case basis. Though keep in mind that at the moment Scatter is not a funded project and the bounties might not be very substantial. 
 
 
 
