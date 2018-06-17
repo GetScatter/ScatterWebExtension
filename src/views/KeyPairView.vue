@@ -73,14 +73,18 @@
                 copier.value = '';
             },
             async makePublicKey(){
-                if(this.keypair.privateKey.length < 50) return false;
+                setTimeout(async () => {
+                    console.log(this.keypair.privateKey.length);
+                    if(this.keypair.privateKey.length < 50) return false;
 
-                this.isValid = false;
+                    this.isValid = false;
 
-                await KeyPairService.makePublicKey(this.keypair);
+                    await KeyPairService.makePublicKey(this.keypair);
+                    console.log('kp', this.keypair);
 
-                if(this.keypair.publicKey) this.isValid = true;
-                else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
+                    if(this.keypair.publicKey) this.isValid = true;
+                    else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
+                }, 100)
             },
             async generateKeyPair(){
                 this.keypair.publicKey = '';
