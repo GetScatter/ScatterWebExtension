@@ -58,11 +58,19 @@
                 }
             }}
 
-            &.blue { &:hover {
-                color:#83baff;
+            &.blue {
                 b {
-                    border: 1px solid #83baff;
+                    border: 1px solid transparent;
+                    color:#fff;
+                    background:#83baff;
                 }
+
+                &:hover {
+                    background:transparent;
+                    color:#83baff;
+                    b {
+                        border: 1px solid #83baff;
+                    }
             }}
         }
     }
