@@ -30,6 +30,7 @@
                     case RouteNames.ENTRY:
                     case RouteNames.MAIN_MENU:
                     case RouteNames.FIRST_TIME:
+                    case RouteNames.ONBOARDING:
                     case RouteNames.SHOW_MNEMONIC: return true;
                     default: return false;
                 }

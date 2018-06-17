@@ -32,6 +32,7 @@
     import KeyPair from '../models/KeyPair';
     import ecc from 'eosjs-ecc';
     import PluginRepository from '../plugins/PluginRepository'
+    import KeyPairService from '../services/KeyPairService'
 
     export default {
         data(){ return {
@@ -71,58 +72,29 @@
                 document.execCommand("copy");
                 copier.value = '';
             },
-            makePublicKey(){
-                setTimeout(() => {
-                    this.isValid = false;
-                    if(!this.keypair.privateKey.length) return false;
-                    let publicKey = '';
+            async makePublicKey(){
+                if(this.keypair.privateKey.length < 50) return false;
 
-                    BlockchainsArray.map(blockchainKV => {
-                        try {
-                            if(publicKey.length) return false;
-                            const blockchain = blockchainKV.value;
+                this.isValid = false;
 
-                            const plugin = PluginRepository.plugin(blockchain);
-                            if(!plugin) return false;
-                            if(plugin.validPrivateKey(this.keypair.privateKey)){
-                                publicKey = plugin.privateToPublic(this.keypair.privateKey);
-                                this.keypair.blockchain = blockchain;
-                            }
-                        } catch(e){}
-                    });
+                await KeyPairService.makePublicKey(this.keypair);
 
-                    if(publicKey) {
-                        this.keypair.publicKey = publicKey;
-                        this.isValid = true;
-                    }
-                    else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
-                },100)
+                if(this.keypair.publicKey) this.isValid = true;
+                else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
             },
-            generateKeyPair(){
-                const plugin = PluginRepository.plugin(this.keypair.blockchain);
-                if(!plugin) return false;
+            async generateKeyPair(){
+                this.keypair.publicKey = '';
+                this.keypair.privateKey = '';
 
-                plugin.randomPrivateKey().then(privateKey => {
-                    const publicKey = plugin.privateToPublic(privateKey);
-                    if(plugin.validPublicKey(publicKey) && plugin.validPrivateKey(privateKey)){
-                        this.keypair.publicKey = publicKey;
-                        this.keypair.privateKey = privateKey;
-                        this.isValid = true;
-                    }
-                });
+                await KeyPairService.generateKeyPair(this.keypair);
+
+                if(this.keypair.publicKey.length) this.isValid = true;
             },
             saveKeyPair(){
                 if(!this.isValid) return this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
-                if(!this.keypair.name.length) return this[Actions.PUSH_ALERT](AlertMsg.BadKeyPairName());
-
-                const scatter = this.scatter.clone();
-                if(scatter.keychain.getKeyPair(this.keypair))
-                    return this[Actions.PUSH_ALERT](AlertMsg.KeyPairExists());
-                if(scatter.keychain.getKeyPairByName(this.keypair.name))
-                    return this[Actions.PUSH_ALERT](AlertMsg.KeyPairExists());
-
-                scatter.keychain.keypairs.push(this.keypair);
-                this[Actions.UPDATE_STORED_SCATTER](scatter).then(() => this.$router.back());
+                KeyPairService.saveKeyPair(this.keypair, this, () => {
+                    this.$router.back();
+                })
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,

@@ -37,8 +37,7 @@
             <figure class="header">{{locale(langKeys.IDENTITY_AccountHeader)}}</figure>
             <figure class="sub-header" style="margin-bottom:0;">{{locale(langKeys.IDENTITY_AccountDescription)}}</figure>
 
-            <sel :disabled="importing" :selected="networks[0]" :options="networks"
-                 :parser="(network) => network.name.length ? network.name : network.unique()" v-on:changed="selectNetwork"></sel>
+            <sel :disabled="importing" :selected="networks[0]" :options="networks" :parser="(network) => network.name.length ? network.name : network.unique()" v-on:changed="selectNetwork"></sel>
 
             <cin :disabled="importing"
                  v-if="identity.networkedAccount(selectedNetwork)"
@@ -217,6 +216,10 @@
                 if(!this.selectedKeypair || !this.selectedKeypair.publicKey.length) return false;
                 this.importing = true;
                 AccountService.importFromKey(this.selectedKeypair, this.selectedNetwork, this).then(imported => {
+                    if(!imported.account){
+                        this.importing = false;
+                        return false;
+                    }
                     this.identity.setAccount(this.selectedNetwork, imported.account);
                     this.importing = false;
                 }).catch(() => this.importing = false);

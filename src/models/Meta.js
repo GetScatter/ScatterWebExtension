@@ -7,6 +7,7 @@ export default class Meta {
         this.version = extension.version || '';
         this.extensionId = extension.id || '';
         this.lastVersion = '0';
+        this.acceptedTerms = false;
     }
 
     regenerateVersion(){

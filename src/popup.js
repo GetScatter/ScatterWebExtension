@@ -38,7 +38,9 @@ class Popup {
         new VueInitializer(routes, components, middleware, (router, store) => {
             store.dispatch(Actions.IS_UNLOCKED)
                 .then(unlocked => {
-                    router.push({name:RouteNames.MAIN_MENU});
+                    if(!store.getters.meta.hasOwnProperty('acceptedTerms') || !store.getters.meta.acceptedTerms)
+                        router.push({name: RouteNames.ONBOARDING});
+                    else router.push({name: RouteNames.MAIN_MENU});
                 });
         });
     }

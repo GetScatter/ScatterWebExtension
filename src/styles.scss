@@ -248,3 +248,33 @@ main {
     }
   }
 }
+
+.white-bg {
+  text-align:center;
+  width:100%;
+  padding:40px;
+  padding-top:20px;
+  font-family:'Raleway', sans-serif;
+
+  .title {
+    font-size:24px;
+    font-weight:300;
+    color:#656565;
+  }
+
+  .description {
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+    text-align: left;
+  }
+
+  .breaker {
+    width:200px;
+    display:inline-block;
+    height:1px;
+    background:#dbdbdb;
+    margin:15px 0;
+  }
+}

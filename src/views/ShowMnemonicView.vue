@@ -41,10 +41,9 @@
             },
             goToFirstIdentity(){
                 this[Actions.SET_MNEMONIC]('');
-//                if(!this.scatter.keychain.identities.length) this.$router.push({name:RouteNames.FIRST_TIME});
-//                else this.$router.push({name:RouteNames.MAIN_MENU});
-
-                this.$router.push({name:RouteNames.MAIN_MENU});
+                if(!this.scatter.meta.hasOwnProperty('acceptedTerms') || !this.scatter.meta.acceptedTerms)
+                    this.$router.push({name:RouteNames.ONBOARDING})
+                else this.$router.push({name:RouteNames.MAIN_MENU});
             },
             ...mapActions([
                 Actions.SET_MNEMONIC,
@@ -57,35 +56,6 @@
 </script>
 
 <style lang="scss">
-    .white-bg {
-        text-align:center;
-        width:100%;
-        padding:40px;
-        padding-top:20px;
-        font-family:'Raleway', sans-serif;
-
-        .title {
-            font-size:24px;
-            font-weight:300;
-            color:#656565;
-        }
-
-        .description {
-            font-size:12px;
-            line-height:18px;
-            font-weight:300;
-            color:#b2b2b2;
-            text-align: left;
-        }
-
-        .breaker {
-            width:200px;
-            display:inline-block;
-            height:1px;
-            background:#dbdbdb;
-            margin:15px 0;
-        }
-    }
 
     .mnemonic {
         border-radius: 4px;

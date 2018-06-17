@@ -1,4 +1,5 @@
 import EntryView from '../views/EntryView.vue'
+import Onboarding from '../views/Onboarding.vue'
 import ShowMnemonicView from '../views/ShowMnemonicView.vue'
 import MainMenuView from '../views/MainMenuView.vue'
 import SettingsView from '../views/SettingsView.vue'
@@ -31,6 +32,7 @@ export const promptPrefix = 'prompt_';
 export const RouteNames = {
     ENTRY:'entry',
     LOAD_FROM_BACKUP:'loadFromBackup',
+    ONBOARDING:'onboarding',
     SHOW_MNEMONIC:'showMnemonic',
     MAIN_MENU:'mainMenu',
     SETTINGS:'settings',
@@ -63,6 +65,7 @@ export const RouteNames = {
 const RouteViews = {
     [RouteNames.ENTRY]:EntryView,
     [RouteNames.LOAD_FROM_BACKUP]:LoadFromBackup,
+    [RouteNames.ONBOARDING]:Onboarding,
     [RouteNames.SHOW_MNEMONIC]:ShowMnemonicView,
     [RouteNames.MAIN_MENU]:MainMenuView,
     [RouteNames.SETTINGS]:SettingsView,
@@ -95,6 +98,7 @@ const RouteViews = {
 export const RouteDepth = {
     [RouteNames.ENTRY]:-1,
     [RouteNames.LOAD_FROM_BACKUP]:1,
+    [RouteNames.ONBOARDING]:1,
     [RouteNames.SHOW_MNEMONIC]:1,
     [RouteNames.MAIN_MENU]:0,
     [RouteNames.SETTINGS]:100,

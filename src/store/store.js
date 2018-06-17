@@ -20,6 +20,7 @@ const state = {
 };
 
 const getters = {
+    meta:state => state.scatter.meta,
     identities:state => state.scatter.keychain.identities,
     permissions:state => state.scatter.keychain.permissions,
     keypairs:state => state.scatter.keychain.keypairs,

@@ -3,7 +3,7 @@
         <section v-if="!scatter.settings.hasEncryptionKey">
             <section class="p20">
                 <form v-on:submit.prevent="create">
-                  <cin icon="fa-lock" :placeholder="locale(langKeys.PLACEHOLDER_Password)" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
+                  <cin icon="fa-lock" :placeholder="locale(langKeys.PLACEHOLDER_NewPassword)" type="password" v-on:changed="changed => bind(changed, 'password')"></cin>
                   <cin icon="fa-lock" :placeholder="locale(langKeys.PLACEHOLDER_ConfirmPassword)" type="password" v-on:changed="changed => bind(changed, 'passwordConfirmation')"></cin>
                   <btn :text="locale(langKeys.BUTTON_CreateNewScatter)" type="submit" margined="true"></btn>
                 </form>
@@ -70,8 +70,6 @@
             },
             next(){
                 if(this.mnemonic) this.$router.push({name:RouteNames.SHOW_MNEMONIC});
-//                else if(!this.scatter.keychain.identities.length || (this.scatter.keychain.identities.length === 1 && this.scatter.keychain.identities[0].account === null))
-//                    this.$router.push({name:RouteNames.FIRST_TIME});
                 else this.$router.push({name:RouteNames.MAIN_MENU});
             },
             ...mapActions([
