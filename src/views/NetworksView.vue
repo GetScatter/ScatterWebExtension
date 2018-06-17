@@ -67,6 +67,11 @@
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();
                     scatter.settings.networks = scatter.settings.networks.filter(x => x.unique() !== network.unique());
+
+                    scatter.keychain.identities.map(id => {
+                        id.removeAccount(network);
+                    });
+
                     this[Actions.UPDATE_STORED_SCATTER](scatter);
                 })
             },
