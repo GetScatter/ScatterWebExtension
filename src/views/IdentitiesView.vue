@@ -189,7 +189,8 @@
             },
             networkToName(_network){
                 const network = this.scatter.settings.networks.find(network => network.unique() === _network);
-                return network.name.length ? network.name : network.unique();
+                if(!network) return 'Deleted Network';
+                return network.hasOwnProperty('name') && network.name.length ? network.name : network.unique();
             },
             ...mapActions([
                 Actions.UPDATE_STORED_SCATTER,

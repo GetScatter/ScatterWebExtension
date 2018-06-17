@@ -22,11 +22,6 @@
                 <section class="partition">
 
                     <!-- Contract Name -->
-                    <section v-if="messages.length > 1">
-                        <figure class="label">Transactions</figure>
-                        <figure class="value big" v-for="message in messages">{{messages.length}}</figure>
-                    </section>
-
                     <figure class="label">{{locale(langKeys.GENERIC_Contract)}} & {{locale(langKeys.GENERIC_Action)}}</figure>
                     <figure class="value big" v-for="message in messages">{{message.code}} -> {{message.type}}</figure>
 

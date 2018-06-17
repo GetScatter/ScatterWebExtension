@@ -165,7 +165,7 @@ export default class EOS extends Plugin {
                             throwIfNoIdentity();
 
                             // Friendly formatting
-                            signargs.messages = await messagesBuilder(_eos, signargs, httpEndpoint, args[0]);
+                            signargs.messages = await messagesBuilder(_eos, signargs, httpEndpoint, args[0], _options.chainId);
 
                             const payload = Object.assign(signargs, { domain:location.host.replace('www.',''), network, requiredFields });
                             const result = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
@@ -228,10 +228,10 @@ export default class EOS extends Plugin {
 }
 
 
-const messagesBuilder = async (_eos, signargs, httpEndpoint, contractName) => await Promise.all(signargs.transaction.actions.map(async action => {
+const messagesBuilder = async (_eos, signargs, httpEndpoint, contractName, chainId) => await Promise.all(signargs.transaction.actions.map(async action => {
     let data = null;
 
-    const eos = _eos({httpEndpoint});
+    const eos = _eos({httpEndpoint, chainId});
     if(action.account === 'eosio') data = eos.fc.fromBuffer(action.name, action.data);
     else {
         const abi = await eos.contract(contractName);
