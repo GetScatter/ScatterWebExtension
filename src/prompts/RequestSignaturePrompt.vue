@@ -17,17 +17,18 @@
         <section class="prompt-body">
 
             <section class="partitioned"
-                     v-if="selectedDisplayType === displayTypes.PROPS"
-                     v-for="message in messages">
+                     v-if="selectedDisplayType === displayTypes.PROPS">
+                <!-- v-for="message in messages" -->
                 <section class="partition">
 
                     <!-- Contract Name -->
-                    <figure class="label">{{locale(langKeys.GENERIC_Contract)}}</figure>
-                    <figure class="value big">{{message.code}}</figure>
+                    <section v-if="messages.length > 1">
+                        <figure class="label">Transactions</figure>
+                        <figure class="value big" v-for="message in messages">{{messages.length}}</figure>
+                    </section>
 
-                    <!-- Contract Action -->
-                    <figure class="label">{{locale(langKeys.GENERIC_Action)}}</figure>
-                    <figure class="value big">{{message.type}}</figure>
+                    <figure class="label">{{locale(langKeys.GENERIC_Contract)}} & {{locale(langKeys.GENERIC_Action)}}</figure>
+                    <figure class="value big" v-for="message in messages">{{message.code}} -> {{message.type}}</figure>
 
                     <section v-if="!requiredFields.isEmpty()">
                         <section class="key-value">
@@ -56,9 +57,14 @@
                 </section>
                 <section class="partition">
 
-                    <key-value :key-values="sortedMessageData(message.data)"
-                               :whitelisted="whitelisted"
-                               v-on:toggled="key => toggleMutableField(key)"></key-value>
+                    <section :class="{'boxed':messages.length > 1, 'unboxed':messages.length === 1}" v-for="message in messages">
+                        <figure class="value big" v-if="messages.length > 1">{{message.code}} -> {{message.type}}</figure>
+                        <key-value :key-values="sortedMessageData(message.data)"
+                                   :whitelisted="whitelisted"
+                                   v-on:toggled="key => toggleMutableField(key)"></key-value>
+                    </section>
+
+
                 </section>
             </section>
 
@@ -359,7 +365,18 @@
                     padding:40px 50px;
 
                     &:first-child { text-align: left; }
-                    &:last-child { text-align: right; border-left:1px solid rgba(0,0,0,0.02); }
+                    &:last-child { text-align: right; border-left:1px solid rgba(0,0,0,0.02); padding:40px 10px; }
+
+                    .boxed {
+                        margin:0 0 10px;
+                        padding:15px;
+                        border:1px solid rgba(0,0,0,0.2);
+                        border-radius:5px;
+                    }
+
+                    .unboxed {
+                        padding:10px 50px;
+                    }
                 }
             }
 
@@ -377,7 +394,7 @@
                 margin-bottom:5px;
 
                 &.big {
-                    font-size:22px;
+                    font-size:18px;
                     line-height:22px;
                     font-weight:200;
                 }

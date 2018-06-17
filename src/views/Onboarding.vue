@@ -33,7 +33,7 @@
 
                 <cin :placeholder="locale(langKeys.PLACEHOLDER_Name)" :text="keypair.name" v-on:changed="changed => bind(changed, 'keypair.name')"></cin>
                 <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :disabled="true" :text="keypair.publicKey" v-on:changed="changed => bind(changed, 'keypair.publicKey')"></cin>
-                <cin :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" @changed="makePublicKey" :text="keypair.privateKey" v-on:changed="changed => bind(changed, 'keypair.privateKey')"></cin>
+                <cin type="password" :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" @changed="makePublicKey" :text="keypair.privateKey" v-on:changed="changed => bind(changed, 'keypair.privateKey')"></cin>
 
                 <btn :text="`Import ${keypair.blockchain.toUpperCase()} Key Pair`" v-on:clicked="saveKeyPair" :is-blue="true" margined="true"></btn>
                 <btn text="No Blockchain" :is-red="true" v-on:clicked="finished" margined="true"></btn>
