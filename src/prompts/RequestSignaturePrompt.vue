@@ -16,8 +16,7 @@
 
         <section class="prompt-body">
 
-            <section class="partitioned"
-                     v-if="selectedDisplayType === displayTypes.PROPS">
+            <section class="partitioned" v-if="selectedDisplayType === displayTypes.PROPS">
                 <!-- v-for="message in messages" -->
                 <section class="partition">
 
@@ -63,8 +62,19 @@
                 </section>
             </section>
 
-            <section class="json-display" v-else>
+            <section class="json-display" v-if="selectedDisplayType === displayTypes.JSON">
                 <pre><code>{{messages}}</code></pre>
+            </section>
+
+            <section class="ricardian-display" v-if="selectedDisplayType === displayTypes.RICARDIAN">
+                <section v-for="message in messages">
+                    <figure class="label">{{locale(langKeys.GENERIC_Contract)}} & {{locale(langKeys.GENERIC_Action)}}</figure>
+                    <figure class="value big">{{message.code}} -> {{message.type}}</figure>
+
+                    <section class="ricardian" v-html="message.ricardian">
+                        <!--{{ message.ricardian }}-->
+                    </section>
+                </section>
             </section>
         </section>
 
@@ -110,7 +120,8 @@
 
     const displayTypes = {
         JSON:'json',
-        PROPS:'properties'
+        PROPS:'properties',
+        RICARDIAN:'ricardian'
     };
 
     export default {
@@ -137,6 +148,7 @@
             ])
         },
         mounted(){
+            console.log('prompt', this.prompt);
             const hasAllRequiredFields = this.identity().hasRequiredFields(this.requiredFields);
 
             if(!hasAllRequiredFields){
@@ -407,6 +419,24 @@
                 height:287px;
                 overflow-y:auto;
             }
+
+            .ricardian-display {
+                padding:40px 50px;
+                font-size:14px;
+                height:287px;
+                overflow-y:auto;
+
+                .ricardian {
+                    padding: 20px;
+                    border: 1px solid rgba(0,0,0,0.1);
+                }
+
+                .ricardian-action, .ricardian-description {
+                    display: inline-block;
+                    font-size: 18px;
+                    font-weight: bold;
+                }
+            }
         }
 
         .prompt-footer {
@@ -431,8 +461,8 @@
                 }
 
                 .header {
-                    color:#cecece;
-                    font-size:11px;
+                    color:rgba(0,0,0,0.8);
+                    font-size:13px;
                     padding-bottom:5px;
                     margin-top:-5px;
                     margin-bottom:10px;
@@ -440,7 +470,7 @@
                 }
 
                 .sub-header {
-                    color:#aeaeae;
+                    color:rgba(0,0,0,0.8);
                     font-size:9px;
                     margin-bottom:20px;
                 }

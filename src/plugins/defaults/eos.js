@@ -13,6 +13,7 @@ import Eos from 'eosjs'
 let {ecc} = Eos.modules;
 import {IdentityRequiredFields} from '../../models/Identity';
 import ObjectHelpers from '../../util/ObjectHelpers'
+import * as ricardianParser from 'eos-rc-parser';
 
 let networkGetter = new WeakMap();
 let messageSender = new WeakMap();
@@ -105,6 +106,7 @@ export default class EOS extends Plugin {
     }
 
     actionParticipants(payload){
+        console.log('payload', payload);
         return ObjectHelpers.flatten(
             payload.messages
                 .map(message => message.authorization
@@ -165,7 +167,7 @@ export default class EOS extends Plugin {
                             throwIfNoIdentity();
 
                             // Friendly formatting
-                            signargs.messages = await messagesBuilder(_eos, signargs, httpEndpoint, args[0], _options.chainId);
+                            signargs.messages = await requestParser(_eos, signargs, httpEndpoint, args[0], _options.chainId);
 
                             const payload = Object.assign(signargs, { domain:location.host.replace('www.',''), network, requiredFields });
                             const result = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
@@ -228,20 +230,25 @@ export default class EOS extends Plugin {
 }
 
 
-const messagesBuilder = async (_eos, signargs, httpEndpoint, contractName, chainId) => await Promise.all(signargs.transaction.actions.map(async action => {
-    let data = null;
-
+const requestParser = async (_eos, signargs, httpEndpoint, contractAccountName, chainId) => await Promise.all(signargs.transaction.actions.map(async action => {
     const eos = _eos({httpEndpoint, chainId});
-    if(action.account === 'eosio') data = eos.fc.fromBuffer(action.name, action.data);
-    else {
-        const abi = await eos.contract(contractName);
-        data = abi.fc.fromBuffer(action.name, action.data);
+
+    const abi = await eos.contract(contractAccountName);
+    const data = abi.fc.fromBuffer(action.name, action.data);
+    const actionAbi = abi.fc.abi.actions.find(fcAction => fcAction.name === action.name);
+    let ricardian = actionAbi ? actionAbi.ricardian_contract : null;
+
+    if(ricardian){
+        const htmlFormatting = {h1:'div class="ricardian-action"', h2:'div class="ricardian-description"'};
+        const signer = action.authorization.length === 1 ? action.authorization[0].actor : null;
+        ricardian = ricardianParser.parse(action.name, data, ricardian, signer, htmlFormatting);
     }
 
     return {
         data,
         code:action.account,
         type:action.name,
-        authorization:action.authorization
+        authorization:action.authorization,
+        ricardian
     };
 }));

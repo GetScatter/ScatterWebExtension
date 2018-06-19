@@ -214,7 +214,7 @@ export default {
 
 
     [KEYS.MNEMONIC_Header]:`Mnemonic`,
-    [KEYS.MNEMONIC_Description]:`Mnemonics are a set of words that translate into a cryptographic seed.`,
+    [KEYS.MNEMONIC_Description]:`Mnemonics in Scatter are only used for password recovery.`,
     [KEYS.MNEMONIC_Note]:`
         Be sure to save yours somewhere safe. It is the only way to regain access to your 
         Scatter and decrypt your private information if you forget your password.
@@ -271,7 +271,7 @@ export default {
     [KEYS.ALERT_NoAccountsFound]:[
         'No Accounts Found',
 
-        `No accounts were found connected to this private/public key.`
+        `No accounts were found connected to this private/public key. Make sure there is an EOS account linked to this public key on the EOS network.`
     ],
     //2
     [KEYS.ALERT_PasswordsDoNotMatch]:[

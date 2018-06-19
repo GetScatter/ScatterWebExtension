@@ -15,6 +15,7 @@
     "aes-oop": "^1.0.4",
     "bip39": "^2.5.0",
     "dotenv-webpack": "^1.5.7",
+    "eos-rc-parser": "^1.0.4",
     "eosjs": "^15.0.0",
     "eosjs-api": "^6.2.1",
     "eosjs-ecc": "^4.0.1",

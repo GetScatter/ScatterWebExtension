@@ -44,7 +44,6 @@ class PromptWindow {
         const middleware = (to, next, store) => next();
 
         new VueInitializer(routes, components, middleware, (router, store) => {
-            console.log('store', store);
             store.dispatch(Actions.PUSH_PROMPT, prompt);
             router.push({name:prompt.routeName()});
         });
