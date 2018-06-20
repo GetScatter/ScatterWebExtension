@@ -1,4 +1,12 @@
+
+
 export default class IdGenerator {
+
+    static rand(){
+        const arr = new Uint32Array(1);
+        window.crypto.getRandomValues(arr);
+        return arr[0]/(0xffffffff + 1);
+    }
 
     /***
      * Generates a random string of specified size
@@ -8,7 +16,7 @@ export default class IdGenerator {
     static text(size){
         let text = "";
         const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for(let i=0; i<size; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+        for(let i=0; i<size; i++) text += possible.charAt(Math.floor(IdGenerator.rand() * possible.length));
         return text;
     }
 
@@ -25,7 +33,7 @@ export default class IdGenerator {
 
         max = Math.pow(10, size+add);
         const min = max / 10,
-              number = Math.floor(Math.random() * (max - min + 1)) + min;
+              number = Math.floor(IdGenerator.rand() * (max - min + 1)) + min;
 
         return ("" + number).substring(add);
     }

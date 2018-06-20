@@ -14,6 +14,7 @@ import Network from '../../models/Network'
 import {IdentityRequiredFields} from '../../models/Identity';
 import ObjectHelpers from '../../util/ObjectHelpers'
 import {strippedHost} from '../../util/GenericTools'
+import IdGenerator from '../../util/IdGenerator';
 
 
 
@@ -132,7 +133,7 @@ export default class ETH extends Plugin {
     validPublicKey(publicKey){   return ethUtil.isValidAddress(publicKey); }
     randomPrivateKey(){
         return new Promise((resolve, reject) => {
-            const entropy = Array.from({length:32}).map(i => Math.round(Math.random() * 255));
+            const entropy = Array.from({length:32}).map(i => Math.round(IdGenerator.rand() * 255));
             const privateKey = new Buffer(entropy);
             resolve(privateKey.toString('hex'));
         })

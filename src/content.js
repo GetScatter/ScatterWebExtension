@@ -34,7 +34,7 @@ class Content {
     setupEncryptedStream(){
         // Setting up a new encrypted stream for
         // interaction between the extension and the application
-        stream = new EncryptedStream(PairingTags.SCATTER, Hasher.insecureHash(IdGenerator.text(64)));
+        stream = new EncryptedStream(PairingTags.SCATTER, IdGenerator.text(256));
         stream.listenWith((msg) => this.contentListener(msg));
 
         // Binding Scatter to the application once the
