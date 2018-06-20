@@ -19,7 +19,7 @@ Scatter is a browser extension that allows you to sign transactions for multiple
 
 #### Getting the Chrome Extension files
 
-**Note: If you are developing locally make sure you have enabled the** `history_plugin` **in your nodeos config or you will not be able to import accounts!**
+**Note: If you are developing locally make sure you have enabled the** `history_api` **plugin in your nodeos config or you will not be able to import accounts!**
 
 **From Chrome Store**
 - [Go to Chrome Store](https://chrome.google.com/webstore/detail/scatter/ammjpmhgckkpcamddpolhchgomcojkle)
