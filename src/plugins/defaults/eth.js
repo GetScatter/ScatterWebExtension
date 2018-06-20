@@ -133,8 +133,8 @@ export default class ETH extends Plugin {
     validPublicKey(publicKey){   return ethUtil.isValidAddress(publicKey); }
     randomPrivateKey(){
         return new Promise((resolve, reject) => {
-            const entropy = Array.from({length:32}).map(i => Math.round(IdGenerator.rand() * 255));
-            const privateKey = new Buffer(entropy);
+            const byteArray = Array.from({length:32}).map(i => Math.round(IdGenerator.rand() * 255));
+            const privateKey = new Buffer(byteArray);
             resolve(privateKey.toString('hex'));
         })
     }
