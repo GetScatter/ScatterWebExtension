@@ -60,7 +60,7 @@
 
                 const scatter = this.scatter.clone();
                 const filetext = AES.encrypt(scatter, seed);
-                const filename = `scatter_${+new Date()}.keychain`;
+                const filename = `scatter_${+new Date()}.scatter_backup.txt`;
                 this.save(filename, filetext);
             },
             save(filename, data) {
