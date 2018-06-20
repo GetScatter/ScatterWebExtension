@@ -263,54 +263,62 @@ function abiToFcSchema(abi) {
 
 import Structs from 'eosjs/lib/structs';
 
-const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chainId) => await Promise.all(signargs.transaction.actions.map(async action => {
+const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chainId) => {
+
     const eos = _eos({httpEndpoint, chainId});
 
-    const contractAccountName = action.account;
-
-    const cachedABI = await messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccountName, abiGet:true, chainId});
-
-    let abi = null;
-    if(typeof cachedABI === 'object'){
-        const schema = abiToFcSchema(cachedABI.abi);
-        const structs = Structs({defaults:false}, schema);
-        abi = Object.assign({abi:cachedABI.abi, schema}, structs)
-    } else {
-        const contract = await eos.contract(contractAccountName);
-        if(!contract) throw new Error('Could not get ABI');
-        abi = contract.fc;
-    }
-
+    const contracts = signargs.transaction.actions.map(action => action.account)
+        .reduce((acc, contract) => {
+            if(!acc.includes(contract)) acc.push(contract);
+            return acc;
+    }, []);
 
     const staleAbi = +new Date() - (1000 * 60 * 60 * 24 * 2);
-    if(typeof cachedABI !== 'object' || cachedABI.timestamp < staleAbi) {
-        const savableAbi = JSON.parse(JSON.stringify(abi));
-        delete savableAbi.schema;
-        delete savableAbi.structs;
-        delete savableAbi.types;
-        savableAbi.timestamp = +new Date();
+    const abis = {};
 
-        await messageSender(NetworkMessageTypes.ABI_CACHE,
-            {abiContractName: contractAccountName, abi:savableAbi, abiGet: false, chainId});
-    }
+    await Promise.all(contracts.map(async contractAccount => {
+        const cachedABI = await messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccount, abiGet:true, chainId});
+        if(cachedABI === 'object' && cachedABI.timestamp > staleAbi) {
+            const schema = abiToFcSchema(cachedABI.abi);
+            const structs = Structs({defaults:false}, schema);
+            abis[contractAccount] = Object.assign({abi:cachedABI.abi, schema}, structs);
+        }
+        else {
+            abis[contractAccount] = (await eos.contract(contractAccount)).fc;
+            const savableAbi = JSON.parse(JSON.stringify(abis[contractAccount]));
+            delete savableAbi.schema;
+            delete savableAbi.structs;
+            delete savableAbi.types;
+            savableAbi.timestamp = +new Date();
+
+            await messageSender(NetworkMessageTypes.ABI_CACHE,
+                {abiContractName: contractAccount, abi:savableAbi, abiGet: false, chainId});
+        }
+    }));
+
+    return await Promise.all(signargs.transaction.actions.map(async (action, index) => {
+        const contractAccountName = action.account;
+
+        let abi = abis[contractAccountName];
+
+        const data = abi.fromBuffer(action.name, action.data);
+        const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
+        let ricardian = actionAbi ? actionAbi.ricardian_contract : null;
 
 
-    const data = abi.fromBuffer(action.name, action.data);
-    const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
-    let ricardian = actionAbi ? actionAbi.ricardian_contract : null;
+        if(ricardian){
+            const htmlFormatting = {h1:'div class="ricardian-action"', h2:'div class="ricardian-description"'};
+            const signer = action.authorization.length === 1 ? action.authorization[0].actor : null;
+            ricardian = ricardianParser.parse(action.name, data, ricardian, signer, htmlFormatting);
+        }
 
+        return {
+            data,
+            code:action.account,
+            type:action.name,
+            authorization:action.authorization,
+            ricardian
+        };
+    }));
 
-    if(ricardian){
-        const htmlFormatting = {h1:'div class="ricardian-action"', h2:'div class="ricardian-description"'};
-        const signer = action.authorization.length === 1 ? action.authorization[0].actor : null;
-        ricardian = ricardianParser.parse(action.name, data, ricardian, signer, htmlFormatting);
-    }
-
-    return {
-        data,
-        code:action.account,
-        type:action.name,
-        authorization:action.authorization,
-        ricardian
-    };
-}));
+}

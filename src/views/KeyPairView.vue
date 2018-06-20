@@ -9,7 +9,7 @@
             <cin :placeholder="locale(langKeys.PLACEHOLDER_PublicKey)" :disabled="true" :text="keypair.publicKey" v-on:changed="changed => bind(changed, 'publicKey')"></cin>
             <cin type="password" :placeholder="locale(langKeys.PLACEHOLDER_PrivateKey)" @changed="makePublicKey" :text="keypair.privateKey" v-on:changed="changed => bind(changed, 'privateKey')"></cin>
             <btn :text="locale(langKeys.BUTTON_GenerateKeyPair)" @click.native="generateKeyPair()" margined="true"></btn>
-            <btn :text="locale(langKeys.GENERIC_Save)" half="true" @click.native="saveKeyPair()" margined="true"></btn>
+            <btn :text="locale(langKeys.GENERIC_Save)" :is-blue="true" half="true" @click.native="saveKeyPair()" margined="true"></btn>
             <btn :text="locale(langKeys.BUTTON_Copy)" half="true" @click.native="copyKeyPair()" margined="true"></btn>
         </section>
 

@@ -77,7 +77,7 @@ const _send = (_type, _payload) => {
             return false;
         }
 
-        let id = IdGenerator.numeric(6);
+        let id = IdGenerator.numeric(24);
         let message = new NetworkMessage(_type, _payload, id);
         resolvers.push(new DanglingResolver(id, resolve, reject));
         stream.send(message, PairingTags.SCATTER);

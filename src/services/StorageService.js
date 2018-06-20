@@ -55,7 +55,6 @@ export default class StorageService {
      * @returns {Promise}
      */
     static cacheABI(contractName, chainId, abi){
-        console.log('caching abi', abi);
         return new Promise((resolve, reject) => {
             apis.storage.local.set({[`abi:${contractName}:${chainId}`]:abi}, () => {
                 resolve(abi);
@@ -73,7 +72,6 @@ export default class StorageService {
         return new Promise((resolve, reject) => {
             const prop = `abi:${contractName}:${chainId}`;
             apis.storage.local.get(prop, (possible) => {
-                console.log('possible', possible);
                 if(JSON.stringify(possible) !== '{}') resolve(possible[prop]);
                 else resolve('no cache');
             });
