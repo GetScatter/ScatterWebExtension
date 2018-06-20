@@ -74,13 +74,15 @@
             },
             async makePublicKey(){
                 setTimeout(async () => {
-                    console.log(this.keypair.privateKey.length);
                     if(this.keypair.privateKey.length < 50) return false;
+
+                    // Special handling for malformatted ETH keypairs.
+                    if(this.keypair.privateKey.indexOf('0x') === 0)
+                        this.keypair.privateKey.replace('0x', '');
 
                     this.isValid = false;
 
                     await KeyPairService.makePublicKey(this.keypair);
-                    console.log('kp', this.keypair);
 
                     if(this.keypair.publicKey) this.isValid = true;
                     else this[Actions.PUSH_ALERT](AlertMsg.InvalidPrivateKey());
