@@ -6,6 +6,7 @@ import Network from './models/Network'
 import IdGenerator from './util/IdGenerator';
 import PluginRepository from './plugins/PluginRepository';
 const ecc = require('eosjs-ecc');
+import {strippedHost} from './util/GenericTools'
 
 
 const throws = (msg) => {
@@ -39,7 +40,7 @@ const throwIfNoIdentity = () => {
 };
 
 
-const locationHost = () => location.host.replace('www.', '');
+const locationHost = () => strippedHost();
 
 /***
  * Messages do not come back on the same thread.
@@ -70,14 +71,14 @@ const _send = (_type, _payload) => {
 
         // Version requirements
         if(!!requiredVersion && requiredVersion > currentVersion){
-            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {domain:locationHost()}, -1, locationHost());
+            let message = new NetworkMessage(NetworkMessageTypes.REQUEST_VERSION_UPDATE, {}, -1);
             stream.send(message, PairingTags.SCATTER);
             reject(Error.requiresUpgrade());
             return false;
         }
 
         let id = IdGenerator.numeric(6);
-        let message = new NetworkMessage(_type, _payload, id, locationHost());
+        let message = new NetworkMessage(_type, _payload, id);
         resolvers.push(new DanglingResolver(id, resolve, reject));
         stream.send(message, PairingTags.SCATTER);
     });
@@ -119,7 +120,6 @@ export default class Scatterdapp {
     suggestNetwork(network){
         if(!Network.fromJson(network).isValid()) throws('The provided network is invalid.');
         return _send(NetworkMessageTypes.REQUEST_ADD_NETWORK, {
-            domain:locationHost(),
             network:network
         });
     }
@@ -130,7 +130,6 @@ export default class Scatterdapp {
      */
     getIdentity(fields = {}){
         return _send(NetworkMessageTypes.GET_OR_REQUEST_IDENTITY, {
-            domain:locationHost(),
             network:network,
             fields
         }).then(async identity => {
@@ -150,14 +149,13 @@ export default class Scatterdapp {
         // TODO: Verify identity matches RIDL registration
 
         const signature = await _send(NetworkMessageTypes.AUTHENTICATE, {
-            domain:locationHost(),
             publicKey
         }, true).catch(err => err);
 
         // If the `signature` is an object, it's an error message
         if(typeof signature === 'object') return signature;
 
-        try { if(ecc.verify(signature, locationHost(), publicKey)) return signature; }
+        try { if(ecc.verify(signature, strippedHost(), publicKey)) return signature; }
         catch (e) {
             this.identity = null;
             publicKey = '';
@@ -171,9 +169,7 @@ export default class Scatterdapp {
      */
     forgetIdentity(){
         throwIfNoIdentity();
-        return _send(NetworkMessageTypes.FORGET_IDENTITY, {
-            domain:locationHost()
-        }).then(() => {
+        return _send(NetworkMessageTypes.FORGET_IDENTITY, {}).then(() => {
             this.identity = null;
             publicKey = null;
             return true;
@@ -198,7 +194,6 @@ export default class Scatterdapp {
      */
     getArbitrarySignature(publicKey, data, whatfor = '', isHash = false){
         return _send(NetworkMessageTypes.REQUEST_ARBITRARY_SIGNATURE, {
-            domain:locationHost(),
             publicKey,
             data,
             whatfor,

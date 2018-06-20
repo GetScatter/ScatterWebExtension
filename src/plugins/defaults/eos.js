@@ -15,6 +15,7 @@ import {IdentityRequiredFields} from '../../models/Identity';
 import ObjectHelpers from '../../util/ObjectHelpers'
 import * as ricardianParser from 'eos-rc-parser';
 import StorageService from '../../services/StorageService'
+import {strippedHost} from '../../util/GenericTools'
 
 let networkGetter = new WeakMap();
 let messageSender = new WeakMap();
@@ -169,7 +170,7 @@ export default class EOS extends Plugin {
                             // Friendly formatting
                             signargs.messages = await requestParser(_eos, signargs, httpEndpoint, args[0], _options.chainId);
 
-                            const payload = Object.assign(signargs, { domain:location.host.replace('www.',''), network, requiredFields });
+                            const payload = Object.assign(signargs, { domain:strippedHost(), network, requiredFields });
                             const result = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
 
                             // No signature

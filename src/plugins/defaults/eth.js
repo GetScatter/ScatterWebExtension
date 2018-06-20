@@ -13,6 +13,7 @@ const ethUtil = require('ethereumjs-util')
 import Network from '../../models/Network'
 import {IdentityRequiredFields} from '../../models/Identity';
 import ObjectHelpers from '../../util/ObjectHelpers'
+import {strippedHost} from '../../util/GenericTools'
 
 
 
@@ -60,7 +61,7 @@ class ScatterEthereumWallet {
         transaction.messages = await messagesBuilder(transaction, abi);
 
         // Signature Request Popup
-        const payload = Object.assign(transaction, { domain:location.host.replace('www.',''), network, requiredFields });
+        const payload = Object.assign(transaction, { domain:strippedHost(), network, requiredFields });
         const {signatures, returnedFields} = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
 
         if(transaction.hasOwnProperty('fieldsCallback'))

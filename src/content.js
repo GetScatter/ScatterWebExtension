@@ -8,6 +8,7 @@ import * as InternalMessageTypes from './messages/InternalMessageTypes'
 import Error from './models/errors/Error'
 import {apis} from './util/BrowserApis';
 import Hasher from './util/Hasher'
+import {strippedHost} from './util/GenericTools'
 
 // The stream that connects between the content script
 // and the website
@@ -77,10 +78,10 @@ class Content {
             return;
         }
 
-        const domain = location.host.replace('www', '');
-        if(msg.hasOwnProperty('domain') && msg.domain !== domain) throw new Error('Bad domain');
-        if(msg.hasOwnProperty('payload') && msg.payload.hasOwnProperty('domain') && msg.payload.domain !== domain)
-            throw new Error('Bad domain');
+        // Always including the domain for every request.
+        msg.domain = strippedHost();
+        if(msg.hasOwnProperty('payload'))
+            msg.payload.domain = strippedHost();
 
         let nonSyncMessage = NetworkMessage.fromJson(msg);
         switch(msg.type){
@@ -113,7 +114,7 @@ class Content {
     }
 
     identityFromPermissions(message = null){
-        const promise = InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:location.host.replace('www.', '')}).send();
+        const promise = InternalMessage.payload(InternalMessageTypes.IDENTITY_FROM_PERMISSIONS, {domain:strippedHost()}).send();
         if(!message) return promise;
         else promise.then(res => {
             if(message) this.respond(message, res);
