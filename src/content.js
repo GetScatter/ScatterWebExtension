@@ -82,8 +82,6 @@ class Content {
         if(msg.hasOwnProperty('payload') && msg.payload.hasOwnProperty('domain') && msg.payload.domain !== domain)
             throw new Error('Bad domain');
 
-        console.log(msg);
-
         let nonSyncMessage = NetworkMessage.fromJson(msg);
         switch(msg.type){
             case 'sync': this.sync(msg); break;

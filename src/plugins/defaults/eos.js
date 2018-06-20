@@ -107,7 +107,6 @@ export default class EOS extends Plugin {
     }
 
     actionParticipants(payload){
-        console.log('payload', payload);
         return ObjectHelpers.flatten(
             payload.messages
                 .map(message => message.authorization
@@ -269,7 +268,6 @@ const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chain
     const contractAccountName = action.account;
 
     const cachedABI = await messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccountName, abiGet:true, chainId});
-    console.log('cachedABI', cachedABI);
 
     let abi = null;
     if(typeof cachedABI === 'object'){
