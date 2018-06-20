@@ -90,7 +90,6 @@ const setupSigProviders = context => {
     })
 };
 
-
 /***
  * Scatterdapp is the object injected into the web application that
  * allows it to interact with Scatter. Without using this the web application

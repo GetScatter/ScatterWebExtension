@@ -218,6 +218,7 @@ You may also double-sign signatures using a private key from the application as 
 the user.
 
 ```js
+// DO NOT DO THIS! If you do this you will give the client your keys.
 const signProvider = (buf, sign) => {
     // You should validate the `buf` before signing it.
     // If you do not you could be signing anything from a malicious Scatter mimic
@@ -232,6 +233,10 @@ const signProvider = (buf, sign) => {
 eos.contract('hello', { signProvider }).then(contract => {
     contract.hi(...args);
 });
+ 
+ 
+// Instead of the above defer your signing to a backend
+const signProvider = async (buf, sign) => await YourApiService.sign(buf);
 ```
 
 
