@@ -30,6 +30,10 @@ class PluginRepositorySingleton {
     plugin(name){
         return this.plugins.find(plugin => plugin.name === name);
     }
+
+    async endorsedNetworks(){
+        return await Promise.all(this.signatureProviders().map(async plugin => await plugin.getEndorsedNetwork()));
+    }
 }
 
 const PluginRepository = new PluginRepositorySingleton();

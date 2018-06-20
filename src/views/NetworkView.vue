@@ -32,6 +32,7 @@
     import AlertMsg from '../models/alerts/AlertMsg'
     import IdentityService from '../services/IdentityService'
     import {BlockchainsArray} from '../models/Blockchains';
+    import PluginRepository from '../plugins/PluginRepository'
 
     export default {
         data(){ return {
@@ -60,8 +61,14 @@
                 if(newHost.indexOf('/') > -1) newHost = newHost.split('/')[0];
                 this.network.host = newHost;
             },
-            saveNetwork(){
+            async saveNetwork(){
                 const scatter = this.scatter.clone();
+
+                const endorsedNetworks = await PluginRepository.endorsedNetworks();
+                if(endorsedNetworks.map(network => network.host).includes(this.network.host)){
+                    this[Actions.PUSH_ALERT](AlertMsg.NetworkExists());
+                    return false;
+                }
 
                 if(!this.network.port)
                     this.network.port = this.network.protocol === 'http' ? 80 : 443;
