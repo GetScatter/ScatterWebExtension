@@ -58,8 +58,7 @@
                 const [mnemonic, seed] = await Mnemonic.generateMnemonic(this.password);
                 if(!seed) return false;
 
-                const scatter = this.scatter.forBackup();
-                scatter.keychain = scatter.keychain.forBackup();
+                const scatter = this.scatter.clone();
                 const filetext = AES.encrypt(scatter, seed);
                 const filename = `scatter_${+new Date()}.keychain`;
                 this.save(filename, filetext);

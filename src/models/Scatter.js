@@ -51,7 +51,6 @@ export default class Scatter {
 
     forBackup(){
         const clone = this.clone();
-        clone.settings.networks = [];
         clone.histories = [];
         return clone;
     }
