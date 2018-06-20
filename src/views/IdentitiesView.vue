@@ -34,13 +34,13 @@
                         <section class="item">
                             <span>{{networkToName(network)}}</span>
                             <span>{{identity.accounts[network].formatted()}}</span>
-                            <section class="items token-balances" v-if="loadingTokenBalances">
+                            <section class="items token-balances" v-if="loadingTokenBalances && loadingTokenBalances === identity.publicKey">
                                 <section class="item">
                                     Loading token balances
                                 </section>
                             </section>
-                            <section class="items token-balances" v-else v-for="balances in balancesFor(network)">
-                                <section class="items" v-for="balance in balances">
+                            <section class="items token-balances" v-else v-for="bals in balancesFor(identity)">
+                                <section class="items" v-for="balance in bals">
                                     <section class="item">
                                         <span>{{balance[0]}}</span>
                                         <span>{{balance[1]}}</span>
@@ -111,7 +111,7 @@
             searchText:'',
             balances:[],
             showingTokens:null,
-            loadingTokenBalances:false,
+            loadingTokenBalances:null,
         }},
         computed: {
             ...mapState([
@@ -129,26 +129,25 @@
                     case 'boolean': return true;
                     default: return obj[key][Object.keys(obj[key])[0]].length;
                 }
-//                return (typeof obj[key] === 'string') ? obj[key].length : obj[key][Object.keys(obj[key])[0]].length
             }) },
             showingTokensFor(identity){
                 return this.showingTokens && (identity.publicKey === this.showingTokens.publicKey);
             },
             async bindBalances(identity){
-                this.loadingTokenBalances = true;
+                this.loadingTokenBalances = identity.publicKey;
                 let netAccountMap = [];
                 Object.keys(identity.accounts).map(netString =>
-                    netAccountMap.push({account:identity.accounts[netString], netString}))
+                    netAccountMap.push({account:identity.accounts[netString], netString}));
 
                 netAccountMap = ObjectHelpers.distinct(netAccountMap);
 
                 await Promise.all(netAccountMap.map(async netAccount => {
-                    await this.accountBalances(netAccount);
+                    await this.accountBalances(netAccount, identity);
                 }));
 
-                this.loadingTokenBalances = false;
+                this.loadingTokenBalances = null;
             },
-            async accountBalances({account, netString}){
+            async accountBalances({account, netString}, identity){
                 let network = Network.fromUnique(netString);
 
                 if(!network.host){
@@ -158,20 +157,23 @@
                 }
 
                 await PluginRepository.plugin(account.blockchain()).getBalances(account, network).then(balances => {
-                    this.balances.push({network:netString, balances});
+                    let idpkref = this.balances.find(bal => bal.idpk === identity.publicKey);
+                    if(!idpkref){
+                       this.balances.push({idpk:identity.publicKey, balances:[]});
+                       idpkref = this.balances.find(bal => bal.idpk === identity.publicKey);
+                    }
+
+                    idpkref.balances.push({network:netString, balances});
                     return true;
                 });
             },
-            balancesFor(network){
-                return this.balances.filter(b => b.network === network).map(b => b.balances);
+            balancesFor(identity){
+                const identityBalances = this.balances.find(balances => balances.idpk === identity.publicKey);
+                if(!identityBalances) return [];
+                return identityBalances.balances.map(b => b.balances);
             },
             filterBySearch(){ return this.identities.filter(x => JSON.stringify(x).indexOf(this.searchText) > -1) },
             removeIdentity(identity){
-//                if(this.identities.length === 1){
-//                    this[Actions.PUSH_ALERT](AlertMsg.CantRemoveLastIdentity());
-//                    return false;
-//                }
-
                 this[Actions.PUSH_ALERT](AlertMsg.RemovingIdentity(identity.name)).then(res => {
                     if(!res || !res.hasOwnProperty('accepted')) return false;
                     const scatter = this.scatter.clone();

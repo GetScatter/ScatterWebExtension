@@ -94,7 +94,7 @@ export default class EOS extends Plugin {
     }
 
     async getBalances(account, network, code = 'eosio.token', table = 'accounts'){
-        const eos = Eos({httpEndpoint:`${network.protocol}://${network.hostport()}`});
+        const eos = Eos({httpEndpoint:`${network.protocol}://${network.hostport()}`, chainId:network.chainId});
         const contract = await eos.contract(code);
         return await eos.getTableRows({
             json: true,
