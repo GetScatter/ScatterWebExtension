@@ -7,6 +7,7 @@ import InternalMessage from './messages/InternalMessage';
 import * as InternalMessageTypes from './messages/InternalMessageTypes'
 import Error from './models/errors/Error'
 import {apis} from './util/BrowserApis';
+import Hasher from './util/Hasher'
 
 // The stream that connects between the content script
 // and the website
@@ -32,7 +33,7 @@ class Content {
     setupEncryptedStream(){
         // Setting up a new encrypted stream for
         // interaction between the extension and the application
-        stream = new EncryptedStream(PairingTags.SCATTER, IdGenerator.text(64));
+        stream = new EncryptedStream(PairingTags.SCATTER, Hasher.insecureHash(IdGenerator.text(64)));
         stream.listenWith((msg) => this.contentListener(msg));
 
         // Binding Scatter to the application once the
