@@ -76,6 +76,13 @@ class Content {
             return;
         }
 
+        const domain = location.host.replace('www', '');
+        if(msg.hasOwnProperty('domain') && msg.domain !== domain) throw new Error('Bad domain');
+        if(msg.hasOwnProperty('payload') && msg.payload.hasOwnProperty('domain') && msg.payload.domain !== domain)
+            throw new Error('Bad domain');
+
+        console.log(msg);
+
         let nonSyncMessage = NetworkMessage.fromJson(msg);
         switch(msg.type){
             case 'sync': this.sync(msg); break;
