@@ -34,7 +34,6 @@
 
                     <section class="description">{{locale(langKeys.REQUEST_Identity)[1]}}</section>
                     <section class="description">{{locale(langKeys.REQUEST_Identity)[2]}}</section>
-                    <section class="description"><b>{{locale(langKeys.REQUEST_Identity)[3]}}</b></section>
                 </section>
 
                 <section v-else>
@@ -201,10 +200,10 @@
 
         .description {
             margin-top:5px;
-            font-size:9px;
-            color:#b8b8b8;
+            font-size:13px;
+            color:rgba(0,0,0,0.8);
 
-            b { color:#707070; }
+            b { color:#54a7fc; }
         }
 
         .partitioned {
