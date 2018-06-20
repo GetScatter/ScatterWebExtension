@@ -74,6 +74,7 @@ export default class Background {
             case InternalMessageTypes.REQUEST_GET_VERSION:              Background.requestGetVersion(sendResponse); break;
             case InternalMessageTypes.REQUEST_VERSION_UPDATE:           Background.requestVersionUpdate(sendResponse, message.payload); break;
             case InternalMessageTypes.AUTHENTICATE:                     Background.authenticate(sendResponse, message.payload); break;
+            case InternalMessageTypes.ABI_CACHE:                        Background.abiCache(sendResponse, message.payload); break;
             case InternalMessageTypes.SET_PROMPT:                       Background.setPrompt(sendResponse, message.payload); break;
             case InternalMessageTypes.GET_PROMPT:                       Background.getPrompt(sendResponse); break;
         }
@@ -327,6 +328,15 @@ export default class Background {
                 const plugin = PluginRepository.plugin(Blockchains.EOS);
                 plugin.signer(this, {data:payload.domain}, identity.publicKey, sendResponse, true);
             })
+        })
+    }
+
+    static abiCache(sendResponse, payload){
+        this.lockGuard(sendResponse, async () => {
+            let abi = null;
+            if(payload.abiGet) abi = await StorageService.getABI(payload.abiContractName, payload.chainId)
+            else abi = await StorageService.cacheABI(payload.abiContractName, payload.chainId, payload.abi);
+            sendResponse(abi);
         })
     }
 

@@ -48,13 +48,35 @@ export default class StorageService {
     }
 
     /***
-     * Backs up the user's Scatter to the Blockchain.
-     * @param scatter
+     * Caches an ABI
+     * @param contractName
+     * @param chainId
+     * @param abi
      * @returns {Promise}
      */
-    static backup(scatter){
+    static cacheABI(contractName, chainId, abi){
+        console.log('caching abi', abi);
         return new Promise((resolve, reject) => {
-            resolve(true);
+            apis.storage.local.set({[`abi:${contractName}:${chainId}`]:abi}, () => {
+                resolve(abi);
+            });
+        });
+    }
+
+    /***
+     * Fetches an ABI from cache
+     * @param contractName
+     * @param chainId
+     * @returns {Promise}
+     */
+    static getABI(contractName, chainId){
+        return new Promise((resolve, reject) => {
+            const prop = `abi:${contractName}:${chainId}`;
+            apis.storage.local.get(prop, (possible) => {
+                console.log('possible', possible);
+                if(JSON.stringify(possible) !== '{}') resolve(possible[prop]);
+                else resolve('no cache');
+            });
         })
     }
 }

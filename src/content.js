@@ -87,6 +87,7 @@ class Content {
             case NetworkMessageTypes.REQUEST_VERSION_UPDATE:            this.requestVersionUpdate(nonSyncMessage); break;
             case NetworkMessageTypes.AUTHENTICATE:                      this.authenticate(nonSyncMessage); break;
             case NetworkMessageTypes.IDENTITY_FROM_PERMISSIONS:         this.identityFromPermissions(nonSyncMessage); break;
+            case NetworkMessageTypes.ABI_CACHE:                         this.abiCache(nonSyncMessage); break;
             default:                                                    stream.send(nonSyncMessage.error(Error.maliciousEvent()), PairingTags.INJECTED)
         }
     }
@@ -111,6 +112,12 @@ class Content {
         else promise.then(res => {
             if(message) this.respond(message, res);
         });
+    }
+
+    abiCache(message){
+        if(!isReady) return;
+        InternalMessage.payload(InternalMessageTypes.ABI_CACHE, message.payload)
+            .send().then(res => this.respond(message, res))
     }
 
     getOrRequestIdentity(message){
