@@ -246,10 +246,7 @@ const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chain
     await Promise.all(contracts.map(async contractAccount => {
         const cachedABI = await messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccount, abiGet:true, chainId});
 
-        let lastUpdate = 0;
-        if(cachedABI) lastUpdate = (await eos.getAccount(contractAccount)).last_code_update;
-
-        if(cachedABI === 'object' && cachedABI.timestamp > +new Date(lastUpdate))
+        if(cachedABI === 'object' && cachedABI.timestamp > +new Date((await eos.getAccount(contractAccount)).last_code_update))
             abis[contractAccount] = eos.fc.abiCache.abi(contractAccount, cachedABI.abi);
 
         else {
