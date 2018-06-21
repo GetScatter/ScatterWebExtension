@@ -230,39 +230,6 @@ export default class EOS extends Plugin {
     }
 }
 
-
-// This is code duplication from eosjs due to it not being exported.
-// https://github.com/EOSIO/eosjs/issues/207
-function abiToFcSchema(abi) {
-    // customTypes
-    // For FcBuffer
-    const abiSchema = {}
-
-    // convert abi types to Fcbuffer schema
-    if(abi.types) { // aliases
-        abi.types.forEach(e => {
-            abiSchema[e.new_type_name] = e.type
-        })
-    }
-
-    if(abi.structs) {
-        abi.structs.forEach(e => {
-            const fields = {}
-            for(const field of e.fields) {
-                fields[field.name] = field.type
-            }
-            abiSchema[e.name] = {base: e.base, fields}
-            if(e.base === '') {
-                delete abiSchema[e.name].base
-            }
-        })
-    }
-
-    return abiSchema
-}
-
-import Structs from 'eosjs/lib/structs';
-
 const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chainId) => {
 
     const eos = _eos({httpEndpoint, chainId});
@@ -278,11 +245,13 @@ const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chain
 
     await Promise.all(contracts.map(async contractAccount => {
         const cachedABI = await messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccount, abiGet:true, chainId});
-        if(cachedABI === 'object' && cachedABI.timestamp > staleAbi) {
-            const schema = abiToFcSchema(cachedABI.abi);
-            const structs = Structs({defaults:false}, schema);
-            abis[contractAccount] = Object.assign({abi:cachedABI.abi, schema}, structs);
-        }
+
+        let lastUpdate = 0;
+        if(cachedABI) lastUpdate = (await eos.getAccount(contractAccount)).last_code_update;
+
+        if(cachedABI === 'object' && cachedABI.timestamp > +new Date(lastUpdate))
+            abis[contractAccount] = eos.fc.abiCache.abi(contractAccount, cachedABI.abi);
+
         else {
             abis[contractAccount] = (await eos.contract(contractAccount)).fc;
             const savableAbi = JSON.parse(JSON.stringify(abis[contractAccount]));
