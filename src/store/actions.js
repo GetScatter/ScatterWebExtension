@@ -65,7 +65,7 @@ export const actions = {
 
     [Actions.IMPORT_SCATTER]:({dispatch}, {imported, seed}) => {
         return new Promise(async (resolve, reject) => {
-            
+
             const scatter = Scatter.fromJson(imported);
 
             scatter.settings.hasEncryptionKey = true;
@@ -74,8 +74,8 @@ export const actions = {
             await Promise.all(PluginRepository.signatureProviders().map(async plugin => {
                 const network = await plugin.getEndorsedNetwork();
 
-                if(!networkUniques.includes(network.unique()))
-                    scatter.settings.networks.push(network);
+                scatter.settings.networks = scatter.settings.networks.filter(_network => _network.unique() !== network.unique());
+                scatter.settings.networks.push(network);
             }));
 
             scatter.meta = new Meta();
