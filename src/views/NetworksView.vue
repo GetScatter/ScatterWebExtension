@@ -15,9 +15,18 @@
                     <figure class="header big">{{network.name}}</figure>
                 </section>
                 <section class="panel">
-                    <figure class="header big"><i class="fa fa-globe"></i>{{network.host}}</figure>
-                    <figure class="header small margin"><i class="fa fa-plug"></i>{{network.port}}</figure>
+                    <figure class="header big">
+                        <a target="_blank" :href="`${network.protocol}://${network.hostport()}`">
+                            <u>{{network.host}}</u>
+                        </a>
+                    </figure>
                     <figure class="header small margin"><i class="fa fa-chain"></i>{{network.blockchain.toUpperCase()}}</figure>
+                    <figure class="header small margin"><i class="fa fa-globe"></i>{{network.protocol}}</figure>
+                    <figure class="header small margin"><i class="fa fa-plug"></i>{{network.port}}</figure>
+                </section>
+                <section class="panel" v-if="network.chainId && network.chainId.length">
+                    <figure class="header small margin"><i class="fa fa-chain"></i> Chain ID</figure><br>
+                    <figure class="header small margin">{{network.chainId}}</figure>
                 </section>
 
                 <!-- Actions -->
@@ -51,6 +60,9 @@
             ...mapGetters([
                 'networks'
             ])
+        },
+        mounted(){
+            console.log('networks', this.networks)
         },
         methods: {
             bind(changed, original) { this[original] = changed },

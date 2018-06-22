@@ -117,7 +117,7 @@
                 padding-bottom:5px;
                 margin-top:-5px;
                 margin-bottom:10px;
-                border-bottom:1px solid #eaeaea;
+                /*border-bottom:1px solid #eaeaea;*/
             }
 
             .sub-header {

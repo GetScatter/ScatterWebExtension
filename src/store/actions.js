@@ -65,12 +65,19 @@ export const actions = {
 
     [Actions.IMPORT_SCATTER]:({dispatch}, {imported, seed}) => {
         return new Promise(async (resolve, reject) => {
+            
             const scatter = Scatter.fromJson(imported);
+
             scatter.settings.hasEncryptionKey = true;
+
+            const networkUniques = scatter.settings.networks.map(network => network.unique());
             await Promise.all(PluginRepository.signatureProviders().map(async plugin => {
                 const network = await plugin.getEndorsedNetwork();
-                scatter.settings.networks.push(network);
+
+                if(!networkUniques.includes(network.unique()))
+                    scatter.settings.networks.push(network);
             }));
+
             scatter.meta = new Meta();
 
             InternalMessage.payload(InternalMessageTypes.SET_SEED, seed).send().then(() => {
