@@ -172,7 +172,7 @@ to accept or deny the addition.
 const eosOptions = {};
  
 // Get a reference to an 'Eosjs' instance with a Scatter signature provider.
-const eos = scatter.eos( network, Eos.Localnet, eosOptions, 'https' );
+const eos = scatter.eos( network, Eos, eosOptions, 'https' );
 ```
 
 
@@ -459,7 +459,7 @@ allows a handful of methods which can interact with the Scatter extension:
 Normally when you use `eosjs` you have to give it a private key to work with.
 
 ```js
-const eos = Eos.Localnet({httpEndpoint:ENDPOINT, keyProvider:PRIVATE_KEY});
+const eos = Eos({httpEndpoint:ENDPOINT, keyProvider:PRIVATE_KEY});
 eos.transfer('users_account', 'some_other_account', 100000, '');
 ```
 
@@ -482,7 +482,7 @@ The only way for a website to push requests into Scatter and use it's private ke
 const identity = await scatter.getIdentity();
 -------------------------
 // The object returned here has no network, and no signature or key provider
-const eos = scatter.eos( network, Eos.Localnet, {} );
+const eos = scatter.eos( network, Eos, {} );
 -------------------------
 // When the transfer method is called the network and signature provider 
 // are bound outside of the website's accessible application scope.
