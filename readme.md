@@ -141,13 +141,18 @@ const network = {
     blockchain:'eos',
     host:'127.0.0.1', // ( or null if endorsed chainId )
     port:8888, // ( or null if defaulting to 80 )
-    chainId:1 || 'abcd', // Or null to fetch automatically ( takes longer )
+    chainId:1 || 'abcd',
 }
 ```
 
+**A note about chainId** - If the user has a chainId in their network inside of Scatter providing the host/port
+will not be enough. You should always aim for chainId inclusion.
+
 Scatter has a few endorsed networks that is uses for retrieving information such as an 
-`EOS Mainnet ( chainId ? )` and `ETH Mainnet ( chainId 1 )`. If you are using those you can 
-simply leave the `host` and `port` null and it will default to the chainId internally. 
+`EOS Mainnet ( chainId aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906 )` 
+and `ETH Mainnet ( chainId 1 )`. If you are using those you can 
+simply leave the `host` and `port` null and it will default to the chainId internally when fetching accounts from 
+the identity. 
 
 #### Suggesting a network to the user
 
