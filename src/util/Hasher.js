@@ -1,5 +1,6 @@
 const ecc = require('eosjs-ecc');
 const scrypt = require('scrypt-async');
+import StorageService from '../services/StorageService';
 
 export default class Hasher {
 
@@ -17,9 +18,13 @@ export default class Hasher {
      * @param cleartext
      */
     static async secureHash(cleartext) {
-        return new Promise((resolve, reject) => {
-            //TODO: Need to provide salt
-            scrypt(cleartext, 'SALT_ME', {
+        return new Promise(async resolve => {
+            // We don't need a salt here, because this is a non-saved(!) hash,
+            // which is used to create a seed that is used to encrypt
+            // the keychain using AES which has it's own salt.
+            // const salt = this.insecureHash(cleartext) + this.insecureHash(cleartext).slice(0,16);
+            const salt = await StorageService.getSalt();
+            scrypt(cleartext, salt, {
                 N: 16384,
                 r: 8,
                 p: 1,
@@ -29,15 +34,5 @@ export default class Hasher {
                 resolve(derivedKey);
             })
         });
-    }
-
-    /***
-     * Checks a cleartext against a insecureHash
-     * @param cleartext
-     * @param hash
-     * @returns {boolean}
-     */
-    static validate(cleartext, hash) {
-        return Hasher.insecureHash(cleartext) === hash
     }
 }

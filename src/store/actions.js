@@ -9,6 +9,8 @@ import InternalMessage from '../messages/InternalMessage'
 import * as InternalMessageTypes from '../messages/InternalMessageTypes'
 import PluginRepository from '../plugins/PluginRepository'
 import RIDLService from '../services/RIDLService'
+import StorageService from '../services/StorageService'
+import IdGenerator from '../util/IdGenerator'
 import ridl from 'ridl';
 
 export const actions = {
@@ -105,6 +107,8 @@ export const actions = {
                 firstIdentity.name = identified;
                 scatter.keychain.updateOrPushIdentity(firstIdentity);
             }
+
+            await StorageService.setSalt(Hasher.insecureHash(IdGenerator.text(32)));
 
             dispatch(Actions.SET_SEED, password).then(mnemonic => {
                 dispatch(Actions.UPDATE_STORED_SCATTER, scatter).then(_scatter => {

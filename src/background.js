@@ -16,7 +16,7 @@ import Permission from './models/Permission'
 import TimingHelpers from './util/TimingHelpers';
 import Error from './models/errors/Error'
 import PluginRepository from './plugins/PluginRepository'
-import {Blockchains} from './models/Blockchains'
+import {Blockchains, BlockchainsArray} from './models/Blockchains'
 import {apis} from './util/BrowserApis';
 import migrate from './migrations/migrator'
 // Gets bound when a user logs into scatter
@@ -376,6 +376,11 @@ export default class Background {
             Background.load(scatter => {
 
                 const network = Network.fromJson(payload.network);
+
+                if(!BlockchainsArray.includes(network.blockchain)){
+                    sendResponse(Error('bad_blockchain', 'The blockchain you specified is not supported by Scatter'));
+                    return;
+                }
 
                 // Already has network, returning true
                 if(scatter.settings.networks.find(_network => _network.unique() === network.unique())) sendResponse(true);

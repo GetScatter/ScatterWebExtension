@@ -27,7 +27,7 @@ export default class Network {
         return new Network('', '', splits[0], parseInt(splits[1] || 80), blockchain)
     }
 
-    unique(){ return `${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`); }
+    unique(){ return (`${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`)).toLowerCase(); }
     hostport(){ return `${this.host}${this.port ? ':' : ''}${this.port}` }
     clone(){ return Network.fromJson(JSON.parse(JSON.stringify(this))) }
     isEmpty(){ return !this.host.length; }

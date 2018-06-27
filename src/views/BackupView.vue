@@ -59,7 +59,8 @@
                 if(!seed) return false;
 
                 const scatter = this.scatter.clone();
-                const filetext = AES.encrypt(scatter, seed);
+                let filetext = AES.encrypt(scatter, seed);
+                filetext += `|SSLT|${await StorageService.getSalt()}`;
                 const filename = `scatter_${+new Date()}.scatter_backup.txt`;
                 this.save(filename, filetext);
             },

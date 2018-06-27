@@ -12,7 +12,7 @@ export default class StorageService {
      * @returns {Promise}
      */
     static save(scatter){
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             apis.storage.local.set({scatter}, () => {
                 resolve(scatter);
             });
@@ -25,7 +25,7 @@ export default class StorageService {
      * @returns {Promise}
      */
     static get() {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             apis.storage.local.get('scatter', (possible) => {
                 (possible && Object.keys(possible).length && possible.hasOwnProperty('scatter'))
                     ? resolve(Scatter.fromJson(possible.scatter))
@@ -40,7 +40,7 @@ export default class StorageService {
      * @returns {Promise}
      */
     static remove(){
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             apis.storage.local.remove('scatter', () => {
                 resolve();
             });
@@ -55,7 +55,7 @@ export default class StorageService {
      * @returns {Promise}
      */
     static cacheABI(contractName, chainId, abi){
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             apis.storage.local.set({[`abi:${contractName}:${chainId}`]:abi}, () => {
                 resolve(abi);
             });
@@ -69,11 +69,28 @@ export default class StorageService {
      * @returns {Promise}
      */
     static getABI(contractName, chainId){
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const prop = `abi:${contractName}:${chainId}`;
             apis.storage.local.get(prop, (possible) => {
                 if(JSON.stringify(possible) !== '{}') resolve(possible[prop]);
                 else resolve('no cache');
+            });
+        })
+    }
+
+    static getSalt(){
+        return new Promise(resolve => {
+            apis.storage.local.get('salt', (possible) => {
+                if(JSON.stringify(possible) !== '{}') resolve(possible.salt);
+                else resolve('SALT_ME');
+            });
+        })
+    }
+
+    static setSalt(salt){
+        return new Promise(resolve => {
+            apis.storage.local.set({salt}, () => {
+                resolve(salt);
             });
         })
     }

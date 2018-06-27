@@ -2,6 +2,9 @@ import * as Actions from '../store/constants';
 import {RouteNames} from '../vue/Routing'
 import AlertMsg from '../models/alerts/AlertMsg'
 import Mnemonic from '../util/Mnemonic'
+import Hasher from '../util/Hasher';
+import IdGenerator from '../util/IdGenerator'
+import StorageService from './StorageService';
 
 export default class AuthenticationService {
 
@@ -43,6 +46,10 @@ export default class AuthenticationService {
      */
     static async changePassword(oldPassword, newPassword, context){
         const [oldMnemonic, oldSeed] = await Mnemonic.generateMnemonic(oldPassword);
+
+        // Setting a new salt every time the password is changed.
+        await StorageService.setSalt(Hasher.insecureHash(IdGenerator.text(32)));
+
         const [newMnemonic, newSeed] = await Mnemonic.generateMnemonic(newPassword);
 
         const scatter = context.scatter.clone();

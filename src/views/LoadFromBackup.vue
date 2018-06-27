@@ -18,6 +18,7 @@
     import AuthenticationService from '../services/AuthenticationService'
     import Mnemonic from '../util/Mnemonic'
     import AES from 'aes-oop';
+    import StorageService from '../services/StorageService'
 
     export default {
         data(){ return {
@@ -33,9 +34,13 @@
         methods: {
             bind(changed, original) { this[original] = changed },
             async importBackup(){
-                console.log('importing', this.encryptedJson)
-            },
-            async importBackup(){
+                const parts = this.encryptedJson.split('|SSLT|');
+                const encrypted = parts[0];
+                const salt = await (async () => {
+                    if(parts.length > 1) return StorageService.setSalt(parts[1]);
+                    else return await StorageService.getSalt()
+                })();
+
                 let decrypted;
                 let seed;
 
@@ -44,12 +49,12 @@
                     if(this.password.split(' ').length >= 12){
                         // MNEMONIC
                         seed = await Mnemonic.mnemonicToSeed(this.password);
-                        decrypted = AES.decrypt(this.encryptedJson, seed);
+                        decrypted = AES.decrypt(encrypted, seed);
                     } else {
                         // PASSWORD
                         const [m, s] = await Mnemonic.generateMnemonic(this.password);
                         seed = s;
-                        decrypted = AES.decrypt(this.encryptedJson, seed);
+                        decrypted = AES.decrypt(encrypted, seed);
                     }
                 } catch(e){
                     console.log('err', e);
