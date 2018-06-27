@@ -151,9 +151,7 @@ export default {
     [KEYS.BACKUP_Header]:`Export encrypted backup`,
     [KEYS.BACKUP_Description]:`
         Exporting your Scatter allows you to import it into other devices. The file will still be encrypted when it is 
-        exported so make sure you have either your mnemonic or your password, otherwise it will be useless. The private keys 
-        from your accounts will also be removed before exporting, the only private keys that will remain within the exported 
-        file will be your Identity keys.
+        exported so make sure you have either your mnemonic or your password, otherwise it will be useless. 
     `,
 
     [KEYS.IMPORT_Header]:`Import encrypted backup`,
