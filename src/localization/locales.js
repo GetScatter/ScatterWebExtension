@@ -9,6 +9,7 @@ import slovene from './languages/slovene';
 import german from './languages/german';
 import korean from './languages/korean';
 import chinese from './languages/chinese';
+import japanese from './languages/japanese';
 
 export const LANG = {
     ENGLISH: 'English',
@@ -20,6 +21,7 @@ export const LANG = {
     GERMAN: 'Deutsch ( German )',
     KOREAN: '한국어 ( Korean )',
     CHINESE: '中文 ( Chinese )',
+    JAPANESE: '日本語 ( Japanese )',
 };
 
 const languages = {
@@ -32,6 +34,7 @@ const languages = {
     [LANG.GERMAN]:german,
     [LANG.KOREAN]:korean,
     [LANG.CHINESE]:chinese,
+    [LANG.JAPANESE]:japanese,
 };
 
 export const locales = () => {
