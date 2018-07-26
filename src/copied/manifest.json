@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Scatter",
   "description": "Decentralized signature, identity and authentication system.",
-  "version": "6.1.4",
+  "version": "6.1.5",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "browser_action": {
     "default_icon": "icon.png",

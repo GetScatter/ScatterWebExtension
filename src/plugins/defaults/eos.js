@@ -137,6 +137,8 @@ export default class EOS extends Plugin {
 
         // Protocol will be deprecated.
         return (network, _eos, _options = {}, protocol = 'http') => {
+
+
             if(!['http', 'https', 'ws'].includes(protocol))
                 throw new Error('Protocol must be either http, https, or ws');
 
@@ -148,9 +150,12 @@ export default class EOS extends Plugin {
             if(!network.isValid()) throw Error.noNetwork();
             const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
+            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : options.chainId;
+            network.chainId = chainId;
+
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions
-            return proxy(_eos({httpEndpoint, chainId:_options.chainId}), {
+            return proxy(_eos({httpEndpoint, chainId}), {
                 get(eosInstance, method) {
 
                     let returnedFields = null;
@@ -168,7 +173,7 @@ export default class EOS extends Plugin {
                             throwIfNoIdentity();
 
                             // Friendly formatting
-                            signargs.messages = await requestParser(_eos, signargs, httpEndpoint, args[0], _options.chainId);
+                            signargs.messages = await requestParser(signargs, network);
 
                             const payload = Object.assign(signargs, { domain:strippedHost(), network, requiredFields });
                             const result = await messageSender(NetworkMessageTypes.REQUEST_SIGNATURE, payload);
@@ -195,7 +200,7 @@ export default class EOS extends Plugin {
 
                         // TODO: We need to check about the implications of multiple eosjs instances
                         return new Promise((resolve, reject) => {
-                            _eos(Object.assign(_options, {httpEndpoint, signProvider}))[method](...args)
+                            _eos(Object.assign(_options, {httpEndpoint, signProvider, chainId}))[method](...args)
                                 .then(result => {
 
                                     // Standard method ( ie. not contract )
@@ -230,21 +235,23 @@ export default class EOS extends Plugin {
     }
 }
 
-const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chainId) => {
-
-    const eos = _eos({httpEndpoint, chainId});
+const requestParser = async (signargs, network) => {
+    const eos = Eos({httpEndpoint:network.fullhost(), chainId:network.chainId});
 
     const contracts = signargs.transaction.actions.map(action => action.account)
         .reduce((acc, contract) => {
             if(!acc.includes(contract)) acc.push(contract);
             return acc;
-    }, []);
+        }, []);
 
     const staleAbi = +new Date() - (1000 * 60 * 60 * 24 * 2);
     const abis = {};
 
     await Promise.all(contracts.map(async contractAccount => {
-        const cachedABI = await messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccount, abiGet:true, chainId});
+        const cachedABI = await Promise.race([
+            messageSender(NetworkMessageTypes.ABI_CACHE, {abiContractName:contractAccount, abiGet:true, chainId:network.chainId}),
+            new Promise(resolve => setTimeout(() => resolve('no cache'), 500))
+        ]);
 
         if(cachedABI === 'object' && cachedABI.timestamp > +new Date((await eos.getAccount(contractAccount)).last_code_update))
             abis[contractAccount] = eos.fc.abiCache.abi(contractAccount, cachedABI.abi);
@@ -258,7 +265,7 @@ const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chain
             savableAbi.timestamp = +new Date();
 
             await messageSender(NetworkMessageTypes.ABI_CACHE,
-                {abiContractName: contractAccount, abi:savableAbi, abiGet: false, chainId});
+                {abiContractName: contractAccount, abi:savableAbi, abiGet: false, chainId:network.chainId});
         }
     }));
 
@@ -270,7 +277,6 @@ const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chain
         const data = abi.fromBuffer(action.name, action.data);
         const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
         let ricardian = actionAbi ? actionAbi.ricardian_contract : null;
-
 
         if(ricardian){
             const htmlFormatting = {h1:'div class="ricardian-action"', h2:'div class="ricardian-description"'};
@@ -286,5 +292,4 @@ const requestParser = async (_eos, signargs, httpEndpoint, possibleSigner, chain
             ricardian
         };
     }));
-
-}
+};

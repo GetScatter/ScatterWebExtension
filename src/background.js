@@ -333,10 +333,9 @@ export default class Background {
 
     static abiCache(sendResponse, payload){
         this.lockGuard(sendResponse, async () => {
-            let abi = null;
-            if(payload.abiGet) abi = await StorageService.getABI(payload.abiContractName, payload.chainId)
-            else abi = await StorageService.cacheABI(payload.abiContractName, payload.chainId, payload.abi);
-            sendResponse(abi);
+            sendResponse(payload.abiGet
+                ? await StorageService.getABI(payload.abiContractName, payload.chainId)
+                : await StorageService.cacheABI(payload.abiContractName, payload.chainId, payload.abi));
         })
     }
 
