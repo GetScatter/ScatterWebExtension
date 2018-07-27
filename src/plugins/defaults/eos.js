@@ -150,7 +150,7 @@ export default class EOS extends Plugin {
             if(!network.isValid()) throw Error.noNetwork();
             const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
-            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : options.chainId;
+            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
             network.chainId = chainId;
 
             // The proxy stands between the eosjs object and scatter.
