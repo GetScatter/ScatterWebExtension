@@ -1,4 +1,4 @@
-# Scatter
+# Scatter Classic
 
 Scatter is a browser extension that allows you to sign transactions for multiple blockchains and provide personal information to web applications without ever exposing your keys or filling out forms.
 
