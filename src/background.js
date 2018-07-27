@@ -374,10 +374,12 @@ export default class Background {
         this.lockGuard(sendResponse, () => {
             Background.load(scatter => {
 
-                const network = Network.fromJson(payload.network);
 
-                if(!BlockchainsArray.includes(network.blockchain)){
-                    sendResponse(Error('bad_blockchain', 'The blockchain you specified is not supported by Scatter'));
+                const network = Network.fromJson(payload.network);
+                console.log('network', network, BlockchainsArray);
+
+                if(!BlockchainsArray.map(x => x.value).includes(network.blockchain)){
+                    sendResponse(new Error('bad_blockchain', 'The blockchain you specified is not supported by Scatter'));
                     return;
                 }
 
