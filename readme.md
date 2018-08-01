@@ -4,12 +4,12 @@ Scatter is a browser extension that allows you to sign transactions for multiple
 
 ## Table of Contents
 
-- [Installing Scatter](https://github.com/EOSEssentials/Scatter#installation)
-- [Interacting With Scatter](https://github.com/EOSEssentials/Scatter#interacting-with-scatter)
-- [Translations and Localization](https://github.com/EOSEssentials/Scatter#translations-and-localization)
-- [Understanding Scatter's Security](https://github.com/EOSEssentials/Scatter#security)
-- [Contributing to Scatter](https://github.com/EOSEssentials/Scatter#contributing)
-- [Responsible Disclosure and Bug Bounties](https://github.com/EOSEssentials/Scatter#responsible-disclosure-and-bug-bounties)
+- [Installing Scatter](https://github.com/GetScatter/ScatterWebExtension#installation)
+- [Interacting With Scatter](https://github.com/GetScatter/ScatterWebExtension#interacting-with-scatter)
+- [Translations and Localization](https://github.com/GetScatter/ScatterWebExtension#translations-and-localization)
+- [Understanding Scatter's Security](https://github.com/GetScatter/ScatterWebExtension#security)
+- [Contributing to Scatter](https://github.com/GetScatter/ScatterWebExtension#contributing)
+- [Responsible Disclosure and Bug Bounties](https://github.com/GetScatter/ScatterWebExtension#responsible-disclosure-and-bug-bounties)
 
 
 
