@@ -194,9 +194,6 @@ export default class ETH extends Plugin {
             engine.start();
 
             return web3;
-
-            //
-
         }
     }
 
