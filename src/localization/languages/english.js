@@ -269,7 +269,7 @@ export default {
     [KEYS.ALERT_NoAccountsFound]:[
         'No Accounts Found',
 
-        `No accounts were found connected to this private/public key. Make sure there is an EOS account linked to this public key on the EOS network.`
+        `No accounts were found connected to this private/public key. Make sure there is an account linked to this public key on the selected network.`
     ],
     //2
     [KEYS.ALERT_PasswordsDoNotMatch]:[

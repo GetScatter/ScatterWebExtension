@@ -4,7 +4,8 @@ import {Blockchains} from '../../models/Blockchains'
 export const m5_0_4 = async scatter => {
     const endorsedNetworks = [
         await PluginRepository.plugin(Blockchains.EOS).getEndorsedNetwork(),
-        await PluginRepository.plugin(Blockchains.ETH).getEndorsedNetwork()
+        await PluginRepository.plugin(Blockchains.ETH).getEndorsedNetwork(),
+        await PluginRepository.plugin(Blockchains.TLOS).getEndorsedNetwork()
     ];
 
     scatter.settings.networks.map(network => {

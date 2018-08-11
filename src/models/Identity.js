@@ -47,7 +47,8 @@ scatter.getIdentity({
     personal:['email'],
     accounts:[
         {blockchain:Blockchains.EOS,network:{chainId:1}},
-        {blockchain:Blockchains.ETH,network:{chainId:1}}
+        {blockchain:Blockchains.ETH,network:{chainId:1}},
+        {blockchain:Blockchains.TLOS,network:{chainId:1}}
     ],
     location:['country']
 })
@@ -164,6 +165,9 @@ export default class Identity {
         return new Promise((resolve, reject) => {
             PrivateKey.randomKey().then(privateKey => {
                 this.privateKey = privateKey.toWif();
+                //todo: how to retrieve current blockchain to pass through to toPublic?
+                //e.g. this.network.blockchain (must contain string value of 'EOS' or 'TLOS')
+                // this.publicKey = privateKey.toPublic().toString(this.network.blockchain);
                 this.publicKey = privateKey.toPublic().toString();
                 this.hash = hash;
                 resolve(true);
