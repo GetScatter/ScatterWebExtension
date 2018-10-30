@@ -32,7 +32,7 @@
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "web3": "^1.0.0-beta2",
-    "web3-provider-engine": "^14.0.6"
+    "web3-provider-engine": "^14.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
