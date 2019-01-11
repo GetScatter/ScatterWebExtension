@@ -1,3 +1,46 @@
+/* time to upgrade */
+
+.upgrade-notice {
+  margin:10px;
+  background:#c0392b;
+  display:flex;
+  flex-direction: row;
+  align-items:center;
+  height:200px;
+  padding:20px;
+
+  .notice {
+    color:white;
+    text-align:center;
+    font-size:16px;
+
+    h3 {
+      margin-top:0;
+    }
+  }
+
+  .button {
+    background: white;
+    cursor: pointer;
+    width:100%;
+    height:50px;
+    line-height:50px;
+    border:1px solid #eaeaea;
+    border-radius:4px;
+    text-align:center;
+    font-family:'Raleway', sans-serif;
+    font-size:18px;
+    color:#656565;
+    text-shadow:0 1px 0 rgba(255,255,255,1);
+    outline:0;
+    box-shadow:inset 0 0 0 rgba(0,0,0,0);
+    transition:all 0.2s ease;
+    transition-property: border, background, color, box-shadow;
+  }
+}
+
+/* legacy */
+
 div, figure, section, nav, article, input, textarea {
   padding:0; margin:0; box-sizing: border-box;
 }

@@ -12,7 +12,7 @@
 </script>
 
 <style lang="scss">
-    button {
+    button,.button {
         cursor: pointer;
         width:100%;
         height:50px;

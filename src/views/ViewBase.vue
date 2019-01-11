@@ -2,6 +2,13 @@
     <section class="view-base">
 
         <section class="router-base">
+            <div class="upgrade-notice">
+                <div class=notice>
+                    <h3>Please upgrade</h3>
+                    <p>Scatter Desktop is more powerful, more secure, and easier to use.</p>
+                    <a class="button" href="https://get-scatter.com/">Upgrade to Scatter Desktop</a>
+                </div>
+            </div>
             <navbar></navbar>
             <transition :name="transitionName">
                 <router-view></router-view>

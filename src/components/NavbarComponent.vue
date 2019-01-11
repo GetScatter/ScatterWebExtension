@@ -135,8 +135,8 @@
         }
 
         &.no-chain {
-            max-height:299px;
-            line-height:299px;
+            max-height:99px;
+            line-height:99px;
 
             .logo {
                 font-size:64px;
@@ -147,8 +147,8 @@
         }
 
         &.locked {
-            max-height:450px;
-            line-height:450px;
+            max-height:200px;
+            line-height:200px;
 
             .logo {
                 font-size:64px;
