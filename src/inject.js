@@ -14,17 +14,17 @@ class Inject {
     constructor(){
         // Injecting an encrypted stream into the
         // web application.
-        const stream = new EncryptedStream(PairingTags.INJECTED, IdGenerator.text(64));
-
-        // Waiting for scatter to push itself onto the application
-        stream.listenWith(msg => {
-            if(msg && msg.hasOwnProperty('type') && msg.type === NetworkMessageTypes.PUSH_SCATTER)
-                window.scatter = new Scatterdapp(stream, msg.payload);
-        });
-
-        // Syncing the streams between the
-        // extension and the web application
-        stream.sync(PairingTags.SCATTER, stream.key);
+        // const stream = new EncryptedStream(PairingTags.INJECTED, IdGenerator.text(64));
+        //
+        // // Waiting for scatter to push itself onto the application
+        // stream.listenWith(msg => {
+        //     if(msg && msg.hasOwnProperty('type') && msg.type === NetworkMessageTypes.PUSH_SCATTER)
+        //         window.scatter = new Scatterdapp(stream, msg.payload);
+        // });
+        //
+        // // Syncing the streams between the
+        // // extension and the web application
+        // stream.sync(PairingTags.SCATTER, stream.key);
     }
 
 }

@@ -2,13 +2,13 @@
     <section class="view-base">
 
         <section class="router-base">
-            <div class="upgrade-notice">
-                <div class=notice>
-                    <h3>Please upgrade</h3>
-                    <p>Scatter Desktop is more powerful, more secure, and easier to use.</p>
-                    <a class="button" href="https://get-scatter.com/">Upgrade to Scatter Desktop</a>
-                </div>
-            </div>
+            <!--<div class="upgrade-notice">-->
+                <!--<div class=notice>-->
+                    <!--<h3>Please upgrade</h3>-->
+                    <!--<p>Scatter Desktop is more powerful, more secure, and easier to use.</p>-->
+                    <!--<a class="button" href="https://get-scatter.com/">Upgrade to Scatter Desktop</a>-->
+                <!--</div>-->
+            <!--</div>-->
             <navbar></navbar>
             <transition :name="transitionName">
                 <router-view></router-view>
@@ -20,30 +20,30 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters, mapState } from 'vuex'
-    import * as Actions from '../store/constants';
-    import {RouteNames, RouteDepth} from '../vue/Routing'
+	import { mapActions, mapGetters, mapState } from 'vuex'
+	import * as Actions from '../store/constants';
+	import {RouteNames, RouteDepth} from '../vue/Routing'
 
-    export default {
-        data(){ return {
-            transitionName:'',
-        }},
-        computed: {
-            ...mapState([
-                'mnemonic'
-            ])
-        },
-        methods: {
-            ...mapActions([
-                Actions.SET_MNEMONIC,
-            ])
-        },
-        watch: {
-            '$route' (to, from) {
-                this.transitionName = RouteDepth[to.name] < RouteDepth[from.name] ? 'slide-right' : 'slide-left'
-            }
-        }
-    }
+	export default {
+		data(){ return {
+			transitionName:'',
+		}},
+		computed: {
+			...mapState([
+				'mnemonic'
+			])
+		},
+		methods: {
+			...mapActions([
+				Actions.SET_MNEMONIC,
+			])
+		},
+		watch: {
+			'$route' (to, from) {
+				this.transitionName = RouteDepth[to.name] < RouteDepth[from.name] ? 'slide-right' : 'slide-left'
+			}
+		}
+	}
 </script>
 
 <style lang="scss">

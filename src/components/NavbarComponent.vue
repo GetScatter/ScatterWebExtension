@@ -1,15 +1,15 @@
 <template>
     <nav :class="navState()">
         <figure class="logo" v-if="showLogo()">Scatter</figure>
-        <section class="breadcrumb" v-else>
-            <figure class="icon" v-on:click="back">
-                <i class="fa fa-chevron-left"></i>
-            </figure>
-            <figure class="route">{{breadcrumb()}}</figure>
-        </section>
-        <figure class="settings-button" v-on:click="toggleSettings">
-            <i class="fa fa-gear"></i>
-        </figure>
+        <!--<section class="breadcrumb" v-else>-->
+            <!--<figure class="icon" v-on:click="back">-->
+                <!--<i class="fa fa-chevron-left"></i>-->
+            <!--</figure>-->
+            <!--<figure class="route">{{breadcrumb()}}</figure>-->
+        <!--</section>-->
+        <!--<figure class="settings-button" v-on:click="toggleSettings">-->
+            <!--<i class="fa fa-gear"></i>-->
+        <!--</figure>-->
     </nav>
 </template>
 
