@@ -18,6 +18,7 @@ export default class KeyPair {
 
     static blockchain(publicKey){
         if(publicKey.indexOf('EOS') !== -1) return Blockchains.EOS;
+        if(publicKey.indexOf('ENU') !== -1) return Blockchains.ENU;
         if(publicKey.indexOf('0x') !== -1 && publicKey.length === 42) return Blockchains.ETH;
         return null;
     }
@@ -31,6 +32,8 @@ export default class KeyPair {
         case Blockchains.EOS: return this.privateKey.length > 51;
         // ETH private keys are 64 chars long
         case Blockchains.ETH: return this.privateKey.length > 64;
+        // ENU private keys are 51 chars long
+        case Blockchains.ENU: return this.privateKey.length > 51;
     }}
 
     /***
