@@ -53,7 +53,7 @@
 
                 <!-- Personal Information -->
                 <section class="panel" v-if="fullKeysOf(identity.personal).length">
-                    <figure class="header small reverse-margin">personal information</figure>
+                    <figure class="header small reverse-margin">{{locale(langKeys.IDENTITY_PersonalHeader)}}</figure>
                     <section class="items">
                         <section class="item" v-for="key in fullKeysOf(identity.personal)">
                             <span>{{key}}</span>
@@ -65,7 +65,7 @@
                 <!-- Location Information -->
                 <section class="panel" v-for="location in identity.locations">
                     <section v-if="fullKeysOf(location).length">
-                        <figure class="header small reverse-margin">location information</figure>
+                        <figure class="header small reverse-margin">{{locale(langKeys.IDENTITY_LocationHeader)}}</figure>
                         <section class="items">
                             <section class="item" v-for="key in fullKeysOf(location)">
                                 <span>{{key}}</span>

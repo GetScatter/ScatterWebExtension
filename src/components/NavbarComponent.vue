@@ -49,11 +49,11 @@
                     case RouteNames.LOAD_FROM_BACKUP: return 'Import Keychain';
                     case RouteNames.SETTINGS: return 'Settings';
                     case RouteNames.TRANSFER: return 'Transfer';
-                    case RouteNames.IDENTITIES: return 'Identities';
+                    case RouteNames.IDENTITIES: return this.locale(this.langKeys.MAINMENU_Identities);
                     case RouteNames.IDENTITY: return 'Identity';
                     case RouteNames.PERMISSIONS:
-                    case RouteNames.DOMAIN_PERMISSIONS: return 'Permissions';
-                    case RouteNames.HISTORY: return 'History';
+                    case RouteNames.DOMAIN_PERMISSIONS: return this.locale(this.langKeys.MAINMENU_Permissions);
+                    case RouteNames.HISTORY: return this.locale(this.langKeys.MAINMENU_History);
                     case RouteNames.NETWORKS: return 'Networks';
                     case RouteNames.NETWORK: return 'Network';
                     case RouteNames.CHANGE_PASSWORD: return 'Password';
@@ -63,7 +63,7 @@
                     case RouteNames.AUTO_LOCK: return 'Auto Lock';
                     case RouteNames.LANGUAGE: return 'Language';
                     case RouteNames.KEYPAIRS: return 'Key Pair';
-                    case RouteNames.KEYS: return 'Key Pairs';
+                    case RouteNames.KEYS: return this.locale(this.langKeys.MAINMENU_Keys);
                 }
                 return 'Undefined'
             },
